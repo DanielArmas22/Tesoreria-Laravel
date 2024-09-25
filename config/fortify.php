@@ -73,7 +73,7 @@ return [
     |
     */
 
-    'home' => '/dashboard',
+    'home' => '/home',
     /* actualizar esta lunea para que redireccione a una funcion que vea si somos el administrador o no */
 
     /*

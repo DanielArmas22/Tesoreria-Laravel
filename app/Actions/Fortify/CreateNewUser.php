@@ -31,7 +31,10 @@ class CreateNewUser implements CreatesNewUsers
             'email.required' => 'El correo electrónico es obligatorio.',
             'email.unique' => 'El correo electrónico ya está registrado.',
             'idEstudiante.exists' => 'El ID de estudiante no existe burro.',
-            'terms.required' => 'Debe aceptar los términos y condiciones.'
+            'terms.required' => 'Debe aceptar los términos y condiciones.',
+            'password.required' => 'La contraseña es obligatoria.',
+            'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
+            'password.confirmed' => 'Las contraseñas no coinciden.',
         ])->validate();
 
         return User::create([
