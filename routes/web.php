@@ -28,19 +28,15 @@ Route::middleware([
 });
 
 Route::get('redirect',[HomeController::class.'redirect'])->name('redirect');
-// Route::get('/', [UsuarioController::class, 'showLogin'])->name('login');
-// Route::get('/registro', [UsuarioController::class, 'showRegistro'])->name('registro');
-// route::resource('/deuda', EstudianteController::class);
-// route::resource('/escala', EstudianteController::class);
 
 
-// Route::get('/', [DeudaController::class, 'showDeuda']);
+
 Route::get('conceptos/', [conceptoEscalaController::class, 'show'])->name('conceptoEscala');
 Route::get('/home', [HomeController::class, 'index'])->name('home.index');
 Route::post('/identificacion', [UsuarioController::class, 'verificalogin'])->name('identificacion');
 
 //estudiante
-// route::delete('/eliminarEstudiante/{id}', [EstudianteController::class, 'destroy'])->name('eliminarEstudiante');
+
 Route::get('estudiante/{id}/confirmar', [EstudianteController::class, 'confirmar'])->name('estudiante.confirmar');
 Route::resource('/estudiante', EstudianteController::class);
 Route::get('/cancelarEstudiante', function () {
