@@ -10,12 +10,22 @@ use App\Models\escala_estudiante;
 use App\Models\deuda;
 use App\Models\conceptoEscala;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 
-class escalaEstudianteController extends Controller
+class escalaEstudianteController extends Controller implements HasMiddleware
 {
     /**
      * Display a listing of the resource.
      */
+    public static function middleware(): array
+    {
+        return [
+            'auth',
+            new Middleware('log', only: ['index']),
+            new Middleware('subscribed', except: ['store']),
+        ];
+    }
     const PAGINATION = 10;
 
     public function index(Request $request)
