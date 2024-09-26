@@ -5,9 +5,19 @@ namespace App\Http\Controllers;
 use App\Models\escala;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 
-class escalaController extends Controller
+class escalaController extends Controller implements HasMiddleware
 {
+    public static function middleware(): array
+    {
+        return [
+            'auth',
+            new Middleware('log', only: ['index']),
+            new Middleware('subscribed', except: ['store']),
+        ];
+    }
     //ConceptoEscala,nueva escala
     const PAGINATION = 5;
     public function index(Request $request)

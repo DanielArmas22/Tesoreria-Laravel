@@ -13,12 +13,21 @@ use App\Models\estudiante;
 use App\Models\pago;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 
 //$fechaActual = date('Y-m-d');->obtener fecha actual
 
-class DevolucionController extends Controller
+class DevolucionController extends Controller implements HasMiddleware
 {
+    public static function middleware(): array
+    {
+        return [
+            'auth',
+            new Middleware('log', only: ['index']),
+            new Middleware('subscribed', except: ['store']),
+        ];
+    }
     const PAGINATION = 5;
 
     public function index(Request $request)

@@ -11,8 +11,19 @@ use App\Models\Detalle_grado_seccion;
 use Illuminate\Support\Facades\DB;
 use App\Models\detalle_condonacion;
 use Barryvdh\DomPDF\Facade\Pdf;
-class CondonacionController extends Controller
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
+
+class CondonacionController extends Controller implements HasMiddleware
 {
+    public static function middleware(): array
+    {
+        return [
+            'auth',
+            new Middleware('log', only: ['index']),
+            new Middleware('subscribed', except: ['store']),
+        ];
+    }
     const PAGINATION = 5;
 
     public function index(Request $request)
