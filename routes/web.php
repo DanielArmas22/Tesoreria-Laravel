@@ -32,7 +32,7 @@ Route::get('redirect',[HomeController::class.'redirect'])->name('redirect');
 
 
 Route::get('conceptos/', [conceptoEscalaController::class, 'show'])->name('conceptoEscala');
-Route::get('/home', [HomeController::class, 'index'])->name('home.index');
+Route::get('/home', [HomeController::class, 'index'])->name('home.index')->middleware('auth');
 Route::post('/identificacion', [UsuarioController::class, 'verificalogin'])->name('identificacion');
 
 //estudiante

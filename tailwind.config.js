@@ -9,6 +9,8 @@ export default {
         './vendor/laravel/jetstream/**/*.blade.php',
         './storage/framework/views/*.php',
         './resources/views/**/*.blade.php',
+        "./resources/**/*.js",
+        "./resources/**/*.vue",
         "./node_modules/tw-elements/js/**/*.js",
         "./node_modules/flowbite/**/*.js"
     ],
@@ -21,5 +23,5 @@ export default {
         },
     },
     darkMode: 'class',
-    plugins: [forms, typography, require("tw-elements/plugin.cjs"), require('flowbite/plugin')],
+    plugins: [require("tw-elements/plugin.cjs"), require('flowbite/plugin'), forms, typography],
 };

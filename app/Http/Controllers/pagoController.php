@@ -9,12 +9,20 @@ use App\Models\Pago;
 use App\Models\deuda;
 use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
-
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 //use Carbon\Carbon
 
-class pagoController extends Controller
+class pagoController extends Controller implements HasMiddleware
 {
-
+    public static function middleware(): array
+    {
+        return [
+            'auth',
+            new Middleware('log', only: ['index']),
+            new Middleware('subscribed', except: ['store']),
+        ];
+    }
 
     const PAGINATION = 3;
 
