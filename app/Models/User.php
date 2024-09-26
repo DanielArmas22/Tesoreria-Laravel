@@ -63,4 +63,12 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+    public function getRedirectRoute(): string
+    {
+        return 'home';
+    }
+    public function estudiante()
+    {
+        return $this->belongsTo(Estudiante::class, 'idEstudiante');
+    }
 }

@@ -63,7 +63,8 @@
                             <a href="#" class="flex ms-2 md:me-24">
                                 <img src="/img/profileTesoreria.jpg" class="h-8 me-3" alt="FlowBite Logo" />
                                 <span
-                                    class="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white">MIAUUUUUUUUUU</span>
+                                    class="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white">SIDERAL
+                                    CARRION</span>
                             </a>
                         </div>
                         {{-- <div class="flex items-center">
@@ -454,7 +455,7 @@
                             </a>
                         </li>
                         <li>
-                            <a href="{{ route('estudiante.edit', 40) }}"
+                            <a href="{{ route('estudiante.edit', Auth::user()->estudiante->idEstudiante) }}"
                                 class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                     stroke-width="1.5" stroke="currentColor"
@@ -480,7 +481,13 @@
                             </button>
                         </li>
                         <li>
-                            <a href="{{ route('deuda.index', ['codEstudiante' => 40, 'dniEstudiante' => '72887521', 'busquedaNombreEstudiante' => 'deysi', 'busquedaApellidoEstudiante' => 'elvia plasencia']) }}"
+                            {{-- <a href="{{ route('deuda.index', ['codEstudiante' => 40, 'dniEstudiante' => '72887521', 'busquedaNombreEstudiante' => 'deysi', 'busquedaApellidoEstudiante' => 'elvia plasencia']) }}" --}}
+                            <a href="{{ route('deuda.index', [
+                                'codEstudiante' => Auth::user()->idEstudiante,
+                                'dniEstudiante' => Auth::user()->estudiante->DNI,
+                                'busquedaNombreEstudiante' => Auth::user()->estudiante->nombre,
+                                'busquedaApellidoEstudiante' => Auth::user()->estudiante->apellidoP,
+                            ]) }}"
                                 class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                     stroke-width="1.5" stroke="currentColor"
@@ -493,7 +500,7 @@
                             </a>
                         </li>
                         <li>
-                            <a href="{{ route('pago.index', ['buscarCodigo' => 40]) }}"
+                            <a href="{{ route('pago.index', ['buscarCodigo' => Auth::user()->estudiante->idEstudiante]) }}"
                                 class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                     stroke-width="1.5" stroke="currentColor"
