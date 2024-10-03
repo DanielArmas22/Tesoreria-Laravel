@@ -13,7 +13,13 @@
         <section class="lg:flex gap-4 px-4 py-8 shadow-xl  rounded-3xl border-[1px]">
             <div class="">
                 <article class="flex justify-start">
-                    <x-button label="Nuevo Estudiante" ruta="estudiante.create" color="success" />
+                    {{-- <button label="Nuevo Estudiante" ruta="estudiante.create" color="success" /> --}}
+                    <form action="{{ route('estudiante.create') }}" method="GET">
+                        <button type=""
+                            class="px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+                            Nuevo estudiante
+                    </form>
+
                 </article>
                 <br>
                 <x-table nombreTabla="Estudiantes" :cabeceras="[

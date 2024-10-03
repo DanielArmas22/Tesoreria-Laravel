@@ -6,7 +6,7 @@
 @endphp
 @section('contenido')
 
-    @if (session('name') == 'daniel')
+    @if (Auth::user()->usertype == 'admin')
         <section class=" space-x-3 flex flex-col items-center">
             @if (session('mensaje'))
                 <x-alert :mensaje="session('mensaje')" tipo="success" />
