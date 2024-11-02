@@ -18,7 +18,7 @@ class RoleMiddleware
         if (!Auth::check()) {
             return redirect('/login');
         }
-
+        //rol
         // Verifica si el rol del usuario está en el array de roles permitidos
         if (!in_array(Auth::user()->role, $roles)) {
             abort(403, 'No tienes acceso a esta página');
