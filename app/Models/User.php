@@ -27,7 +27,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'idEstudiante',
+        'rol',
+        // 'idEstudiante',
     ];
 
     /**
@@ -69,6 +70,11 @@ class User extends Authenticatable
     }
     public function estudiante()
     {
-        return $this->belongsTo(Estudiante::class, 'idEstudiante');
+        return $this->belongsTo(Estudiante_padre::class, 'idUsuario', 'idUsuario');
+    }
+
+    public function hasRole($rol)
+    {
+        return $this->rol === $rol;
     }
 }

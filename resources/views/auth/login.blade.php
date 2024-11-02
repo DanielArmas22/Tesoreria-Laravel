@@ -11,7 +11,9 @@
                 {{ $value }}
             </div>
         @endsession
-
+        @isset($role)
+            <p>rol: {{ $role }}</p>
+        @endisset
         <form method="POST" action="{{ route('login') }}">
             @csrf
 

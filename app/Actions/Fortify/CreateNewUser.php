@@ -22,16 +22,12 @@ class CreateNewUser implements CreatesNewUsers
         Validator::make($input, [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'idEstudiante' => ['required', 'integer', 'exists:estudiante,idEstudiante'], // Verificación de existencia
             'password' => $this->passwordRules(),
-            'terms' => Jetstream::hasTermsAndPrivacyPolicyFeature() ? ['accepted', 'required'] : '',
         ],
         [
             'name.required' => 'El nombre es obligatorio.',
             'email.required' => 'El correo electrónico es obligatorio.',
             'email.unique' => 'El correo electrónico ya está registrado.',
-            'idEstudiante.exists' => 'El ID de estudiante no existe burro.',
-            'terms.required' => 'Debe aceptar los términos y condiciones.',
             'password.required' => 'La contraseña es obligatoria.',
             'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
             'password.confirmed' => 'Las contraseñas no coinciden.',
@@ -40,7 +36,6 @@ class CreateNewUser implements CreatesNewUsers
         return User::create([
             'name' => $input['name'],
             'email' => $input['email'],
-            'idEstudiante' => $input['idEstudiante'],
             'password' => Hash::make($input['password']),
         ]);
     }
