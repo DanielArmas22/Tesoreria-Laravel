@@ -22,8 +22,6 @@ class escalaEstudianteController extends Controller implements HasMiddleware
     {
         return [
             'auth',
-            new Middleware('log', only: ['index']),
-            new Middleware('subscribed', except: ['store']),
         ];
     }
     const PAGINATION = 10;

@@ -35,8 +35,14 @@ Route::get('conceptos/', [conceptoEscalaController::class, 'show'])->name('conce
 Route::get('/home', [HomeController::class, 'index'])->name('home.index')->middleware('auth');
 Route::post('/identificacion', [UsuarioController::class, 'verificalogin'])->name('identificacion');
 
-//estudiante
+Route::get('/register/padre', [UsuarioController::class, 'showRegPadre'])->name('register.padre');
+Route::post('/register/padre', [UsuarioController::class, 'regPadre']);
 
+Route::get('/login/padre', [UsuarioController::class, 'showLoginPadre'])->name('login.padre');
+Route::post('/login/padre', [UsuarioController::class, 'loginPadre']);
+
+
+//estudiante
 Route::get('estudiante/{id}/confirmar', [EstudianteController::class, 'confirmar'])->name('estudiante.confirmar');
 Route::resource('/estudiante', EstudianteController::class);
 Route::get('/cancelarEstudiante', function () {
@@ -49,6 +55,10 @@ Route::get('/descripcionEscala/{idEstudiante}/{periodo}', [EstudianteController:
 //condonacion
 route::resource('/condonacion', CondonacionController::class);
 Route::get('/condonacion/{id}/edit/{generarPDF}', [CondonacionController::class, 'edit'])->name('generarCondonacion');
+
+// Route::get('/editarCondonacion', [CondonacionController::class, 'editPadre'])->name('generarCondonacion');
+
+
 Route::get('condonacion/{id}/confirmar', [CondonacionController::class, 'confirmar'])->name('condonacion.confirmar');
 Route::get('/cancelarCondonacion', function () {
     return redirect()->route('condonacion.index')->with('datos', 'Acción Cancelada ..!');
@@ -89,7 +99,11 @@ Route::get('/boleta/{nroOperacion}', [PagoController::class, 'showBoleta'])->nam
 
 //escala
 //web escala
+
+// Route::resource('/escala', escalaController::class);
+// Route::get('escala/{id}/confirmar', [escalaController::class, 'confirmar'])->name('escala.confirmar');
+// Route::post('/escala', [escalaController::class, 'store'])->name('escala.store');
 Route::resource('/escala', escalaController::class);
 Route::get('escala/{id}/confirmar', [escalaController::class, 'confirmar'])->name('escala.confirmar');
-
 Route::post('/escala', [escalaController::class, 'store'])->name('escala.store');
+

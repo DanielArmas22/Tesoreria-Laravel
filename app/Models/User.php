@@ -27,7 +27,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'idEstudiante',
+        'rol',
+        // 'idEstudiante',
     ];
 
     /**
@@ -62,5 +63,23 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+    public function getRedirectRoute(): string
+    {
+        return 'home';
+    }
+    public function hasRole($rol)
+    {
+        return $this->rol === $rol;
+    }
+    public function estudiantes()
+    {
+        return $this->hasMany(Estudiante_padre::class, 'idUsuario', 'id');
+    }
+    public function countEstudiantes()
+    {
+        $contador = $this->estudiantes()->count();
+        echo $contador;
+        return 1;
     }
 }

@@ -35,7 +35,7 @@
                                         <td class="text-center border px-4 py-2">{{ $dato->conMora }}</td>
                                         <td class="text-center border px-4 py-2">{{ $dato->escala->descripcion }}</td>
                                         <td class="text-center border px-4 py-2">{{ $dato->nMes }}</td>
-                                        <td class="px-6 border py-1">
+                                        <td class="px-6 border flex justify-center space-x-5 py-1">
                                             <button type="button"
                                                 class="hover:scale-105 inline-block rounded bg-success px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white shadow-success-3 hover:transition hover:duration-300 hover:ease-in-out hover:bg-success-accent-300 hover:shadow-success-2 focus:bg-success-accent-300 focus:shadow-success-2 focus:outline-none focus:ring-0 active:bg-success-600 active:shadow-success-2 motion-reduce:transition-none dark:shadow-black/30 dark:hover:shadow-dark-strong dark:focus:shadow-dark-strong dark:active:shadow-dark-strong">
                                                 <a
