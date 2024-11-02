@@ -25,8 +25,8 @@ class Estudiante extends Model
     {
         return $this->hasOne(detalle_estudiante_GS::class, 'idEstudiante', 'idEstudiante');
     }
-    public function user()
+    public function estudiante_padre()
     {
-        return $this->hasOne(User::class,'idEstudiante','idEstudiante');
+        return $this->hasMany(Estudiante_padre::class, 'idEstudiante', 'idEstudiante');
     }
 }

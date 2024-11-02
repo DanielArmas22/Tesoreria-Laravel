@@ -99,7 +99,11 @@ Route::get('/boleta/{nroOperacion}', [PagoController::class, 'showBoleta'])->nam
 
 //escala
 //web escala
+
+// Route::resource('/escala', escalaController::class);
+// Route::get('escala/{id}/confirmar', [escalaController::class, 'confirmar'])->name('escala.confirmar');
+// Route::post('/escala', [escalaController::class, 'store'])->name('escala.store');
 Route::resource('/escala', escalaController::class);
 Route::get('escala/{id}/confirmar', [escalaController::class, 'confirmar'])->name('escala.confirmar');
-
 Route::post('/escala', [escalaController::class, 'store'])->name('escala.store');
+

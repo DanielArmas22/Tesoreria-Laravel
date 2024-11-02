@@ -8,6 +8,9 @@ class HomeController extends Controller
 {
     public function index()
     {
+        // if(auth()->user()->hasRole('padre')){
+        //     dd(auth()->user()->estudiantes);
+        // }
         return view('pages.home');
     }
     public function redirect()

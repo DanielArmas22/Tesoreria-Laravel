@@ -1,7 +1,7 @@
 @extends('layouts.layoutA')
 @section('titulo', 'Pagos')
 @section('contenido')
-    @if (Auth::user()->usertype == 'admin')
+    @if (Auth::user()->hasRole('admin'))
         <div class="container mx-auto">
             <div class="bg-gray-50 rounded-lg shadow-sm p-4">
                 <h2 class="text-2xl font-bold mb-4 text-gray-800">Listado de Pagos</h2>

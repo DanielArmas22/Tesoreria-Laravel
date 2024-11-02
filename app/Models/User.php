@@ -68,13 +68,18 @@ class User extends Authenticatable
     {
         return 'home';
     }
-    public function estudiante()
-    {
-        return $this->belongsTo(Estudiante_padre::class, 'idUsuario', 'idUsuario');
-    }
-
     public function hasRole($rol)
     {
         return $this->rol === $rol;
+    }
+    public function estudiantes()
+    {
+        return $this->hasMany(Estudiante_padre::class, 'idUsuario', 'id');
+    }
+    public function countEstudiantes()
+    {
+        $contador = $this->estudiantes()->count();
+        echo $contador;
+        return 1;
     }
 }

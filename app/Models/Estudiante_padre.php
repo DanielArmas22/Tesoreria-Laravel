@@ -22,7 +22,7 @@ class Estudiante_padre extends Model
     }
     public function user()
     {
-        return $this->belongsTo(User::class, 'idUsuario','idUsuario');
+        return $this->hasOne(User::class, 'id','idUsuario');
     }
 
     public function getKeyName()
