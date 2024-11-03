@@ -92,7 +92,7 @@ class UsuarioController extends Controller
         ]);
         
         Auth::login($user); //iniciar sesion
-        return redirect("/dashboard/padre");
+        return redirect("/home");
     }
 
 
@@ -126,7 +126,7 @@ class UsuarioController extends Controller
         $credentials['role'] = $role;
 
         if (Auth::attempt($credentials)) {
-            return redirect()->intended("/dashboard/$role");
+            return redirect()->intended("/home");
         }
 
         return back()->withErrors(['email' => 'Credenciales incorrectas para el rol seleccionado']);
