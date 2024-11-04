@@ -13,7 +13,10 @@
                 Admin
             @endif
             @if (Auth::user()->hasRole('director'))
-                director jeje
+                Director
+            @endif
+            @if (Auth::user()->hasRole('tesorero'))
+                Tesorero
             @endif
             @if (Auth::user()->hasRole('padre'))
                 Padre

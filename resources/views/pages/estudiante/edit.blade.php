@@ -1,7 +1,7 @@
 @extends('layouts.layoutA')
 {{-- @section('titulo', 'Editar Estudiante') --}}
 @section('contenido')
-    @if (Auth::user()->usertype == 'admin')
+    @if (Auth::user()->hasRole('admin') or Auth::user()->hasRole('tesorero'))
         <section class="border-[1px] flex gap-4  px-4 py-8 shadow-xl  rounded-3xl mx-auto justify-between">
             <article class="border-r-2 border-r-blue-100 px-4">
                 <div class="flex gap-4 flex-col items-center">

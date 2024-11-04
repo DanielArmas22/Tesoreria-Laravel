@@ -14,7 +14,7 @@ class UsuarioController extends Controller
     const ROLE_PADRE = 'padre';
     const ROLE_ADMIN = 'admin';
     const ROLE_CAJERO = 'cajero';
-    // const ROLE_PADRE = 'padre';
+    const ROLE_TESORERO = 'tesorero';
     public function showLogin()
     {
         return view('login');
@@ -62,6 +62,11 @@ class UsuarioController extends Controller
         return view('auth.register', ['role' => $this::ROLE_CAJERO]);
     }
 
+    public function showRegTesorero()
+    {
+        return view('auth.register', ['role' => $this::ROLE_TESORERO]);
+    }
+
     public function regPadre(Request $request)
     {
         $data=request()->validate([
@@ -92,10 +97,35 @@ class UsuarioController extends Controller
         ]);
         
         Auth::login($user); //iniciar sesion
-        return redirect("/dashboard/padre");
+        return redirect("home");
     }
 
+    public function regTesorero(Request $request)
+    {
+        $data=request()->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ],
+        [
+            'name.required' => 'El nombre es obligatorio.',
+            'email.required' => 'El correo electrónico es obligatorio.',
+            'email.unique' => 'El correo electrónico ya está registrado.',
+            'password.required' => 'La contraseña es obligatoria.',
+            'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
+            'password.confirmed' => 'Las contraseñas no coinciden.',
+        ]);
 
+        $user =  User::create([
+            'name' => $request->get('name'),
+            'email' => $request->get('email'),
+            'password' => Hash::make($request->get('password')),
+            'rol' => $this::ROLE_TESORERO
+        ]);
+        
+        Auth::login($user); //iniciar sesion
+        return redirect("home");
+    }
 
 
 
@@ -108,6 +138,14 @@ class UsuarioController extends Controller
     public function loginPadre(Request $request)
     {
         return $this->loginByRole($request, $this::ROLE_PADRE);
+    }
+    public function showLoginTesorero()
+    {
+        return view('auth.login',['role' => $this::ROLE_TESORERO]);
+    }
+    public function loginTesorero(Request $request)
+    {
+        return $this->loginByRole($request, $this::ROLE_TESORERO);
     }
 
     protected function loginByRole(Request $request, $role)
@@ -126,7 +164,7 @@ class UsuarioController extends Controller
         $credentials['role'] = $role;
 
         if (Auth::attempt($credentials)) {
-            return redirect()->intended("/dashboard/$role");
+            return redirect()->intended("/home");
         }
 
         return back()->withErrors(['email' => 'Credenciales incorrectas para el rol seleccionado']);

@@ -5,8 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\detalle_pago;
 use App\Models\estudiante;
 use Illuminate\Http\Request;
+use App\Models\conceptoEscala;
 use App\Models\Pago;
 use App\Models\deuda;
+use App\Models\escala;
+use App\Models\Grado;
+use App\Models\Seccion;
 use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Routing\Controllers\HasMiddleware;
@@ -22,7 +26,7 @@ class pagoController extends Controller implements HasMiddleware
         ];
     }
 
-    const PAGINATION = 3;
+    const PAGINATION = 10;
 
     public function index(Request $request, $generarPDF = null)
     {
@@ -32,19 +36,68 @@ class pagoController extends Controller implements HasMiddleware
         $fechaInicio = $request->get('fechaInicio');
         $fechaFin = $request->get('fechaFin');
 
+        $conceptoEscalas = conceptoEscala::select('descripcion')->distinct()->get();
+        $escalaF = escala::get();
+        $grados = Grado::get();
+        $secciones = Seccion::get();
+
+        $busquedaConcepto = $request->get('busquedaConcepto');
+        $busquedaEscala = $request->get('busquedaEscala');
+        $busquedaGrado = $request->get('busquedaGrado');
+        $busquedaSeccion = $request->get('busquedaSeccion');
+
+        $dniEstudiante = $request->get('dniEstudiante');
+        $busquedaNombreEstudiante = $request->get('busquedaNombreEstudiante');
+        $busquedaApellidoEstudiante = $request->get('busquedaApellidoEstudiante');
+
+        $codMinimo = $request->get('codMinimo');
+        $codMaximo = $request->get('codMaximo');
+
+        $pagosHoy = $request->get('pagosHoy');
+        $fechaActual = date('Y-m-d');
+
         $pago = DB::table('pago as P')
-        ->join('detalle_pago as DP', 'P.nroOperacion', '=', 'DP.nroOperacion')                                 
+        ->join('detalle_pago as DP', 'P.nroOperacion', '=', 'DP.nroOperacion') 
+        ->join('deuda as D', 'D.idDeuda', '=', 'DP.idDeuda')   
+        ->join('concepto_escala as C','C.idConceptoEscala','=','D.idConceptoEscala')
+        ->join('escala as ES','C.idEscala','=','ES.idEscala')
         ->join('estudiante as E', 'P.idEstudiante', '=', 'E.idEstudiante')
-        ->select('P.nroOperacion','P.idEstudiante', 'P.fechaPago','P.periodo','E.nombre','E.apellidoP','E.apellidoM',DB::raw('ROUND(sum(DP.monto),2) as totalMonto'))
+        ->join('detalle_estudiante_gs as DEGS','DEGS.idEstudiante','=','E.idEstudiante')
+        ->join('grado as G','G.gradoEstudiante','=','DEGS.gradoEstudiante')
+        ->join('seccion as SEC','SEC.seccionEstudiante','=','DEGS.seccionEstudiante')
+        ->select('P.nroOperacion','P.idEstudiante', 'P.fechaPago','P.periodo','E.nombre','E.apellidoP','E.apellidoM',DB::raw('ROUND(sum(DP.monto),2) as totalMonto'),
+                'G.descripcionGrado','SEC.descripcionSeccion','ES.descripcion as escala','C.descripcion as concep')
         ->where('P.estado','=','1')
-        ->groupBy('p.nroOperacion');
+        ->groupBy('p.nroOperacion','G.descripcionGrado', 
+        'SEC.descripcionSeccion','escala','concep');
         
+        if ($pagosHoy) {
+            $pago->whereDate('P.fechaPago', '=', $fechaActual);
+        }
         
         if($buscarCodigo !=null){
             $pago->where('P.idEstudiante', 'like','%' .$buscarCodigo . '%');
         }
+        if($dniEstudiante!=null){
+            $pago->where('E.DNI', $dniEstudiante);
+        }
+        if ($busquedaNombreEstudiante!=null) {
+            $pago->where('E.nombre', 'like', '%'.$busquedaNombreEstudiante.'%');
+        }
+
+        if ($busquedaApellidoEstudiante != null) {
+            $pago->where(DB::raw("CONCAT(E.apellidoP, ' ', E.apellidoM)"), 'like', '%' . $busquedaApellidoEstudiante . '%');
+        }
+
+        if ($codMinimo != null) {
+            $pago->having('totalMonto', '>=', $codMinimo);
+        }
+        if ($codMaximo != null) {
+            $pago->having('totalMonto', '<=', $codMaximo);
+        }
+
         if($nroOperacion !=null){
-            $pago->where('P.nroOperacion', 'like','%' .$nroOperacion . '%');
+            $pago->where('DP.nroOperacion', 'like','%' .$nroOperacion . '%');
         }
 
         if ($fechaInicio) {
@@ -55,6 +108,22 @@ class pagoController extends Controller implements HasMiddleware
             $pago->whereDate('P.fechaPago', '<=', $fechaFin);
         }
 
+        if($busquedaConcepto!=null){
+            $pago->where('C.descripcion','like','%'.$busquedaConcepto.'%');
+        }
+
+        if ($busquedaEscala!=null){
+            $pago->where('ES.idEscala','=', $busquedaEscala);
+        }
+
+        if ($busquedaGrado!=null) {
+            $pago->where('DEGS.gradoEstudiante', $busquedaGrado);
+        }
+
+        if($busquedaSeccion!=null){
+            $pago->where('DEGS.seccionEstudiante', $busquedaSeccion);
+        }
+
         $pagos = $pago->paginate($this::PAGINATION);
         $totalPago = 0;
 
@@ -62,14 +131,22 @@ class pagoController extends Controller implements HasMiddleware
         foreach ($pagos as $minipago) {
             $totalPago += $minipago->totalMonto;
         }
-        $pagos = $pagos->appends(['buscarCodigo' => $buscarCodigo, 'nroOperacion' => $nroOperacion, 'fechaInicio' => $fechaInicio, 'fechaFin' => $fechaFin,'totalPago' => $totalPago]);
+
+        $pagos = $pagos->appends(['buscarCodigo' => $buscarCodigo, 'nroOperacion' => $nroOperacion, 
+        'fechaInicio' => $fechaInicio, 'fechaFin' => $fechaFin,'totalPago' => $totalPago, 'codMinimo'=>$codMinimo,
+        'codMaximo'=>$codMaximo,'conceptoEscalas'=>$conceptoEscalas,'busquedaConcepto'=>$busquedaConcepto,'escalaF'=>$escalaF, 
+        'grados'=>$grados, 'secciones'=>$secciones,'busquedaEscala'=>$busquedaEscala,'busquedaGrado'=>$busquedaGrado,
+        'busquedaSeccion'=>$busquedaSeccion,'dniEstudiante'=>$dniEstudiante,'busquedaNombreEstudiante'=>$busquedaNombreEstudiante,
+        'busquedaApellidoEstudiante'=>$busquedaApellidoEstudiante,'pagosHoy'=>$pagosHoy]);
 
         if($request->has('generarPDF') && $request->generarPDF){
-            $pdf = PDF::loadView('pages.pago.reportepdf', compact('pagos', 'nroOperacion','buscarCodigo', 'fechaInicio', 'fechaFin','totalPago'));
+            $pdf = PDF::loadView('pages.pago.reportepdf', compact('pagos', 'nroOperacion','buscarCodigo', 'fechaInicio', 'fechaFin','totalPago','conceptoEscalas','busquedaConcepto','escalaF', 'grados', 'secciones',
+                    'busquedaEscala','busquedaGrado','busquedaSeccion','dniEstudiante','busquedaNombreEstudiante','busquedaApellidoEstudiante','codMinimo','codMaximo','pagosHoy'));
             return $pdf->stream('invoice.pdf');
         }
 
-        return view('pages.pago.index', compact('pagos', 'nroOperacion','buscarCodigo', 'fechaInicio', 'fechaFin','totalPago'));
+        return view('pages.pago.index', compact('pagos', 'nroOperacion','buscarCodigo', 'fechaInicio', 'fechaFin','totalPago','conceptoEscalas','busquedaConcepto','escalaF', 'grados', 'secciones',
+                    'busquedaEscala','busquedaGrado','busquedaSeccion','dniEstudiante','busquedaNombreEstudiante','busquedaApellidoEstudiante','codMinimo','codMaximo','pagosHoy'));
 
     }
 

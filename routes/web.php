@@ -41,6 +41,12 @@ Route::post('/register/padre', [UsuarioController::class, 'regPadre']);
 Route::get('/login/padre', [UsuarioController::class, 'showLoginPadre'])->name('login.padre');
 Route::post('/login/padre', [UsuarioController::class, 'loginPadre']);
 
+//Tesorero
+Route::get('/register/tesorero', [UsuarioController::class, 'showRegtesorero'])->name('register.tesorero');
+Route::post('/register/tesorero', [UsuarioController::class, 'regtesorero']);
+
+Route::get('/login/tesorero', [UsuarioController::class, 'showLogintesorero'])->name('login.tesorero');
+Route::post('/login/tesorero', [UsuarioController::class, 'logintesorero']);
 
 //estudiante
 Route::get('estudiante/{id}/confirmar', [EstudianteController::class, 'confirmar'])->name('estudiante.confirmar');

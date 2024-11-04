@@ -11,9 +11,10 @@
         <form method="POST"
             action="
         @if (isset($role) && $role == 'padre') {{ route('register.padre') }}
+        @elseif (isset($role) && $role == 'tesorero') {{ route('register.tesorero') }}
         @else
-        {{ route('register') }} @endif
-        ">
+            {{ route('register') }} @endif
+            ">
             @csrf
 
             <div>
