@@ -28,10 +28,16 @@
                     required autocomplete="username" />
             </div>
             @if (isset($role) && $role == 'padre')
+                <div id="error-message" style="color: red;"></div>
+                <input type="hidden" id="csrf_token" value="{{ csrf_token() }}" />
                 <div class="mt-4">
                     <x-label for="idEstudiante" value="{{ __('Codigo del Estudiante') }}" />
                     <x-input id="idEstudiante" class="block mt-1 w-full" type="text" name="idEstudiante"
                         :value="old('idEstudiante')" required autocomplete="username" />
+                </div>
+                <button class=" mt-4 px-6 py-2 rounded-xl border-2 border-gray-500" id="btnEstudiante">buscar</button>
+                <div id="success-message" style="color: green;"></div>
+                <div id="estudiantes-list">
                 </div>
             @endif
 
@@ -52,11 +58,103 @@
                     href="{{ route('login') }}">
                     {{ __('Ya tienes una cuenta?') }}
                 </a>
-
                 <x-button class="ms-4">
                     {{ __('Registrarme') }}
                 </x-button>
             </div>
         </form>
+        {{-- <script>
+            document.getElementById('btnEstudiante').addEventListener('click', function() {
+                var idEstudiante = document.getElementById('idEstudiante').value;
+                var csrfToken = document.getElementById('csrf_token').value;
+                fetch('/addEstudiante/' + idEstudiante, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken
+                    },
+                    body: JSON.stringify({
+                        id: idEstudiante
+                    })
+                });
+            });
+        </script> --}}
+        <script>
+            btnEstudiante.addEventListener('click', function(event) {
+                event.preventDefault();
+                var idEstudiante = document.getElementById('idEstudiante').value;
+                if (idEstudiante == '') {
+                    document.getElementById('error-message').innerText = 'Ingrese un codigo de estudiante';
+                    return;
+                }
+                var csrfToken = document.getElementById('csrf_token').value;
+                fetch(window.location.origin + '/addEstudiante/' + idEstudiante, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken
+                        },
+                        body: JSON.stringify({
+                            id: idEstudiante
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        // Maneja la respuesta del servidor
+                        if (data.error) {
+                            document.getElementById('error-message').innerText = data.error.message;
+                        } else {
+                            console.log('Success:', data.message);
+                            document.getElementById('error-message').innerText = '';
+                            document.getElementById('success-message').innerText = '';
+                            document.getElementById('success-message').innerText = data.message;
+                            // Actualizar la tabla de estudiantes
+                            actualizarListaEstudiantes(data.estudiantes);
+
+                            // Actualiza la interfaz de usuario si es necesario
+                        }
+                    })
+                    .catch(error => {
+                        document.getElementById('error-message').innerText = error.message;
+                    });
+            });
+
+            function actualizarListaEstudiantes(estudiantes) {
+                var estudiantesList = document.getElementById('estudiantes-list');
+                // Limpiar la lista existente
+                estudiantesList.innerHTML = '';
+
+                // Iterar sobre los estudiantes y agregarlos como inputs
+                estudiantes.forEach(function(estudiante, index) {
+                    // Crear un contenedor para los inputs del estudiante
+                    var estudianteDiv = document.createElement('div');
+                    estudianteDiv.classList.add('estudiante-item');
+
+                    // Input oculto para el ID del estudiante
+                    var inputId = document.createElement('input');
+                    inputId.type = 'hidden';
+                    inputId.name = 'idEstudiantes[]';
+                    inputId.value = estudiante.id;
+
+                    // Mostrar el nombre del estudiante
+                    var labelNombre = document.createElement('label');
+                    labelNombre.textContent = 'Nombre: ' + estudiante.nombre;
+
+                    // Mostrar el DNI del estudiante
+                    var labelDNI = document.createElement('label');
+                    labelDNI.textContent = 'DNI: ' + estudiante.dni;
+
+                    // Agregar los elementos al contenedor
+                    estudianteDiv.appendChild(inputId);
+                    estudianteDiv.appendChild(labelNombre);
+                    estudianteDiv.appendChild(document.createElement('br'));
+                    estudianteDiv.appendChild(labelDNI);
+                    estudianteDiv.appendChild(document.createElement('br'));
+
+                    // Agregar el contenedor del estudiante a la lista
+                    estudiantesList.appendChild(estudianteDiv);
+                });
+            }
+        </script>
     </x-authentication-card>
 </x-guest-layout>

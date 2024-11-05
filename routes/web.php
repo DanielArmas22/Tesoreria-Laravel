@@ -37,6 +37,8 @@ Route::post('/identificacion', [UsuarioController::class, 'verificalogin'])->nam
 
 Route::get('/register/padre', [UsuarioController::class, 'showRegPadre'])->name('register.padre');
 Route::post('/register/padre', [UsuarioController::class, 'regPadre']);
+Route::post('/addEstudiante/{id}', [UsuarioController::class, 'addEstudiante'])->name('addEstudiante');
+
 
 Route::get('/login/padre', [UsuarioController::class, 'showLoginPadre'])->name('login.padre');
 Route::post('/login/padre', [UsuarioController::class, 'loginPadre']);
