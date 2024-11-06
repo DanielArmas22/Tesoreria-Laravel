@@ -79,7 +79,6 @@ class User extends Authenticatable
     public function countEstudiantes()
     {
         $contador = $this->estudiantes()->count();
-        echo $contador;
-        return 1;
+        return $contador;
     }
 }

@@ -2,35 +2,30 @@
 @section('contenido')
     <section class="w-full">
         {{-- @livewire('navigation-menu') --}}
-
-        <h1 class="text-7xl text-center">Bienvenido a la Tesorería</h1>
+        <p class="opacity-50">Usted a inciado sesión como <strong>{{ Auth::user()->rol }}</strong></p>
+        @if (Auth::user()->hasRole('admin'))
+            <h1 class="text-7xl text-center font-thin">Sistema de Tesorería</h1>
+        @endif
+        @if (Auth::user()->hasRole('director'))
+            <h1 class="text-7xl text-center font-thin">Sistema de Reportes - Tesorería</h1>
+        @endif
+        @if (Auth::user()->hasRole('padre'))
+            <h1 class="text-7xl text-center font-thin">Sistema de Pago de Conceptos</h1>
+        @endif
         <br>
         <br>
         {{-- ejemplo de validacion según rol --}}
-        <p>rol:
-            @if (Auth::user()->hasRole('admin'))
-                Admin
-            @endif
-            @if (Auth::user()->hasRole('director'))
-                director jeje
-            @endif
-            @if (Auth::user()->hasRole('padre'))
-                Padre
-                <br>
+        @if (Auth::user()->hasRole('padre'))
+            <p>
                 Estudiantes:
-                <ul>
-                    @foreach (Auth::user()->estudiantes as $estudiante)
-                        <li class="font-bold">Hijo: {{ $estudiante->estudiante->nombre }}</li>
-                        hola
-                    @endforeach
-                    hola queda
-                    <br>
-                    nombre: {{ Auth::user()->name }}
-                    <br>
-                    {{-- nombre: {{ Auth::user()->countEstudiantes }} --}}
-            @endif
+            <ul>
+                @foreach (Auth::user()->estudiantes as $estudiante)
+                    <li class="font-bold">Hijo: {{ $estudiante->estudiante->DNI }} {{ $estudiante->estudiante->nombre }}
+                        {{ $estudiante->estudiante->apellidoP }}</li>
+                @endforeach
+                </p>
+        @endif
 
-        </p>
 
     </section>
 @endsection
