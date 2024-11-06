@@ -4,7 +4,7 @@
             <x-authentication-card-logo />
         </x-slot>
 
-        <x-validation-errors class="mb-4" />
+        {{-- <x-validation-errors class="mb-4" /> --}}
 
         @session('status')
             <div class="mb-4 font-medium text-sm text-green-600">
@@ -14,19 +14,28 @@
         @isset($role)
             <p>rol: {{ $role }}</p>
         @endisset
-        <form method="POST" action="{{ route('login') }}">
+        <form method="POST"
+            action="@if (isset($role) && $role == 'padre') {{ route('login.padre') }}
+        @else
+        {{ route('login') }} @endif">
             @csrf
 
             <div>
                 <x-label for="email" value="{{ __('Correo Electronico') }}"></x-label>
                 <x-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required
                     autofocus autocomplete="username" />
+                @error('email')
+                    <span class="text-red-600 text-sm">{{ $message }}</span>
+                @enderror
             </div>
 
             <div class="mt-4">
                 <x-label for="password" value="{{ __('Contraseña') }}" />
                 <x-input id="password" class="block mt-1 w-full" type="password" name="password" required
                     autocomplete="current-password" />
+                @error('password')
+                    <span class="text-red-600 text-sm">{{ $message }}</span>
+                @enderror
             </div>
 
             <div class="block mt-4">

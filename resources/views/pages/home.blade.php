@@ -1,11 +1,10 @@
 @extends('layouts.layoutA')
 @section('contenido')
-    <section class="">
+    <section class="w-full">
         {{-- @livewire('navigation-menu') --}}
 
-        <h1 class="text-7xl">Bienvenido a la Tesorería</h1>
+        <h1 class="text-7xl text-center">Bienvenido a la Tesorería</h1>
         <br>
-        <p class="">Selecciona una opción para continuar</p>
         <br>
         {{-- ejemplo de validacion según rol --}}
         <p>rol:

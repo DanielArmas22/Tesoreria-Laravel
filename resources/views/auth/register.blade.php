@@ -5,9 +5,9 @@
         </x-slot>
 
         <x-validation-errors class="mb-4" />
-        @isset($role)
+        {{-- @isset($role)
             <p>rol: {{ $role }}</p>
-        @endisset
+        @endisset --}}
         <form method="POST"
             action="
         @if (isset($role) && $role == 'padre') {{ route('register.padre') }}
@@ -25,15 +25,15 @@
             <div class="mt-4">
                 <x-label for="email" value="{{ __('Correo Electronico') }}" />
                 <x-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')"
-                    required autocomplete="username" />
+                    required autocomplete="email" />
             </div>
             @if (isset($role) && $role == 'padre')
                 <div id="error-message" style="color: red;"></div>
                 <input type="hidden" id="csrf_token" value="{{ csrf_token() }}" />
                 <div class="mt-4">
                     <x-label for="idEstudiante" value="{{ __('Codigo del Estudiante') }}" />
-                    <x-input id="idEstudiante" class="block mt-1 w-full" type="text" name="idEstudiante"
-                        :value="old('idEstudiante')" required autocomplete="username" />
+                    <x-input id="idEstudiante" class="block mt-1 w-full" type="number" name="idEstudiante"
+                        :value="old('idEstudiante')" required autocomplete="idEstudiante" step="1" />
                 </div>
                 <button class=" mt-4 px-6 py-2 rounded-xl border-2 border-gray-500" id="btnEstudiante">buscar</button>
                 <div id="success-message" style="color: green;"></div>
@@ -63,22 +63,6 @@
                 </x-button>
             </div>
         </form>
-        {{-- <script>
-            document.getElementById('btnEstudiante').addEventListener('click', function() {
-                var idEstudiante = document.getElementById('idEstudiante').value;
-                var csrfToken = document.getElementById('csrf_token').value;
-                fetch('/addEstudiante/' + idEstudiante, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': csrfToken
-                    },
-                    body: JSON.stringify({
-                        id: idEstudiante
-                    })
-                });
-            });
-        </script> --}}
         <script>
             btnEstudiante.addEventListener('click', function(event) {
                 event.preventDefault();
@@ -102,7 +86,8 @@
                     .then(data => {
                         // Maneja la respuesta del servidor
                         if (data.error) {
-                            document.getElementById('error-message').innerText = data.error.message;
+                            console.log('Error:', 'da');
+                            document.getElementById('error-message').innerText = data.error;
                         } else {
                             console.log('Success:', data.message);
                             document.getElementById('error-message').innerText = '';
@@ -115,7 +100,8 @@
                         }
                     })
                     .catch(error => {
-                        document.getElementById('error-message').innerText = error.message;
+                        console.log('Error:', 'da2');
+                        document.getElementById('error-message').innerText = error;
                     });
             });
 

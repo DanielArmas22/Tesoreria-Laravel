@@ -189,24 +189,29 @@ class UsuarioController extends Controller
 
     protected function loginByRole(Request $request, $role)
     {
-        $credentials = request()->validate(
-            [
-                'name' => 'required',
-                'password' => 'required'
-            ],
-            [
-                'name.required' => 'Ingrese Usuario existente',
-                'password.required' => 'Ingrese contraseña correcta',
-            ]
-        );
-        // $credentials = $request->only('email', 'password');
-        $credentials['role'] = $role;
+        // Validar los datos de inicio de sesión
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
+        ], [
+            'email.required' => 'El campo de correo electrónico es obligatorio.',
+            'email.email' => 'Por favor, ingresa un correo electrónico válido.',
+            'password.required' => 'La contraseña es obligatoria.',
+        ]);
 
+        // Agregar el rol a las credenciales
+        $credentials = [
+            'email' => $request->email,
+            'password' => $request->password,
+            'rol' => $role, 
+        ];
         if (Auth::attempt($credentials)) {
-            return redirect()->intended("/home");
+            $request->session()->regenerate(); 
+            return redirect()->intended("/home"); 
         }
-
-        return back()->withErrors(['email' => 'Credenciales incorrectas para el rol seleccionado']);
+        return back()->withErrors([
+            'email' => 'Las credenciales no coinciden o no tienes permiso para este tipo de acceso.',
+        ]);
     }
     public function salir()
     {
