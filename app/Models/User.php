@@ -81,4 +81,9 @@ class User extends Authenticatable
         $contador = $this->estudiantes()->count();
         return $contador;
     }
+    public function findEstudiante($id)
+    {
+        return $this->estudiantes()->where('idEstudiante', $id)->exists();
+    }
+
 }

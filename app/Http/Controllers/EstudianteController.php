@@ -12,6 +12,8 @@ use App\Models\escala_estudiante;
 use App\Models\detalle_devolucion;
 use App\Models\escala;
 // use App\Models\escala_estudiante;
+use Illuminate\Support\Facades\Auth;
+
 use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\DB;
@@ -185,6 +187,11 @@ class EstudianteController extends Controller implements HasMiddleware
     }
     public function edit($id)
     {
+        $estudiante = Estudiante::findOrFail($id);
+        // dd($estudiante);
+        if (auth()->user()->cannot('edit', $estudiante)) {
+            abort(403, 'Estudiante no encontrado');
+        }
         $aulas = Detalle_grado_seccion::get();
         $deudas = Deuda::select(
             'deuda.*',
