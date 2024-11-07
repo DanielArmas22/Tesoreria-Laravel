@@ -7,5 +7,34 @@
         <br>
         <p class="">Selecciona una opción para continuar</p>
         <br>
+        {{-- ejemplo de validacion según rol --}}
+        <p>rol:
+            @if (Auth::user()->hasRole('admin'))
+                Admin
+            @endif
+            @if (Auth::user()->hasRole('director'))
+                Director
+            @endif
+            @if (Auth::user()->hasRole('tesorero'))
+                Tesorero
+            @endif
+            @if (Auth::user()->hasRole('padre'))
+                Padre
+                <br>
+                Estudiantes:
+                <ul>
+                    @foreach (Auth::user()->estudiantes as $estudiante)
+                        <li class="font-bold">Hijo: {{ $estudiante->estudiante->nombre }}</li>
+                        hola
+                    @endforeach
+                    hola queda
+                    <br>
+                    nombre: {{ Auth::user()->name }}
+                    <br>
+                    {{-- nombre: {{ Auth::user()->countEstudiantes }} --}}
+            @endif
+
+        </p>
+
     </section>
 @endsection

@@ -5,9 +5,16 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Models\Estudiante_padre;
+use Illuminate\Support\Facades\Hash;
+
 
 class UsuarioController extends Controller
 {
+    const ROLE_PADRE = 'padre';
+    const ROLE_ADMIN = 'admin';
+    const ROLE_CAJERO = 'cajero';
+    const ROLE_TESORERO = 'tesorero';
     public function showLogin()
     {
         return view('login');
@@ -44,7 +51,124 @@ class UsuarioController extends Controller
         return back()->withErrors(['password' => 'Contraseña no válida'])->withInput(request(['name', 'password']));
     }
 
-    
+
+    public function showRegPadre()
+    {
+        return view('auth.register', ['role' => $this::ROLE_PADRE]);
+    }
+
+    public function showRegCajero()
+    {
+        return view('auth.register', ['role' => $this::ROLE_CAJERO]);
+    }
+
+    public function showRegTesorero()
+    {
+        return view('auth.register', ['role' => $this::ROLE_TESORERO]);
+    }
+
+    public function regPadre(Request $request)
+    {
+        $data=request()->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ],
+        [
+            'name.required' => 'El nombre es obligatorio.',
+            'email.required' => 'El correo electrónico es obligatorio.',
+            'email.unique' => 'El correo electrónico ya está registrado.',
+            'password.required' => 'La contraseña es obligatoria.',
+            'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
+            'password.confirmed' => 'Las contraseñas no coinciden.',
+        ]);
+
+        $user =  User::create([
+            'name' => $request->get('name'),
+            'email' => $request->get('email'),
+            'password' => Hash::make($request->get('password')),
+            'rol' => $this::ROLE_PADRE
+        ]);
+        //crear los estudiante_padre
+        $idEstudiante = $request->get('idEstudiante');
+        Estudiante_padre::create([
+            'idEstudiante' => $idEstudiante,
+            'idUsuario' => $user->id
+        ]);
+        
+        Auth::login($user); //iniciar sesion
+        return redirect("home");
+    }
+
+    public function regTesorero(Request $request)
+    {
+        $data=request()->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ],
+        [
+            'name.required' => 'El nombre es obligatorio.',
+            'email.required' => 'El correo electrónico es obligatorio.',
+            'email.unique' => 'El correo electrónico ya está registrado.',
+            'password.required' => 'La contraseña es obligatoria.',
+            'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
+            'password.confirmed' => 'Las contraseñas no coinciden.',
+        ]);
+
+        $user =  User::create([
+            'name' => $request->get('name'),
+            'email' => $request->get('email'),
+            'password' => Hash::make($request->get('password')),
+            'rol' => $this::ROLE_TESORERO
+        ]);
+        
+        Auth::login($user); //iniciar sesion
+        return redirect("home");
+    }
+
+
+
+
+
+    public function showLoginPadre()
+    {
+        return view('auth.login',['role' => $this::ROLE_PADRE]);
+    }
+    public function loginPadre(Request $request)
+    {
+        return $this->loginByRole($request, $this::ROLE_PADRE);
+    }
+    public function showLoginTesorero()
+    {
+        return view('auth.login',['role' => $this::ROLE_TESORERO]);
+    }
+    public function loginTesorero(Request $request)
+    {
+        return $this->loginByRole($request, $this::ROLE_TESORERO);
+    }
+
+    protected function loginByRole(Request $request, $role)
+    {
+        $credentials = request()->validate(
+            [
+                'name' => 'required',
+                'password' => 'required'
+            ],
+            [
+                'name.required' => 'Ingrese Usuario existente',
+                'password.required' => 'Ingrese contraseña correcta',
+            ]
+        );
+        // $credentials = $request->only('email', 'password');
+        $credentials['role'] = $role;
+
+        if (Auth::attempt($credentials)) {
+            return redirect()->intended("/home");
+        }
+
+        return back()->withErrors(['email' => 'Credenciales incorrectas para el rol seleccionado']);
+    }
     public function salir()
     {
         Auth::logout();
