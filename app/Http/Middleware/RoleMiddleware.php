@@ -5,6 +5,8 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Auth;
+
 
 class RoleMiddleware
 {
@@ -18,6 +20,9 @@ class RoleMiddleware
         if (!Auth::check()) {
             return redirect('/login');
         }
+        // Define the allowed roles
+        $roles = ['admin', 'director', 'padre', 'tesorero', 'cajero'];
+        
         //rol
         // Verifica si el rol del usuario está en el array de roles permitidos
         if (!in_array(Auth::user()->role, $roles)) {

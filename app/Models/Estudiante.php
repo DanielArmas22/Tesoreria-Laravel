@@ -15,7 +15,7 @@ class Estudiante extends Model
     protected $fillable = ['nombre', 'apellidoP', 'apellidoM', 'estado'];
     public function escalaEstudiante()
     {
-        return $this->hasMany(escalaEstudiante::class, 'idEstudiante', 'idEstudiante');
+        return $this->hasMany(escala_Estudiante::class, 'idEstudiante', 'idEstudiante');
     }
     public function deuda()
     {

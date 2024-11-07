@@ -8,14 +8,8 @@
         <p class="">Selecciona una opción para continuar</p>
         <br>
         {{-- ejemplo de validacion según rol --}}
-        <p>rol:
-            @if (Auth::user()->hasRole('admin'))
-                Admin
-            @endif
-            @if (Auth::user()->hasRole('director'))
-                director jeje
-            @endif
-            @if (Auth::user()->hasRole('padre'))
+        <p>rol: {{Auth::user()->rol}}
+            @if (Auth::user()->rol=='padre')
                 Padre
                 <br>
                 Estudiantes:

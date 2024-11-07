@@ -26,6 +26,9 @@ class pagoController extends Controller implements HasMiddleware
 
     public function index(Request $request, $generarPDF = null)
     {
+        $nombreEstudiante = $request->get('nombreEstudiante');
+        $apellidoPaterno = $request->get('apellidoPaterno');
+        $apellidoMaterno = $request->get('apellidoMaterno');
         $buscarpor = $request->get('buscarpor');
         $buscarCodigo = $request->get('buscarCodigo');
         $nroOperacion = $request->get('nroOperacion');
@@ -46,6 +49,18 @@ class pagoController extends Controller implements HasMiddleware
         if($nroOperacion !=null){
             $pago->where('P.nroOperacion', 'like','%' .$nroOperacion . '%');
         }
+        
+        if($nombreEstudiante !=null){
+            $pago->where('E.nombre', 'like','%' .$nombreEstudiante . '%');
+        }
+        
+        if($apellidoPaterno !=null){
+            $pago->where('E.apellidoP', 'like','%' .$apellidoPaterno . '%');
+        }
+        
+        if($apellidoMaterno !=null){
+            $pago->where('E.apellidoM', 'like','%' .$apellidoMaterno . '%');
+        }
 
         if ($fechaInicio) {
             $pago->whereDate('P.fechaPago', '>=', $fechaInicio);
@@ -62,14 +77,14 @@ class pagoController extends Controller implements HasMiddleware
         foreach ($pagos as $minipago) {
             $totalPago += $minipago->totalMonto;
         }
-        $pagos = $pagos->appends(['buscarCodigo' => $buscarCodigo, 'nroOperacion' => $nroOperacion, 'fechaInicio' => $fechaInicio, 'fechaFin' => $fechaFin,'totalPago' => $totalPago]);
+        $pagos = $pagos->appends(['buscarCodigo' => $buscarCodigo, 'apellidoPaterno'=>$apellidoPaterno, 'apellidoMaterno'=>$apellidoMaterno , 'nombreEstudiante'=>$nombreEstudiante  ,'nroOperacion' => $nroOperacion, 'fechaInicio' => $fechaInicio, 'fechaFin' => $fechaFin,'totalPago' => $totalPago]);
 
         if($request->has('generarPDF') && $request->generarPDF){
-            $pdf = PDF::loadView('pages.pago.reportepdf', compact('pagos', 'nroOperacion','buscarCodigo', 'fechaInicio', 'fechaFin','totalPago'));
+            $pdf = PDF::loadView('pages.pago.reportepdf', compact('pagos','nombreEstudiante' ,'apellidoPaterno','apellidoMaterno','nroOperacion','buscarCodigo', 'fechaInicio', 'fechaFin','totalPago'));
             return $pdf->stream('invoice.pdf');
         }
 
-        return view('pages.pago.index', compact('pagos', 'nroOperacion','buscarCodigo', 'fechaInicio', 'fechaFin','totalPago'));
+        return view('pages.pago.index', compact('pagos','nombreEstudiante','apellidoPaterno','apellidoMaterno','nroOperacion','buscarCodigo', 'fechaInicio', 'fechaFin','totalPago'));
 
     }
 
@@ -82,30 +97,62 @@ class pagoController extends Controller implements HasMiddleware
     }
     public function show(Request $request)
     {
-        // Obtener el id del estudiante desde la solicitud
+        // Retrieve inputs from the request
         $idEstudiante = $request->input('idEstudiante');
-        // Consultar la base de datos para obtener los datos del estudiante
-        $estudiante = null;
-        $deudas = null;
+        $nombreEstudiante = $request->input('nombreEstudiante');
+        $apellidoPEstudiante = $request->input('apellidoPEstudiante');
+        $apellidoMEstudiante = $request->input('apellidoMEstudiante');
+        $seccion = $request->input('seccion');
+        $grado = $request->input('grado');
 
+        // Query for student data
         $estudiante = DB::table('estudiante as E')
-            ->join('detalle_estudiante_gs as DE', 'E.idEstudiante', '=', 'DE.idEstudiante')
-            ->join('grado as G', 'DE.gradoEstudiante', '=', 'G.gradoEstudiante')
-            ->join('seccion as S', 'DE.seccionEstudiante', '=', 'S.seccionEstudiante')
-            ->select('E.idEstudiante', 'E.dni', 'E.nombre', 'E.apellidoP', 'E.apellidoM', 'G.descripcionGrado', 'S.descripcionSeccion')->where('E.estado', '=', '1')->where('E.idEstudiante', $idEstudiante)->first();
-        
-            $condonacion = DB::table('DETALLE_CONDONACION as DC')
-            ->select('DC.IDDEUDA', DB::raw('SUM(DC.MONTO) as total'))
+        ->join('detalle_estudiante_gs as DE', 'E.idEstudiante', '=', 'DE.idEstudiante')
+        ->join('grado as G', 'DE.gradoEstudiante', '=', 'G.gradoEstudiante')
+        ->join('seccion as S', 'DE.seccionEstudiante', '=', 'S.seccionEstudiante')
+        ->select('E.idEstudiante', 'E.dni', 'E.nombre', 'E.apellidoP', 'E.apellidoM', 'G.descripcionGrado', 'S.descripcionSeccion')
+        ->where('E.estado', '=', '1');
+
+        // Apply conditional filters on `estudiante`
+        if ($idEstudiante) {
+            $estudiante->where('E.idEstudiante', '=', $idEstudiante);
+        }
+        if ($nombreEstudiante) {
+            $estudiante->where('E.nombre', '=', $nombreEstudiante);
+        }
+        if ($apellidoPEstudiante) {
+            $estudiante->where('E.apellidoP', '=', $apellidoPEstudiante);
+        }
+        if ($apellidoMEstudiante) {
+            $estudiante->where('E.apellidoM', '=', $apellidoMEstudiante);
+        }
+
+        // Execute the query for `estudiante`
+        $estudiante = $estudiante->first(); // Get the first matching record (or `null` if not found)
+
+        // Define the subquery for condonations
+        $condonacion = DB::table('DETALLE_CONDONACION as DC')
+        ->select('DC.IDDEUDA', DB::raw('SUM(DC.MONTO) as total'))
         ->groupBy('DC.IDDEUDA');
 
+        // Query for `deudas`
         $deudas = DB::table('deuda as D')
-            ->join('estudiante as E', 'D.idEstudiante', '=', 'E.idEstudiante')
-            ->join('concepto_escala as CE', 'D.idConceptoEscala', '=', 'CE.idConceptoEscala')
-            ->join('escala as Esc', 'CE.idEscala', '=', 'Esc.idEscala')
-            ->leftJoinSub($condonacion, 'sub', function($join) {
-                $join->on('D.idDeuda', '=', 'sub.IDDEUDA');
-            })
+        ->join('estudiante as E', 'D.idEstudiante', '=', 'E.idEstudiante')
+        ->join('detalle_estudiante_gs as DE', 'E.idEstudiante', '=', 'DE.idEstudiante')
+        ->join('grado as G', 'DE.gradoEstudiante', '=', 'G.gradoEstudiante')
+        ->join('seccion as S', 'DE.seccionEstudiante', '=', 'S.seccionEstudiante')
+        ->join('concepto_escala as CE', 'D.idConceptoEscala', '=', 'CE.idConceptoEscala')
+        ->join('escala as Esc', 'CE.idEscala', '=', 'Esc.idEscala')
+        ->leftJoinSub($condonacion, 'sub', function ($join) {
+            $join->on('D.idDeuda', '=', 'sub.IDDEUDA');
+        })
             ->select(
+                'E.idEstudiante',
+                'E.nombre',
+                'E.apellidoP',
+                'E.apellidoM',
+                'G.descripcionGrado',
+                'S.descripcionSeccion',
                 'D.idDeuda',
                 'CE.descripcion as conceptoDescripcion',
                 'D.montoMora',
@@ -114,13 +161,33 @@ class pagoController extends Controller implements HasMiddleware
                 'D.estado',
                 'Esc.monto',
                 'sub.total as totalCondonacion'
+            )
+            ->where('D.estado', '=', '1');
 
-            )->where('D.idEstudiante', '=',$idEstudiante)->where('D.estado','=','1')
-            ->get(['estudiante' => $estudiante, 'deudas' => $deudas, 'idEstudiante'=> $idEstudiante ]);
-            // dd($deudas)->toSql();
-        return view('pages.pago.create', ['estudiante' => $estudiante, 'deudas' => $deudas]);
-        
+        // Apply conditions to `deudas` query
+        if ($idEstudiante) {
+            $deudas->where('D.idEstudiante', '=', $idEstudiante);
+        }
+        if ($nombreEstudiante) {
+            $deudas->where('E.nombre', '=', $nombreEstudiante);
+        }
+        if ($apellidoPEstudiante) {
+            $deudas->where('E.apellidoP', '=', $apellidoPEstudiante);
+        }
+        if ($apellidoMEstudiante) {
+            $deudas->where('E.apellidoM', '=', $apellidoMEstudiante);
+        }
+
+        // Execute the query for `deudas`
+        $deudas = $deudas->get();
+
+        // Pass the results to the view
+        return view('pages.pago.create', [
+            'estudiante' => $estudiante, // A single `estudiante` record or `null`
+            'deudas' => $deudas // A collection of `deudas` records
+        ]);
     }
+
 
     public function store(Request $request)
     {
@@ -213,4 +280,6 @@ class pagoController extends Controller implements HasMiddleware
         // Descargar el PDF
         // return $pdf->download('boleta_pago_' . $nroOperacion . '.pdf');
     }
+
+    
 }

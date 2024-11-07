@@ -89,6 +89,7 @@ Route::get('cancelarDevolucion', function () {
     return redirect()->route('devolucion.index')->with(['devolucion' => 'Acción Cancelada ..!', 'color' => 'error']);
 })->name('cancelarDevolucion');
 Route::post('/devolucion/datos',[DevolucionController::class,'datos'])->name('devolucion.datos');
+Route::post('/DevolucionPdf', [DevolucionController::class, 'showpdf'])->name('generarDevolucion');
 
 
 //pagos

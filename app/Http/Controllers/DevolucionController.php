@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 //$fechaActual = date('Y-m-d');->obtener fecha actual
 
@@ -32,6 +33,10 @@ class DevolucionController extends Controller implements HasMiddleware
     {
         $buscarxEstudiante = $request->get('buscarxEstudiante');
         $busquedaxnroOperacion = $request->get('busquedaxnroOperacion');
+        $nombreEstudiante = $request->get('nombreEstudiante');
+        $mayorPago = $request->get('mayorPago');
+        $menorPago = $request->get('menorPago');
+        $apellidoPaterno = $request->get('apellidoPaterno');
         $fechaInicio = $request->get('fechaInicio');
         $fechaFin = $request->get('fechaFin');
         //if($busquedaxEstudiante=null)
@@ -69,20 +74,38 @@ class DevolucionController extends Controller implements HasMiddleware
         if($buscarxEstudiante!=null){
             $query->where('E.idEstudiante',"=",$buscarxEstudiante);
         }
+
         if($busquedaxnroOperacion!=null){
             $query->where('P.nroOperacion','=',$busquedaxnroOperacion);
         }
+
+        if($nombreEstudiante!=null){
+            $query->where('E.nombre','=',$nombreEstudiante);
+        }
+
+        if($apellidoPaterno!=null){
+            $query->where('E.apellidoP','=',$apellidoPaterno);
+        }
+        
+        if ($menorPago != null) {
+            $query->havingRaw('SUM(DP.monto) >= ?', [$menorPago]);
+        }
+        if ($mayorPago != null) {
+            $query->havingRaw('SUM(DP.monto) <= ?', [$mayorPago]);
+        }
+
         if ($fechaInicio) {
             $query->whereDate('D.fechaDevolucion', '>=', $fechaInicio);
         }
+        
         if ($fechaFin) {
             $query->whereDate('D.fechaDevolucion', '<=', $fechaFin);
         }
         $datos = $query
                 ->paginate($this::PAGINATION)
-                ->appends(['buscarxEstudiante' => $buscarxEstudiante, 'busquedaxnroOperacion' => $busquedaxnroOperacion, 'fechaInicio' => $fechaInicio, 'fechaFin' => $fechaFin]);
+                ->appends(['buscarxEstudiante' => $buscarxEstudiante, 'nombreEstudiante' => $nombreEstudiante, 'apellidoPaterno' =>$apellidoPaterno ,'mayorPago'=>$mayorPago,'menorPago'=>$menorPago, 'busquedaxnroOperacion' => $busquedaxnroOperacion, 'fechaInicio' => $fechaInicio, 'fechaFin' => $fechaFin]);
 
-        return view('pages.devolucion.index', compact('datos', 'buscarxEstudiante','busquedaxnroOperacion','fechaInicio','fechaFin'));
+        return view('pages.devolucion.index', compact('datos', 'buscarxEstudiante','menorPago','mayorPago', 'nombreEstudiante', 'apellidoPaterno' ,'busquedaxnroOperacion','fechaInicio','fechaFin'));
     }
     
     public function create(Request $request)
@@ -202,4 +225,14 @@ class DevolucionController extends Controller implements HasMiddleware
             ->select('D.idDeuda', 'DP.monto', 'CE.descripcion')->get();
         return view('pages.devolucion.datos', compact('operacion', 'deudas', 'estudiante', 'fechaActual', 'observacion'));
     }
+
+    public function showpdf(Request $request){
+        $datos = json_decode($request->input('datos'), true);
+        //dd($datos); // Verifica los datos aquí
+        $datos = collect($datos)->map(function ($item) {
+            return (object) $item;
+        });
+        $pdf = PDF::loadView('pages.devolucion.reportepdf', compact('datos'));
+        return $pdf->stream('invoice.pdf');
+    } 
 }
