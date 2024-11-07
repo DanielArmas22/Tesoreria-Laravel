@@ -11,6 +11,9 @@ use App\Models\deuda;
 use App\Models\devolucion;
 use App\Models\estudiante;
 use App\Models\pago;
+use App\Models\escala;
+use App\Models\Grado;
+use App\Models\Seccion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Routing\Controllers\HasMiddleware;
@@ -30,16 +33,38 @@ class DevolucionController extends Controller implements HasMiddleware
 
     public function index(Request $request)
     {
-        $buscarxEstudiante = $request->get('buscarxEstudiante');
-        $busquedaxnroOperacion = $request->get('busquedaxnroOperacion');
+        $buscarCodigo = $request->get('buscarCodigo');
+        $nroOperacion = $request->get('nroOperacion');
         $fechaInicio = $request->get('fechaInicio');
         $fechaFin = $request->get('fechaFin');
-        //if($busquedaxEstudiante=null)
+        
+        $conceptoEscalas = conceptoEscala::select('descripcion')->distinct()->get();
+        $escalaF = escala::get();
+        $grados = Grado::get();
+        $secciones = Seccion::get();
+
+        $busquedaConcepto = $request->get('busquedaConcepto');
+        $busquedaEscala = $request->get('busquedaEscala');
+        $busquedaGrado = $request->get('busquedaGrado');
+        $busquedaSeccion = $request->get('busquedaSeccion');
+
+        $dniEstudiante = $request->get('dniEstudiante');
+        $busquedaNombreEstudiante = $request->get('busquedaNombreEstudiante');
+        $busquedaApellidoEstudiante = $request->get('busquedaApellidoEstudiante');
+
+        $codMinimo = $request->get('codMinimo');
+        $codMaximo = $request->get('codMaximo');
+
+        $DevolucionesHoy = $request->get('DevolucionesHoy');
+        $fechaActual = date('Y-m-d');
         
         $query = DB::table('detalle_devolucion as DD')
             ->join('pago as P', 'P.nroOperacion', '=', 'DD.nroOperacion')
             ->join('devolucion as D', 'D.idDevolucion', '=', 'DD.idDevolucion')
             ->join('estudiante as E', 'E.idEstudiante', '=', 'P.idEstudiante')
+            ->join('detalle_estudiante_gs as DEGS','DEGS.idEstudiante','=','E.idEstudiante')
+            ->join('grado as G','G.gradoEstudiante','=','DEGS.gradoEstudiante')
+            ->join('seccion as SEC','SEC.seccionEstudiante','=','DEGS.seccionEstudiante')
             ->leftJoin('detalle_pago as DP', 'DP.nroOperacion', '=', 'P.nroOperacion')
             ->where('DD.estado', '=', '1')
             ->select(
@@ -50,7 +75,9 @@ class DevolucionController extends Controller implements HasMiddleware
                 'E.nombre',
                 'E.apellidoP',
                 'D.fechaDevolucion',
-                DB::raw('SUM(DP.monto) as totalPago')
+                DB::raw('SUM(DP.monto) as totalPago'),
+                'G.descripcionGrado',
+                'SEC.descripcionSeccion'
             )
             ->groupBy(
                 'DD.idDevolucion',
@@ -59,18 +86,34 @@ class DevolucionController extends Controller implements HasMiddleware
                 'E.idEstudiante',
                 'E.nombre',
                 'E.apellidoP',
-                'D.fechaDevolucion'
+                'D.fechaDevolucion',
+                'G.descripcionGrado',
+                'SEC.descripcionSeccion'
             );
 
         $total = DB::table('DETALLE_CONDONACION as DC')
                 ->select('DC.IDDEUDA', DB::raw('SUM(DC.MONTO) as total'))
                 ->groupBy('DC.IDDEUDA');
-
-        if($buscarxEstudiante!=null){
-            $query->where('E.idEstudiante',"=",$buscarxEstudiante);
+        
+        if ($DevolucionesHoy) {
+            $query->whereDate('D.fechaDevolucion', '=', $fechaActual);
         }
-        if($busquedaxnroOperacion!=null){
-            $query->where('P.nroOperacion','=',$busquedaxnroOperacion);
+
+        if($buscarCodigo!=null){
+            $query->where('E.idEstudiante',"=",$buscarCodigo);
+        }
+        if($dniEstudiante!=null){
+            $query->where('E.DNI', $dniEstudiante);
+        }
+        if ($busquedaNombreEstudiante!=null) {
+            $query->where('E.nombre', 'like', '%'.$busquedaNombreEstudiante.'%');
+        }
+
+        if ($busquedaApellidoEstudiante != null) {
+            $query->where(DB::raw("CONCAT(E.apellidoP, ' ', E.apellidoM)"), 'like', '%' . $busquedaApellidoEstudiante . '%');
+        }
+        if($nroOperacion!=null){
+            $query->where('P.nroOperacion','=',$nroOperacion);
         }
         if ($fechaInicio) {
             $query->whereDate('D.fechaDevolucion', '>=', $fechaInicio);
@@ -78,11 +121,23 @@ class DevolucionController extends Controller implements HasMiddleware
         if ($fechaFin) {
             $query->whereDate('D.fechaDevolucion', '<=', $fechaFin);
         }
+        if ($busquedaGrado!=null) {
+            $query->where('DEGS.gradoEstudiante', $busquedaGrado);
+        }
+
+        if($busquedaSeccion!=null){
+            $query->where('DEGS.seccionEstudiante', $busquedaSeccion);
+        }
         $datos = $query
                 ->paginate($this::PAGINATION)
-                ->appends(['buscarxEstudiante' => $buscarxEstudiante, 'busquedaxnroOperacion' => $busquedaxnroOperacion, 'fechaInicio' => $fechaInicio, 'fechaFin' => $fechaFin]);
+                ->appends(['buscarCodigo' => $buscarCodigo, 'nroOperacion' => $nroOperacion, 'fechaInicio' => $fechaInicio, 'fechaFin' => $fechaFin,
+                    'grados'=>$grados, 'secciones'=>$secciones,'busquedaEscala'=>$busquedaEscala,'busquedaGrado'=>$busquedaGrado,
+                    'busquedaSeccion'=>$busquedaSeccion,'dniEstudiante'=>$dniEstudiante,'busquedaNombreEstudiante'=>$busquedaNombreEstudiante,
+                    'busquedaApellidoEstudiante'=>$busquedaApellidoEstudiante]);
 
-        return view('pages.devolucion.index', compact('datos', 'buscarxEstudiante','busquedaxnroOperacion','fechaInicio','fechaFin'));
+        return view('pages.devolucion.index', compact('datos', 'buscarCodigo','nroOperacion','fechaInicio','fechaFin',
+                    'conceptoEscalas','escalaF','grados','secciones','busquedaConcepto','busquedaEscala','busquedaGrado',
+                    'busquedaSeccion','dniEstudiante','busquedaNombreEstudiante','busquedaApellidoEstudiante','codMinimo','codMaximo','DevolucionesHoy'));
     }
     
     public function create(Request $request)
