@@ -31,7 +31,9 @@
     }
 </style>
 @section('contenido')
+<<<<<<< Updated upstream
     @if (Auth::user()->hasRole('admin') or Auth::user()->hasRole('tesorero'))
+>>>>>>> Stashed changes
         @if (session('deuda'))
             <x-alert :mensaje="session('deuda')" tipo="{{ !empty($color) ? $color : 'success' }}" />
         @endif
