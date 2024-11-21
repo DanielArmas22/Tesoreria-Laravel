@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
+
 // use App\Models\User;
 
 class Estudiante extends Model
@@ -29,4 +31,43 @@ class Estudiante extends Model
     {
         return $this->hasMany(Estudiante_padre::class, 'idEstudiante', 'idEstudiante');
     }
+    public function getDeudas(){
+        $deudas = Deuda::select(
+            'deuda.*',
+            DB::raw('(SELECT SUM(DC.MONTO) FROM DETALLE_CONDONACION as DC WHERE DC.IDDEUDA = deuda.idDeuda GROUP BY DC.IDDEUDA) as totalCondonacion')
+        )
+        ->where('idEstudiante', '=', $this->idEstudiante)
+        ->where('estado', '1')
+        ->orderBy('fechaLimite')
+        ->get();
+        return $deudas;
+    }
+    public function getDeudasProximas()
+    {
+        $deudas = $this->getDeudas();
+    
+        // Obtener la fecha límite más próxima
+        $fechaLimiteMasProxima = $deudas->first()?->fechaLimite;
+    
+        // Filtrar las deudas que tengan la misma fecha límite más próxima
+        $deudasProximas = $deudas->filter(function ($deuda) use ($fechaLimiteMasProxima) {
+            return $deuda->fechaLimite === $fechaLimiteMasProxima;
+        });
+    
+        return $deudasProximas;
+    }
+    public function getDeudasVencidas()
+    {
+        $deudas = $this->getDeudas();
+
+        // Filtrar las deudas cuya fecha límite es inferior a la fecha actual
+        $deudasVencidas = $deudas->filter(function ($deuda) {
+            return $deuda->fechaLimite < now()->toDateString();
+        });
+
+        return $deudasVencidas;
+    }
+
+    
+
 }

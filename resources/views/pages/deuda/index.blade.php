@@ -31,7 +31,7 @@
     }
 </style>
 @section('contenido')
-    @if (Auth::user()->usertype == 'admin')
+    @if (Auth::user()->hasRole('admin'))
         @if (session('deuda'))
             <x-alert :mensaje="session('deuda')" tipo="{{ !empty($color) ? $color : 'success' }}" />
         @endif
