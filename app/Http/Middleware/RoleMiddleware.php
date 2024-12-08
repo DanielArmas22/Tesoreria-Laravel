@@ -28,7 +28,7 @@ class RoleMiddleware
         // Verificar si el rol del usuario está entre los roles permitidos
         if (! in_array($user->rol, $roles)) {
             // Aquí puedes manejar la respuesta no autorizada
-            abort(403, 'La página que buscas,  no existe :(');
+            abort(404, 'La página que buscas,  no existe :(');
         }
 
         return $next($request);
