@@ -8,9 +8,11 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 
+
 class escalaController extends Controller implements HasMiddleware
 {
-    public static function middleware(): array
+    //rechazar conexion si no está logeaado
+    public static function middleware(): array 
     {
         return [
             'auth',

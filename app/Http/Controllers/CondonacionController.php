@@ -14,8 +14,14 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 
-class CondonacionController extends Controller
+class CondonacionController extends Controller implements HasMiddleware
 {
+    public static function middleware(): array 
+    {
+        return [
+            'auth',
+        ];
+    }
     const PAGINATION = 5;
 
     public function index(Request $request)

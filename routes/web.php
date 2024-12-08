@@ -111,4 +111,4 @@ Route::get('escala/{id}/confirmar', [escalaController::class, 'confirmar'])->nam
 Route::post('/escala', [escalaController::class, 'store'])->name('escala.store');
 
 //usuarios
-Route::get('/usuarios', [UsuarioController::class, 'index'])->name('usuarios.index');
+Route::get('/usuarios', [UsuarioController::class, 'index'])->name('usuarios.index')->middleware('role:admin');

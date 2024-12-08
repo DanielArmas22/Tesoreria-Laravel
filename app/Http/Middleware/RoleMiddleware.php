@@ -5,24 +5,32 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
-
+use Illuminate\Support\Facades\Auth;
 class RoleMiddleware
 {
     /**
-     * Handle an incoming request.
+     * Manejar una solicitud entrante.
      *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * @param  \Illuminate\Http\Request $request
+     * @param  \Closure $next
+     * @param  ...$roles // Parámetros variables, se pueden pasar múltiples roles
+     * @return mixed
      */
-    public function handle(Request $request, Closure $next): Response
+    public function handle(Request $request, Closure $next, ...$roles)
     {
-        if (!Auth::check()) {
+        $user = Auth::user();
+        // Verificar si el usuario está autenticado
+        if (! $user) {
+            // Redirigir o lanzar error si no está logueado
             return redirect('/login');
         }
 
-        // Verifica si el rol del usuario está en el array de roles permitidos
-        if (!in_array(Auth::user()->role, $roles)) {
-            abort(403, 'No tienes acceso a esta página');
+        // Verificar si el rol del usuario está entre los roles permitidos
+        if (! in_array($user->rol, $roles)) {
+            // Aquí puedes manejar la respuesta no autorizada
+            abort(403, 'La página que buscas,  no existe :(');
         }
+
         return $next($request);
     }
 }

@@ -225,6 +225,10 @@ class UsuarioController extends Controller
 
     public function index()
     {
+        //restringir acceso a usuarios no autenticados
+        if (!Auth::check()) {
+            return redirect('/login');
+        }
         $datos = User::paginate($this::PAGINATION);
         return view('pages.usuario.index',compact('datos'));
     }

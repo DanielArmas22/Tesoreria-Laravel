@@ -18,8 +18,14 @@ use Illuminate\Routing\Controllers\Middleware;
 
 //$fechaActual = date('Y-m-d');->obtener fecha actual
 
-class DevolucionController extends Controller 
+class DevolucionController extends Controller  implements HasMiddleware
 {
+    public static function middleware(): array 
+    {
+        return [
+            'auth',
+        ];
+    }
     const PAGINATION = 5;
 
     public function index(Request $request)
