@@ -1,7 +1,7 @@
 @extends('layouts.layoutA')
 {{-- @section('titulo', 'Editar Estudiante') --}}
 @section('contenido')
-    @if (Auth::user()->usertype == 'admin')
+    @if (Auth::user()->hasRole('admin'))
         <section class="border-[1px] flex gap-4  px-4 py-8 shadow-xl  rounded-3xl mx-auto justify-between">
             <article class="border-r-2 border-r-blue-100 px-4">
                 <div class="flex gap-4 flex-col items-center">
@@ -74,13 +74,15 @@
                                 <button
                                     class="bg-success shadow-success-3 hover:shadow-success-2 hover:bg-success-accent-300 focus:bg-success-accent-300 active:bg-success-600 focus:shadow-success-2 active:shadow-success-2 rounded  flex items-center px-6 py-2 text-xs font-medium uppercase leading-normal text-white transition duration-150 ease-in-out  focus:outline-none focus:ring-0  motion-reduce:transition-none dark:shadow-black/30 dark:hover:shadow-dark-strong dark:focus:shadow-dark-strong dark:active:shadow-dark-strong text-center"
                                     type="submit">Actualizar</button>
-                                <x-button ruta="cancelarEstudiante" color="dark" label="Cancelar"></x-button>
+                                <x-button ruta="cancelarEstudiante" color="dark" label="Cancelar">Eliminar</x-button>
                             </div>
                             <div class="flex justify-center">
                                 <x-button ruta="estudiante.confirmar" color="danger" label="Eliminar"
                                     datos="{{ $estudiante->idEstudiante }}" />
-
                             </div>
+                            <a class="bg-success shadow-success-3 hover:shadow-success-2 hover:bg-success-accent-300 focus:bg-success-accent-300 active:bg-success-600 focus:shadow-success-2 active:shadow-success-2 rounded  flex items-center px-6 py-2 text-xs font-medium uppercase leading-normal text-white transition duration-150 ease-in-out  focus:outline-none focus:ring-0  motion-reduce:transition-none dark:shadow-black/30 dark:hover:shadow-dark-strong dark:focus:shadow-dark-strong dark:active:shadow-dark-strong text-center"
+                                href="{{ route('estudiante.confirmar', ['id' => $estudiante->idEstudiante]) }}">Eliminar
+                            </a>
                         </div>
                     </form>
 

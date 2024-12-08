@@ -122,6 +122,7 @@ class escalaEstudianteController extends Controller implements HasMiddleware
         $escalaEstudiante->fechaEE=$request->fechaEE;
         $escalaEstudiante->estado = 1;
         $escalaEstudiante->save();
+        
         //PARA AUTOGENERAR LA DEUDA
         $fechaEE = Carbon::createFromFormat('Y-m-d', $request->fechaEE);
         $mesFechaEE = $fechaEE->month;

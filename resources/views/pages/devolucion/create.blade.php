@@ -42,7 +42,7 @@
                 <p>{{ session('mensaje') }}</p>
             </div>
         @endif
-        <div class="grid gap-8 grid-cols-1 md:grid-cols-2">
+        <div class="grid gap-8 ">
             <!-- Búsqueda del Estudiante -->
             <div class="bg-gray-50 p-6 rounded-lg shadow-sm">
                 <h2 class="text-2xl font-bold mb-4 text-gray-800">Buscar Estudiante</h2>
@@ -61,9 +61,9 @@
             </div>
 
             <!-- Datos del Estudiante -->
-            <div class="bg-gray-50 p-6 rounded-lg shadow-sm">
+            <div class="bg-gray-50 p-6 rounded-lg shadow-sm w-full">
                 <h3 class="text-xl font-semibold mb-4 text-gray-800">Datos del Estudiante</h3>
-                <div class="flex flex-col space-y-4">
+                <div class="grid grid-cols-2 gap-2 ">
                     <div class="flex space-x-4 mb-4">
                         <div class="flex-1">
                             <label for="dni" class="block text-sm font-medium text-gray-700">DNI</label>
