@@ -16,6 +16,10 @@ class UsuarioController extends Controller
     const ROLE_PADRE = 'padre';
     const ROLE_ADMIN = 'admin';
     const ROLE_CAJERO = 'cajero';
+    const ROLE_DIRECTOR = 'director';
+    const ROLE_SECRETARIO = 'secretario';
+
+    const PAGINATION = 5;
     // const ROLE_PADRE = 'padre';
     public function showLogin()
     {
@@ -217,5 +221,11 @@ class UsuarioController extends Controller
     {
         Auth::logout();
         return redirect('/identificacion');
+    }
+
+    public function index()
+    {
+        $datos = User::paginate($this::PAGINATION);
+        return view('pages.usuario.index',compact('datos'));
     }
 }

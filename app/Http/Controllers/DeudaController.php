@@ -11,18 +11,12 @@ use App\Models\Seccion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-use Illuminate\Routing\Controllers\HasMiddleware;
-use Illuminate\Routing\Controllers\Middleware;
+// use Illuminate\Routing\Controllers\HasMiddleware;
+// use Illuminate\Routing\Controllers\Middleware;
 
-class DeudaController extends Controller implements HasMiddleware
+class DeudaController extends Controller
 {
 
-    public static function middleware(): array
-    {
-        return [
-            'auth',
-        ];
-    }
     
     const PAGINATION = 10;
     public function index(Request $request)

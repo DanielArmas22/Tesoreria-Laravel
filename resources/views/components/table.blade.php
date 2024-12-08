@@ -1,4 +1,14 @@
-@props(['cabeceras', 'datos', 'nombreTabla', 'atributos', 'ruta', 'id', 'color' => '', 'clickfila' => ''])
+@props([
+    'cabeceras',
+    'datos',
+    'nombreTabla',
+    'atributos',
+    'ruta',
+    'id',
+    'color' => '',
+    'clickfila' => '',
+    'isonclick' => 'true',
+])
 
 <style>
     .pagination {
@@ -44,7 +54,7 @@
             @foreach ($datos as $dato)
                 <tr class="cursor-pointer hover:bg-blue-100"
                     {{ !empty($ruta) ? 'data-url=' . route($ruta, $dato->$id) : '' }}
-                    onclick="clickfila({{ $dato->$id }})">
+                    onclick="{{ $isonclick == 'true' ? 'clickfila(' . $dato->$id . ')' : '' }}">
                     @foreach ($atributos as $atributo)
                         <td class="border-b px-4 py-2 text-center">
                             @switch($atributo)

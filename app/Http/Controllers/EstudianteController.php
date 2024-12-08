@@ -11,6 +11,9 @@ use App\Models\pago;
 use App\Models\escala_estudiante;
 use App\Models\detalle_devolucion;
 use App\Models\escala;
+use App\Models\User;
+use App\Models\Estudiante_padre;
+
 // use App\Models\escala_estudiante;
 use Illuminate\Support\Facades\Auth;
 
@@ -20,14 +23,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 
-class EstudianteController extends Controller implements HasMiddleware
+class EstudianteController extends Controller
 {
-    public static function middleware(): array
-    {
-        return [
-            'auth',
-        ];
-    }
     const PAGINATION = 5;
     // const Busqueda = 
     public function index(Request $request)
@@ -125,7 +122,6 @@ class EstudianteController extends Controller implements HasMiddleware
         if ($seccion != null) {
             $datos = $datos->where('S.seccionEstudiante', '=', $seccion);
         }
-
         // $datos = Estudiante::with('detalle_estudiante_gs')->where('estado', '=', '1');
         $datos = $datos->paginate($this::PAGINATION)->appends(['busquedaCodigo' => $busquedaCodigo, 'busquedaNombre' => $busquedaNombre, 'busquedaDNI' => $busquedaDNI, 'grado' => $grado, 'seccion' => $seccion, 'deuda' => $opDeuda]);
         // dd($datos);
@@ -183,8 +179,29 @@ class EstudianteController extends Controller implements HasMiddleware
         $detalleEstudianteGS->estado = 1;
         $detalleEstudianteGS->save();
 
+         // Logica de creacion del padre
+        $apoderado = User::where('DNI', '=', $request->DNIApoderado)->where("rol","=","padre")->first();
+        if(!isset($apoderado)){
+            $apoderado = new User();
+            $apoderado->DNI = $request->DNIApoderado;
+            $apoderado->name = $request->nombreApoderado;
+            $apoderado->email = $request->emailApoderado;
+            $apoderado->password = bcrypt($request->DNIApoderado);
+            $apoderado->rol = "padre";
+            $apoderado->save();
+        }
+        $estudiantePadre = new Estudiante_padre();
+        $estudiantePadre->idEstudiante = $estudiante->idEstudiante;
+        $estudiantePadre->idUsuario = $apoderado->id;  
+        $estudiantePadre->save();
         return redirect()->route('estudiante.index')->with('datos', 'Registro Nuevo Guardado...!');
     }
+    public function buscarApoderado(Request $request)
+    {
+        $apoderado = User::where('DNI', '=', $request->DNIApoderado)->where("rol","=","padre")->first();
+        return redirect()->back()->with('apoderado', $apoderado);
+    }
+    
     public function edit($id)
     {
         $estudiante = Estudiante::findOrFail($id);
@@ -253,6 +270,8 @@ class EstudianteController extends Controller implements HasMiddleware
             $detalleEstudianteGS->save();
         }
         $estudiante->save();
+
+       
         return redirect()->route('estudiante.index')->with('datos', 'Registro Actualizado...!');
     }
     public function confirmar($id)

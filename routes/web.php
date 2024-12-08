@@ -17,15 +17,15 @@ Route::get('/', function () {
 });
 
 
-Route::middleware([
-    'auth:sanctum',
-    config('jetstream.auth_session'),
-    'verified',
-])->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
-});
+// Route::middleware([
+//     'auth:sanctum',
+//     config('jetstream.auth_session'),
+//     'verified',
+// ])->group(function () {
+//     Route::get('/dashboard', function () {
+//         return view('dashboard');
+//     })->name('dashboard');
+// });
 
 Route::get('redirect',[HomeController::class.'redirect'])->name('redirect');
 
@@ -52,6 +52,7 @@ Route::get('/cancelarEstudiante', function () {
 })->name('cancelarEstudiante');
 
 Route::get('/descripcionEscala/{idEstudiante}/{periodo}', [EstudianteController::class, 'desEscala']);
+Route::get('/buscarApoderado', [EstudianteController::class, 'buscarApoderado'])->name('buscarApoderado');
 
 
 //condonacion
@@ -109,3 +110,5 @@ Route::resource('/escala', escalaController::class);
 Route::get('escala/{id}/confirmar', [escalaController::class, 'confirmar'])->name('escala.confirmar');
 Route::post('/escala', [escalaController::class, 'store'])->name('escala.store');
 
+//usuarios
+Route::get('/usuarios', [UsuarioController::class, 'index'])->name('usuarios.index');

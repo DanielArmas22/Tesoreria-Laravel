@@ -12,6 +12,9 @@
         @if (Auth::user()->hasRole('padre'))
             <h1 class="text-7xl text-center font-thin">Tramites - Sideral Carrion</h1>
         @endif
+        @if (Auth::user()->hasRole('Secretaria'))
+            <h1 class="text-7xl text-center font-thin">Sistema de Registros - Sideral Carrion</h1>
+        @endif
         <br>
         <br>
         {{-- ejemplo de validacion según rol --}}
