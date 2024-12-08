@@ -128,7 +128,7 @@
                                 </p>
                             </button>
                             <i class="fa-solid fa-broom"></i>
-                            <x-button label="Limpiar" color="success" ruta="estudiante.index" />
+                            <x-boton label="Limpiar" color="success" ruta="estudiante.index" />
                         </div>
                     </div>
                 </form>

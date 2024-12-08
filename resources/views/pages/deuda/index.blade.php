@@ -215,7 +215,7 @@
                             </p>
                         </button>
                         <i class="fa-solid fa-broom"></i>
-                        <x-button label="Limpiar" color="success" ruta="deuda.index" />
+                        <x-boton label="Limpiar" color="success" ruta="deuda.index" />
                     </div>
                 </section>
             </form>
@@ -293,21 +293,21 @@
                                         class="peer block w-full min-w-[200px] rounded border border-gray-300 bg-white px-3 py-2 leading-normal text-gray-700 outline-none transition duration-150 ease-in-out focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
                                         placeholder="ID Estudiante" aria-label="Código" id="codEstudiante"
                                         name="codEstudiante" value="{{ $codEstudiante }}"
-                                        aria-describedby="search-button" readonly>
+                                        aria-describedby="search-button">
                                 </div>
                                 <div class="flex flex-col items-start">
                                     <h4 class="">Dni</h4>
                                     <input type="number"
                                         class="peer block w-full min-w-[200px] rounded border border-gray-300 bg-white px-3 py-2 leading-normal text-gray-700 outline-none transition duration-150 ease-in-out focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
                                         placeholder="DNI" aria-label="Código" id="dniEstudiante" name="dniEstudiante"
-                                        value="{{ $dniEstudiante }}" aria-describedby="search-button" readonly />
+                                        value="{{ $dniEstudiante }}" aria-describedby="search-button" />
                                 </div>
                                 <div class="flex flex-col items-start">
                                     <h4 class="">Nombre</h4>
                                     <input type="search"
                                         class="peer block w-full min-w-[200px] rounded border border-gray-300 bg-white px-3 py-2 leading-normal text-gray-700 outline-none transition duration-150 ease-in-out focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
                                         placeholder="Nombres" aria-label="Código" id="busquedaNombreEstudiante"
-                                        name="busquedaNombreEstudiante" value="{{ $busquedaNombreEstudiante }}" readonly
+                                        name="busquedaNombreEstudiante" value="{{ $busquedaNombreEstudiante }}"
                                         aria-describedby="search-button" />
                                 </div>
                                 <div class="flex flex-col items-start">
@@ -316,7 +316,7 @@
                                         class="peer block w-full min-w-[200px] rounded border border-gray-300 bg-white px-3 py-2 leading-normal text-gray-700 outline-none transition duration-150 ease-in-out focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
                                         placeholder="Apellidos" aria-label="Código" id="busquedaApellidoEstudiante"
                                         name="busquedaApellidoEstudiante" value="{{ $busquedaApellidoEstudiante }}"
-                                        readonly aria-describedby="search-button" />
+                                        aria-describedby="search-button" />
                                 </div>
                             </article>
                         </section>
@@ -459,6 +459,7 @@
                                 Buscar
                             </p>
                         </button>
+                        <x-boton label="Limpiar" color="success" ruta="deuda.index" />
                     </div>
                 </section>
             </form>

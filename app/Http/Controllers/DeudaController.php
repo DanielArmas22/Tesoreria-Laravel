@@ -10,6 +10,7 @@ use App\Models\Grado;
 use App\Models\Seccion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 // use Illuminate\Routing\Controllers\HasMiddleware;
 // use Illuminate\Routing\Controllers\Middleware;
@@ -21,6 +22,7 @@ class DeudaController extends Controller
     const PAGINATION = 10;
     public function index(Request $request)
     {
+        
         $escalaF = escala::get();
         $grados = Grado::get();
         $secciones = Seccion::get();
@@ -47,14 +49,24 @@ class DeudaController extends Controller
         $busquedaGrado = $request->get('busquedaGrado');
         $busquedaSeccion = $request->get('busquedaSeccion');
 
-
+        // if(Auth::user()->hasRole('padre')){
+        //     $deudas = Auth::user()->getTotalDeudas();
+        //     dd($deudas);
+        // }
         $query = DB::table('deuda as D')
                     ->join('estudiante as ES','ES.idEstudiante','=','D.idEstudiante')
                     ->join('concepto_escala as C','C.idConceptoEscala','=','D.idConceptoEscala')
                     ->join('escala as E','C.idEscala','=','E.idEscala')
                     ->join('detalle_estudiante_gs as DEGS','DEGS.idEstudiante','=','ES.idEstudiante')
                     ->select('D.*', 'C.descripcion', 'E.descripcion as desEscala','ES.idEstudiante','ES.nombre','ES.apellidoP','E.monto',DB::raw('(SELECT SUM(DC.MONTO) FROM DETALLE_CONDONACION as DC WHERE DC.IDDEUDA = D.idDeuda GROUP BY DC.IDDEUDA) as totalCondonacion'))->where('D.estado','1');
-        
+
+        if (Auth::user()->hasRole('padre')) {
+        // Obtener la colección de deudas del padre (asumiendo que retorna colecciones con idDeuda)
+        $idsDeudasPadre = Auth::user()->getTotalDeudas()->pluck('idDeuda')->toArray();
+        // Ajustar la consulta para que solo traiga esas deudas
+        $query->whereIn('D.idDeuda', $idsDeudasPadre);
+        }
+
         if($busquedaConcepto!=null){
             $query->where('C.descripcion','like','%'.$busquedaConcepto.'%');
         }

@@ -46,8 +46,10 @@ class Estudiante extends Model
     {
         $deudas = $this->getDeudas();
     
-        // Obtener la fecha límite más próxima
-        $fechaLimiteMasProxima = $deudas->first()?->fechaLimite;
+        // Obtener la fecha límite más próxima que no esté vencida
+        $fechaLimiteMasProxima = $deudas->filter(function ($deuda) {
+            return $deuda->fechaLimite >= now()->toDateString();
+        })->first()?->fechaLimite;
     
         // Filtrar las deudas que tengan la misma fecha límite más próxima
         $deudasProximas = $deudas->filter(function ($deuda) use ($fechaLimiteMasProxima) {
@@ -67,7 +69,11 @@ class Estudiante extends Model
 
         return $deudasVencidas;
     }
-
+    public function countDeudas()
+    {
+        $deudas = $this->getDeudas();
+        return $deudas->count();
+    }
     
 
 }

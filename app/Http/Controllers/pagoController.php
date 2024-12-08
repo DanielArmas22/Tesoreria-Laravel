@@ -36,7 +36,7 @@ class pagoController extends Controller implements HasMiddleware
         ->join('detalle_pago as DP', 'P.nroOperacion', '=', 'DP.nroOperacion')                                 
         ->join('estudiante as E', 'P.idEstudiante', '=', 'E.idEstudiante')
         ->select('P.nroOperacion','P.idEstudiante', 'P.fechaPago','P.periodo','E.nombre','E.apellidoP','E.apellidoM',DB::raw('ROUND(sum(DP.monto),2) as totalMonto'))
-        ->where('P.estado','=','1')
+        ->where('P.estadoPago','=','1')
         ->groupBy('p.nroOperacion');
         
         
@@ -92,7 +92,7 @@ class pagoController extends Controller implements HasMiddleware
             ->join('detalle_estudiante_gs as DE', 'E.idEstudiante', '=', 'DE.idEstudiante')
             ->join('grado as G', 'DE.gradoEstudiante', '=', 'G.gradoEstudiante')
             ->join('seccion as S', 'DE.seccionEstudiante', '=', 'S.seccionEstudiante')
-            ->select('E.idEstudiante', 'E.dni', 'E.nombre', 'E.apellidoP', 'E.apellidoM', 'G.descripcionGrado', 'S.descripcionSeccion')->where('E.estado', '=', '1')->where('E.idEstudiante', $idEstudiante)->first();
+            ->select('E.idEstudiante', 'E.dni', 'E.nombre', 'E.apellidoP', 'E.apellidoM', 'G.descripcionGrado', 'S.descripcionSeccion')->where('E.estadoPago', '=', '1')->where('E.idEstudiante', $idEstudiante)->first();
         
             $condonacion = DB::table('DETALLE_CONDONACION as DC')
             ->select('DC.IDDEUDA', DB::raw('SUM(DC.MONTO) as total'))
@@ -111,11 +111,11 @@ class pagoController extends Controller implements HasMiddleware
                 'D.montoMora',
                 'D.fechaLimite',
                 DB::raw('ROUND(D.adelanto,2) as adelanto'),
-                'D.estado',
+                'D.estadoPago',
                 'Esc.monto',
                 'sub.total as totalCondonacion'
 
-            )->where('D.idEstudiante', '=',$idEstudiante)->where('D.estado','=','1')
+            )->where('D.idEstudiante', '=',$idEstudiante)->where('D.estadoPago','=','1')
             ->get(['estudiante' => $estudiante, 'deudas' => $deudas, 'idEstudiante'=> $idEstudiante ]);
             // dd($deudas)->toSql();
         return view('pages.pago.create', ['estudiante' => $estudiante, 'deudas' => $deudas]);
@@ -141,7 +141,7 @@ class pagoController extends Controller implements HasMiddleware
             $pago->idEstudiante = $request->idestudiante;
             $pago->fechaPago = now()->format('Y-m-d');
             $pago->periodo = '2024';   //$pago->periodo = Carbon::now()->year; SE PUEDE PONER ESTO ARA QUE LO HAGA CON LA FECHA DEL SISTEMA
-            $pago->estado = '1';
+            $pago->estadoPago = '1';
             $pago->save();
             
             // Crear los detalles del pago
@@ -154,7 +154,7 @@ class pagoController extends Controller implements HasMiddleware
                 $detallePago->nroOperacion = $pago->nroOperacion;
                 $detallePago->idDeuda = $idDeuda;
                 $detallePago->monto = $monto;
-                $detallePago->estado = '1';
+                $detallePago->estadoPago = '1';
                 $detallePago->save();
                 
                 // Actualizar la deuda
@@ -174,7 +174,7 @@ class pagoController extends Controller implements HasMiddleware
                     // $deuda->adelanto += $monto;
                     if($montotmp>= $montoPagar){
                         // $deuda->adelanto += $monto;
-                        $deuda->estado = '0';
+                        $deuda->estadoPago = '0';
                     }
                     $deuda->adelanto = $montotmp;
                     $deuda->save();

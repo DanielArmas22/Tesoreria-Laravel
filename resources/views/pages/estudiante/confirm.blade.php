@@ -14,14 +14,14 @@
                     valor="{{ $estudiante->descripcionGrado }} {{ $estudiante->descripcionSeccion }}" readonly="true" />
             </article>
             <br>
-            {{-- <x-button label="Eliminar" ruta="estudiante.destroy" color="danger" datos="{{ $estudiante->idEstudiante }}" /> --}}
+            {{-- <x-boton label="Eliminar" ruta="estudiante.destroy" color="danger" datos="{{ $estudiante->idEstudiante }}" /> --}}
             <form action="{{ route('estudiante.destroy', $estudiante->idEstudiante) }}" method="POST"
                 class="flex justify-center gap-4">
                 @method('delete')
                 @csrf
                 <button type="submit"
                     class="rounded  px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white transition duration-150 ease-in-out  focus:outline-none focus:ring-0  motion-reduce:transition-none dark:shadow-black/30 dark:hover:shadow-dark-strong dark:focus:shadow-dark-strong dark:active:shadow-dark-strong text-center  bg-danger shadow-danger-3 hover:shadow-danger-2 hover:bg-danger-accent-300 focus:bg-danger-accent-300 active:bg-danger-600 focus:shadow-danger-2 active:shadow-danger-2">Eliminar</button>
-                {{-- <x-button ruta="estudiante.edit" datos="{{ $estudiante->idEstudiante }}" /> --}}
+                {{-- <x-boton ruta="estudiante.edit" datos="{{ $estudiante->idEstudiante }}" /> --}}
                 <button type="submit"
                     class="rounded  px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white transition duration-150 ease-in-out  focus:outline-none focus:ring-0  motion-reduce:transition-none dark:shadow-black/30 dark:hover:shadow-dark-strong dark:focus:shadow-dark-strong dark:active:shadow-dark-strong text-center  bg-primary shadow-primary-3 hover:shadow-primary-2 hover:bg-primary-accent-300 focus:bg-primary-accent-300 active:bg-primary-600 focus:shadow-primary-2 active:shadow-primary-2">Cancelar</button>
             </form>

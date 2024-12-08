@@ -85,6 +85,41 @@ class User extends Authenticatable
     {
         return $this->estudiantes()->where('idEstudiante', $id)->exists();
     }
-
+    public function countTotalDeudas($tipo)
+    {
+        $total = 0;
+        $estudiantes = $this->estudiantes()->get();
+        foreach ($estudiantes as $estudiante) {
+            switch ($tipo) {
+                case 'totales':
+                    $total += $estudiante->estudiante->countDeudas();
+                    break;
+                case 'proximas':
+                    $total += $estudiante->estudiante->getDeudasProximas()->count();
+                    break;
+                case 'vencidas':
+                    $total += $estudiante->estudiante->getDeudasVencidas()->count();
+                    break;
+                default:
+                $total += $estudiante->estudiante->countDeudas();
+                    break;
+            }
+        }
+        return $total;
+    }
+    public function getTotalDeudas()
+{
+    $estudiantes = $this->estudiantes()->get();
     
+    // Iniciamos una colección vacía.
+    $deudasCollection = collect();
+    
+    // Iteramos cada estudiante y fusionamos sus deudas en una sola colección.
+    foreach ($estudiantes as $estudiante) {
+        $deudasCollection = $deudasCollection->merge($estudiante->estudiante->getDeudas());
+    }
+
+    return $deudasCollection;
+}
+
 }

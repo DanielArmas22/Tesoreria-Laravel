@@ -18,14 +18,8 @@ use Illuminate\Routing\Controllers\Middleware;
 
 //$fechaActual = date('Y-m-d');->obtener fecha actual
 
-class DevolucionController extends Controller implements HasMiddleware
+class DevolucionController extends Controller 
 {
-    public static function middleware(): array
-    {
-        return [
-            'auth',
-        ];
-    }
     const PAGINATION = 5;
 
     public function index(Request $request)
@@ -41,7 +35,7 @@ class DevolucionController extends Controller implements HasMiddleware
             ->join('devolucion as D', 'D.idDevolucion', '=', 'DD.idDevolucion')
             ->join('estudiante as E', 'E.idEstudiante', '=', 'P.idEstudiante')
             ->leftJoin('detalle_pago as DP', 'DP.nroOperacion', '=', 'P.nroOperacion')
-            ->where('DD.estado', '=', '1')
+            ->where('DD.estadoDevolucion', '=', '1')
             ->select(
                 'DD.idDevolucion',
                 'DD.nroOperacion',
@@ -90,19 +84,19 @@ class DevolucionController extends Controller implements HasMiddleware
         $estudiante = null;
         $detalle_pago = null;
         $idEstudiante = $request->get('idEstudiante');
-        $pago=pago::where('estado','=','1')->get();
+        $pago=pago::where('estadoDevolucion','=','1')->get();
         if($idEstudiante!=null){
             $estudiante = DB::table('estudiante as E')
             ->join('detalle_estudiante_gs as DE', 'E.idEstudiante', '=', 'DE.idEstudiante')
             ->join('grado as G', 'DE.gradoEstudiante', '=', 'G.gradoEstudiante')
             ->join('seccion as S', 'DE.seccionEstudiante', '=', 'S.seccionEstudiante')
-            ->select('E.idEstudiante', 'E.DNI', 'E.nombre', 'E.apellidoP', 'E.apellidoM', 'G.descripcionGrado', 'S.descripcionSeccion')->where('E.estado', '=', '1')->where('E.idEstudiante', $idEstudiante)->first();
+            ->select('E.idEstudiante', 'E.DNI', 'E.nombre', 'E.apellidoP', 'E.apellidoM', 'G.descripcionGrado', 'S.descripcionSeccion')->where('E.estadoDevolucion', '=', '1')->where('E.idEstudiante', $idEstudiante)->first();
             
             $detalle_pago= DB::table('detalle_pago as DP')
             ->join('pago as P','P.nroOperacion','=','DP.nroOperacion')
             ->join('deuda as D','D.idDeuda','=','DP.idDeuda')
             ->join('concepto_escala as CE','CE.idConceptoEscala','=','D.idConceptoEscala')
-            ->where('P.idEstudiante','=',$idEstudiante)->where('DP.estado','=','1')
+            ->where('P.idEstudiante','=',$idEstudiante)->where('DP.estadoDevolucion','=','1')
             ->select('DP.monto','P.fechaPago','P.nroOperacion','D.idDeuda','CE.descripcion')->get();
             if (!isset($estudiante)) {
                 return redirect()->route('devolucion.create')->with(['mensaje'=>'Estudiante no encontrado']);
@@ -123,7 +117,7 @@ class DevolucionController extends Controller implements HasMiddleware
             ->join('pago as P','P.nroOperacion','=','DP.nroOperacion')
             ->join('deuda as D','D.idDeuda','=','DP.idDeuda')
             ->join('concepto_escala as CE','CE.idConceptoEscala','=','D.idConceptoEscala')
-            ->where('P.idEstudiante','=',$request->idEstudiante)->where('DP.estado','=','1')
+            ->where('P.idEstudiante','=',$request->idEstudiante)->where('DP.estadoDevolucion','=','1')
             ->where('DP.nroOperacion','=',$operacion)
             ->select('D.idDeuda','DP.monto','CE.descripcion')->get();
             
@@ -144,15 +138,15 @@ class DevolucionController extends Controller implements HasMiddleware
         ]);
             $devolucion = new devolucion();
             $devolucion->fechaDevolucion = $request->input('fechaActual');
-            $devolucion->estado = 1;
+            $devolucion->estadoDevolucion = 1;
             $devolucion->save();
 
-            $devolucion = devolucion::where('estado', '=', '1')->orderBy('idDevolucion', 'desc')->first();
+            $devolucion = devolucion::where('estadoDevolucion', '=', '1')->orderBy('idDevolucion', 'desc')->first();
             $detalle_devolucion = new detalle_devolucion();
             $detalle_devolucion->nroOperacion = $request->input('nroOperacion');
             $detalle_devolucion->idDevolucion = $devolucion->idDevolucion;
             $detalle_devolucion->observacion = $request->input('observacion');
-            $detalle_devolucion->estado = 1;
+            $detalle_devolucion->estadoDevolucion = 1;
             $detalle_devolucion->save();
             
             $deudas = $validatedData['deudas'];
@@ -168,10 +162,10 @@ class DevolucionController extends Controller implements HasMiddleware
                                             ->where('idDeuda', $idDeuda)
                                             ->firstOrFail();
                 
-                // Actualizar los estados y valores
-                $deuda->estado = '1';
+                // Actualizar los estadoDevolucions y valores
+                $deuda->estadoDevolucion = '1';
                 $deuda->adelanto -= $detalle_pago->monto;
-                $detalle_pago->estado = '0';
+                $detalle_pago->estadoDevolucion = '0';
 
                 // Guardar los cambios
                 $deuda->save();
@@ -179,7 +173,7 @@ class DevolucionController extends Controller implements HasMiddleware
             }
 
             $pago = pago::findOrFail($request->input('nroOperacion'));
-            $pago->estado='0'; //eliminamos el pago
+            $pago->estadoDevolucion='0'; //eliminamos el pago
             $pago->save();
             //DB::commit();
 
@@ -197,7 +191,7 @@ class DevolucionController extends Controller implements HasMiddleware
             ->join('deuda as D', 'D.idDeuda', '=', 'DP.idDeuda')
             ->join('concepto_escala as CE', 'CE.idConceptoEscala', '=', 'D.idConceptoEscala')
             ->where('P.idEstudiante', '=', $request->idEstudiante)
-            ->where('DP.estado', '=', '0')
+            ->where('DP.estadoDevolucion', '=', '0')
             ->where('DP.nroOperacion', '=', $request->nroOperacion)
             ->select('D.idDeuda', 'DP.monto', 'CE.descripcion')->get();
         return view('pages.devolucion.datos', compact('operacion', 'deudas', 'estudiante', 'fechaActual', 'observacion'));
