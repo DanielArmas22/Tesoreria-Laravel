@@ -108,18 +108,60 @@ class User extends Authenticatable
         return $total;
     }
     public function getTotalDeudas()
-{
-    $estudiantes = $this->estudiantes()->get();
-    
-    // Iniciamos una colección vacía.
-    $deudasCollection = collect();
-    
-    // Iteramos cada estudiante y fusionamos sus deudas en una sola colección.
-    foreach ($estudiantes as $estudiante) {
-        $deudasCollection = $deudasCollection->merge($estudiante->estudiante->getDeudas());
-    }
+    {
+        $estudiantes = $this->estudiantes()->get();
+        
+        // Iniciamos una colección vacía.
+        $deudasCollection = collect();
+        
+        // Iteramos cada estudiante y fusionamos sus deudas en una sola colección.
+        foreach ($estudiantes as $estudiante) {
+            $deudasCollection = $deudasCollection->merge($estudiante->estudiante->getDeudas());
+        }
 
-    return $deudasCollection;
-}
+        return $deudasCollection;
+    }
+    public function getTotalPagos()
+    {
+        $estudiantes = $this->estudiantes()->get();
+        // dd($estudiantes);
+        // Iniciamos una colección vacía.
+        $pagos = collect();
+        
+        // Iteramos cada estudiante y fusionamos sus deudas en una sola colección.
+        foreach ($estudiantes as $estudiante) {
+            
+            $pagos = $pagos->merge($estudiante->estudiante->pagos);
+        }
+        return $pagos;
+    }
+    public function getTotalDevoluciones()
+    {
+        $estudiantes = $this->estudiantes()->get();
+        
+        // Iniciamos una colección vacía.
+        $deudasCollection = collect();
+        
+        // Iteramos cada estudiante y fusionamos sus deudas en una sola colección.
+        foreach ($estudiantes as $estudiante) {
+            $deudasCollection = $deudasCollection->merge($estudiante->estudiante->devoluciones);
+        }
+
+        return $deudasCollection;
+    }
+    public function getTotalCondonaciones()
+    {
+        $estudiantes = $this->estudiantes()->get();
+        
+        // Iniciamos una colección vacía.
+        $deudasCollection = collect();
+        
+        // Iteramos cada estudiante y fusionamos sus deudas en una sola colección.
+        foreach ($estudiantes as $estudiante) {
+            $deudasCollection = $deudasCollection->merge($estudiante->estudiante->getDeudas());
+        }
+
+        return $deudasCollection;
+    }
 
 }

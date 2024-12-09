@@ -248,11 +248,26 @@
                         </tr>
                     </tfoot>
                 </table>
-                <div class="flex justify-end mt-4">
-                    <button type="submit"
-                        class="agregar inline-flex items-center px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
-                        PAGAR TOTAL
-                    </button>
+                <h2 class="text-2xl font-bold mb-4 text-gray-800">Método de Pago</h2>
+                <div class="w-full p-4">
+                    <select
+                        class="peer h-full w-full rounded-[7px] border border-blue-gray-200 border-t-transparent bg-transparent px-3 py-2.5 font-sans text-sm font-normal text-blue-gray-700 outline outline-0 transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 empty:!bg-gray-900 focus:border-2 focus:border-gray-900 focus:border-t-transparent focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50"
+                        name="metodoPago">
+                        <option value="tarjeta_credito">Tarjeta de Crédito</option>
+                        <option value="tarjeta_debito">Tarjeta de Débito</option>
+                        <option value="transferencia_bancaria">Transferencia Bancaria</option>
+                        <option value="paypal">PayPal</option>
+                        <option value="efectivo">Efectivo</option>
+                    </select>
+                    <label
+                        class="before:content[' '] after:content[' '] pointer-events-none absolute left-0 -top-1.5 flex h-full w-full select-none text-[11px] font-normal leading-tight text-blue-gray-400 transition-all before:pointer-events-none before:mt-[6.5px] before:mr-1 before:box-border before:block before:h-1.5 before:w-2.5 before:rounded-tl-md before:border-t before:border-l before:border-blue-gray-200 before:transition-all after:pointer-events-none after:mt-[6.5px] after:ml-1 after:box-border after:block after:h-1.5 after:w-2.5 after:flex-grow after:rounded-tr-md after:border-t after:border-r after:border-blue-gray-200 after:transition-all peer-placeholder-shown:text-sm peer-placeholder-shown:leading-[3.75] peer-placeholder-shown:text-blue-gray-500 peer-placeholder-shown:before:border-transparent peer-placeholder-shown:after:border-transparent peer-focus:text-[11px] peer-focus:leading-tight peer-focus:text-gray-900 peer-focus:before:border-t-2 peer-focus:before:border-l-2 peer-focus:before:border-gray-900 peer-focus:after:border-t-2 peer-focus:after:border-r-2 peer-focus:after:border-gray-900 peer-disabled:text-transparent peer-disabled:before:border-transparent peer-disabled:after:border-transparent peer-disabled:peer-placeholder-shown:text-blue-gray-500">Seleccione
+                        un Método de Pago</label>
+                    <div class="flex justify-end mt-4">
+                        <button type="submit"
+                            class="agregar inline-flex items-center px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+                            PAGAR TOTAL
+                        </button>
+                    </div>
                 </div>
                 <br><br>
             </form>

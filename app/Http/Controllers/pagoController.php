@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Support\Facades\Auth;
 //use Carbon\Carbon
 
 class pagoController extends Controller implements HasMiddleware
@@ -26,6 +27,7 @@ class pagoController extends Controller implements HasMiddleware
 
     public function index(Request $request, $generarPDF = null)
     {
+
         $buscarpor = $request->get('buscarpor');
         $buscarCodigo = $request->get('buscarCodigo');
         $nroOperacion = $request->get('nroOperacion');
@@ -35,10 +37,16 @@ class pagoController extends Controller implements HasMiddleware
         $pago = DB::table('pago as P')
         ->join('detalle_pago as DP', 'P.nroOperacion', '=', 'DP.nroOperacion')                                 
         ->join('estudiante as E', 'P.idEstudiante', '=', 'E.idEstudiante')
-        ->select('P.nroOperacion','P.idEstudiante', 'P.fechaPago','P.periodo','E.nombre','E.apellidoP','E.apellidoM',DB::raw('ROUND(sum(DP.monto),2) as totalMonto'))
-        ->where('P.estadoPago','=','1')
+        ->select('P.nroOperacion','P.idEstudiante', 'P.fechaPago','P.periodo','P.metodoPago','E.nombre','E.apellidoP','E.apellidoM',DB::raw('ROUND(sum(DP.monto),2) as totalMonto'))
+        ->whereIn('P.estadoPago', ['1', '2'])
         ->groupBy('p.nroOperacion');
         
+        if (Auth::user()->hasRole('padre')) {
+            // Obtener la colección de pagos del padre (asumiendo que retorna colecciones con nroOperacion)
+            $nroOpPadre = Auth::user()->getTotalPagos()->pluck('nroOperacion')->toArray();
+            // Ajustar la consulta para que solo traiga esas deudas
+            $pago->whereIn('P.nroOperacion', $nroOpPadre);
+            }
         
         if($buscarCodigo !=null){
             $pago->where('P.idEstudiante', 'like','%' .$buscarCodigo . '%');
@@ -92,7 +100,7 @@ class pagoController extends Controller implements HasMiddleware
             ->join('detalle_estudiante_gs as DE', 'E.idEstudiante', '=', 'DE.idEstudiante')
             ->join('grado as G', 'DE.gradoEstudiante', '=', 'G.gradoEstudiante')
             ->join('seccion as S', 'DE.seccionEstudiante', '=', 'S.seccionEstudiante')
-            ->select('E.idEstudiante', 'E.dni', 'E.nombre', 'E.apellidoP', 'E.apellidoM', 'G.descripcionGrado', 'S.descripcionSeccion')->where('E.estadoPago', '=', '1')->where('E.idEstudiante', $idEstudiante)->first();
+            ->select('E.idEstudiante', 'E.dni', 'E.nombre', 'E.apellidoP', 'E.apellidoM', 'G.descripcionGrado', 'S.descripcionSeccion')->where('E.estado', '=', '1')->where('E.idEstudiante', $idEstudiante)->first();
         
             $condonacion = DB::table('DETALLE_CONDONACION as DC')
             ->select('DC.IDDEUDA', DB::raw('SUM(DC.MONTO) as total'))
@@ -111,11 +119,11 @@ class pagoController extends Controller implements HasMiddleware
                 'D.montoMora',
                 'D.fechaLimite',
                 DB::raw('ROUND(D.adelanto,2) as adelanto'),
-                'D.estadoPago',
+                'D.estado',
                 'Esc.monto',
                 'sub.total as totalCondonacion'
 
-            )->where('D.idEstudiante', '=',$idEstudiante)->where('D.estadoPago','=','1')
+            )->where('D.idEstudiante', '=',$idEstudiante)->where('D.estado','=','1')
             ->get(['estudiante' => $estudiante, 'deudas' => $deudas, 'idEstudiante'=> $idEstudiante ]);
             // dd($deudas)->toSql();
         return view('pages.pago.create', ['estudiante' => $estudiante, 'deudas' => $deudas]);
@@ -141,7 +149,8 @@ class pagoController extends Controller implements HasMiddleware
             $pago->idEstudiante = $request->idestudiante;
             $pago->fechaPago = now()->format('Y-m-d');
             $pago->periodo = '2024';   //$pago->periodo = Carbon::now()->year; SE PUEDE PONER ESTO ARA QUE LO HAGA CON LA FECHA DEL SISTEMA
-            $pago->estadoPago = '1';
+            $pago->estadoPago = '2';
+            $pago->metodoPago= $request->metodoPago;
             $pago->save();
             
             // Crear los detalles del pago
@@ -157,7 +166,8 @@ class pagoController extends Controller implements HasMiddleware
                 $detallePago->estadoPago = '1';
                 $detallePago->save();
                 
-                // Actualizar la deuda
+                
+                // Actualizar la deuda (SE QUEDA PQ ES EL PAGO VIRTUAL DEL PADRE)
                 $deuda = Deuda::findOrFail($idDeuda);
                 if ($deuda) {
                                 $cond = DB::table('DETALLE_CONDONACION as DC')

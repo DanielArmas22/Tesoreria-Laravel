@@ -31,6 +31,10 @@ class Estudiante extends Model
     {
         return $this->hasMany(Estudiante_padre::class, 'idEstudiante', 'idEstudiante');
     }
+    public function pagos()
+    {
+        return $this->hasMany(pago::class, 'idEstudiante', 'idEstudiante');
+    }
     public function getDeudas(){
         $deudas = Deuda::select(
             'deuda.*',
@@ -74,6 +78,16 @@ class Estudiante extends Model
         $deudas = $this->getDeudas();
         return $deudas->count();
     }
-    
 
+    public function devoluciones()
+    {
+        return $this->hasManyThrough(
+            DetalleDevolucion::class, // Modelo final
+            Pago::class, // Modelo intermedio
+            'idEstudiante', // Clave foránea en pagos
+            'nroOperacion', // Clave foránea en detalle_devolucion
+            'idEstudiante', // Clave primaria en estudiante
+            'nroOperacion' // Clave primaria en pagos
+        );
+    }
 }

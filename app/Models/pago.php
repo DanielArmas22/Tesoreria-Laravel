@@ -18,11 +18,17 @@ class pago extends Model
         return $this->hasMany(detalle_pago::class, 'nroOperacion', 'nroOperacion');
     }
 
-    public function detalleDevolucion()
+    public function devolucion()
     {
-        return $this->hasMany(detalle_devolucion::class, 'nroOperacion', 'nroOperacion');
+        return $this->hasOneThrough(
+            devolucion::class, // Modelo final
+            detalle_devolucion::class, // Modelo intermedio
+            'idDevolucion', // Clave foránea en el intermedio
+            'idDevolucion', // Clave foránea en el final
+            'nroOperacion', // Clave primaria en el modelo
+            'nroOperacion' // Clave primaria en el intermedio
+        );
     }
-
     public function estudiante(){
         return $this->hasOne(estudiante::class, 'idEstudiante', 'idEstudiante');
     }

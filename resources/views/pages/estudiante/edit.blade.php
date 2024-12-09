@@ -230,6 +230,9 @@
                     <br>
                     <ul class="flex gap-2 p-3">
                         <li> <a class="bg-success shadow-success-3 hover:shadow-success-2 hover:bg-success-accent-300 focus:bg-success-accent-300 active:bg-success-600 focus:shadow-success-2 active:shadow-success-2 rounded  flex items-center px-6 py-2 text-xs font-medium uppercase leading-normal text-white transition duration-150 ease-in-out  focus:outline-none focus:ring-0  motion-reduce:transition-none dark:shadow-black/30 dark:hover:shadow-dark-strong dark:focus:shadow-dark-strong dark:active:shadow-dark-strong text-center"
+                                href="{{ route('pago.show', ['idEstudiante' => $estudiante->idEstudiante]) }}">Nuevo
+                            </a></li>
+                        <li> <a class="bg-success shadow-success-3 hover:shadow-success-2 hover:bg-success-accent-300 focus:bg-success-accent-300 active:bg-success-600 focus:shadow-success-2 active:shadow-success-2 rounded  flex items-center px-6 py-2 text-xs font-medium uppercase leading-normal text-white transition duration-150 ease-in-out  focus:outline-none focus:ring-0  motion-reduce:transition-none dark:shadow-black/30 dark:hover:shadow-dark-strong dark:focus:shadow-dark-strong dark:active:shadow-dark-strong text-center"
                                 href="{{ route('pago.index', ['buscarCodigo' => $estudiante->idEstudiante]) }}">Listar
                             </a></li>
                     </ul>
@@ -238,10 +241,23 @@
                     <br>
                     <ul class="flex gap-2 p-3">
                         <li> <a class="bg-success shadow-success-3 hover:shadow-success-2 hover:bg-success-accent-300 focus:bg-success-accent-300 active:bg-success-600 focus:shadow-success-2 active:shadow-success-2 rounded  flex items-center px-6 py-2 text-xs font-medium uppercase leading-normal text-white transition duration-150 ease-in-out  focus:outline-none focus:ring-0  motion-reduce:transition-none dark:shadow-black/30 dark:hover:shadow-dark-strong dark:focus:shadow-dark-strong dark:active:shadow-dark-strong text-center"
+                                href="{{ route('devolucion.create', ['idEstudiante' => $estudiante->idEstudiante]) }}">Solicitar
+                            </a></li>
+                        <li> <a class="bg-success shadow-success-3 hover:shadow-success-2 hover:bg-success-accent-300 focus:bg-success-accent-300 active:bg-success-600 focus:shadow-success-2 active:shadow-success-2 rounded  flex items-center px-6 py-2 text-xs font-medium uppercase leading-normal text-white transition duration-150 ease-in-out  focus:outline-none focus:ring-0  motion-reduce:transition-none dark:shadow-black/30 dark:hover:shadow-dark-strong dark:focus:shadow-dark-strong dark:active:shadow-dark-strong text-center"
                                 href="{{ route('devolucion.index', ['buscarxEstudiante' => $estudiante->idEstudiante]) }}">Listar
                             </a></li>
                     </ul>
                     <br>
+                    <h4 class="text-lg">Condonacion</h4>
+                    <br>
+                    <ul class="flex gap-2 p-3">
+                        <li> <a class="bg-success shadow-success-3 hover:shadow-success-2 hover:bg-success-accent-300 focus:bg-success-accent-300 active:bg-success-600 focus:shadow-success-2 active:shadow-success-2 rounded  flex items-center px-6 py-2 text-xs font-medium uppercase leading-normal text-white transition duration-150 ease-in-out  focus:outline-none focus:ring-0  motion-reduce:transition-none dark:shadow-black/30 dark:hover:shadow-dark-strong dark:focus:shadow-dark-strong dark:active:shadow-dark-strong text-center"
+                                href="{{ route('condonacion.create', ['idEstudiante' => $estudiante->idEstudiante]) }}">solicitar
+                            </a></li>
+                        <li> <a class="bg-success shadow-success-3 hover:shadow-success-2 hover:bg-success-accent-300 focus:bg-success-accent-300 active:bg-success-600 focus:shadow-success-2 active:shadow-success-2 rounded  flex items-center px-6 py-2 text-xs font-medium uppercase leading-normal text-white transition duration-150 ease-in-out  focus:outline-none focus:ring-0  motion-reduce:transition-none dark:shadow-black/30 dark:hover:shadow-dark-strong dark:focus:shadow-dark-strong dark:active:shadow-dark-strong text-center"
+                                href="{{ route('condonacion.index', ['codigoEstudiante' => $estudiante->idEstudiante, 'dniEstudiante' => $estudiante->DNI]) }}">Listar
+                            </a></li>
+                    </ul>
                 </div>
             </article>
         </section>
