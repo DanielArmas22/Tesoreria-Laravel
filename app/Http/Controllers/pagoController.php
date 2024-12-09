@@ -38,8 +38,72 @@ class pagoController extends Controller implements HasMiddleware
         $pago = DB::table('pago as P')
         ->join('detalle_pago as DP', 'P.nroOperacion', '=', 'DP.nroOperacion')                                 
         ->join('estudiante as E', 'P.idEstudiante', '=', 'E.idEstudiante')
-        ->select('P.nroOperacion','P.idEstudiante', 'P.fechaPago','P.periodo','E.nombre','E.apellidoP','E.apellidoM',DB::raw('ROUND(sum(DP.monto),2) as totalMonto'))
+        ->select('P.nroOperacion','P.idEstudiante','P.fechaPago','P.periodo','E.nombre','E.apellidoP','E.apellidoM',DB::raw('ROUND(sum(DP.monto),2) as totalMonto'))
         ->where('P.estado','=','1')
+        ->groupBy('p.nroOperacion');
+        
+        
+        if($buscarCodigo !=null){
+            $pago->where('P.idEstudiante', 'like','%' .$buscarCodigo . '%');
+        }
+        if($nroOperacion !=null){
+            $pago->where('P.nroOperacion', 'like','%' .$nroOperacion . '%');
+        }
+        
+        if($nombreEstudiante !=null){
+            $pago->where('E.nombre', 'like','%' .$nombreEstudiante . '%');
+        }
+        
+        if($apellidoPaterno !=null){
+            $pago->where('E.apellidoP', 'like','%' .$apellidoPaterno . '%');
+        }
+        
+        if($apellidoMaterno !=null){
+            $pago->where('E.apellidoM', 'like','%' .$apellidoMaterno . '%');
+        }
+
+        if ($fechaInicio) {
+            $pago->whereDate('P.fechaPago', '>=', $fechaInicio);
+        }
+
+        if ($fechaFin) {
+            $pago->whereDate('P.fechaPago', '<=', $fechaFin);
+        }
+
+        $pagos = $pago->paginate($this::PAGINATION);
+        $totalPago = 0;
+
+        // Iterar sobre los registros y sumar los valores de totalMonto
+        foreach ($pagos as $minipago) {
+            $totalPago += $minipago->totalMonto;
+        }
+        $pagos = $pagos->appends(['buscarCodigo' => $buscarCodigo, 'apellidoPaterno'=>$apellidoPaterno, 'apellidoMaterno'=>$apellidoMaterno , 'nombreEstudiante'=>$nombreEstudiante  ,'nroOperacion' => $nroOperacion, 'fechaInicio' => $fechaInicio, 'fechaFin' => $fechaFin,'totalPago' => $totalPago]);
+
+        if($request->has('generarPDF') && $request->generarPDF){
+            $pdf = PDF::loadView('pages.pago.reportepdf', compact('pagos','nombreEstudiante' ,'apellidoPaterno','apellidoMaterno','nroOperacion','buscarCodigo', 'fechaInicio', 'fechaFin','totalPago'));
+            return $pdf->stream('invoice.pdf');
+        }
+
+        return view('pages.pago.index', compact('pagos','nombreEstudiante','apellidoPaterno','apellidoMaterno','nroOperacion','buscarCodigo', 'fechaInicio', 'fechaFin','totalPago'));
+
+    }
+
+    public function indexCajero(Request $request, $generarPDF = null)
+    {
+        $nombreEstudiante = $request->get('nombreEstudiante');
+        $apellidoPaterno = $request->get('apellidoPaterno');
+        $apellidoMaterno = $request->get('apellidoMaterno');
+        $buscarpor = $request->get('buscarpor');
+        $buscarCodigo = $request->get('buscarCodigo');
+        $nroOperacion = $request->get('nroOperacion');
+        $fechaInicio = $request->get('fechaInicio');
+        $fechaFin = $request->get('fechaFin');
+
+        $pago = DB::table('pago as P')
+        ->join('detalle_pago as DP', 'P.nroOperacion', '=', 'DP.nroOperacion')                                 
+        ->join('estudiante as E', 'P.idEstudiante', '=', 'E.idEstudiante')
+        ->select('P.nroOperacion','P.idEstudiante','P.metodoPago','P.fechaPago','P.periodo','E.nombre','E.apellidoP','E.apellidoM',DB::raw('ROUND(sum(DP.monto),2) as totalMonto'))
+        ->where('P.estadoPago','=','2')
         ->groupBy('p.nroOperacion');
         
         
@@ -272,14 +336,131 @@ class pagoController extends Controller implements HasMiddleware
         $montoTotal = number_format($detalles->sum('monto'), 2, '.', '');
 
 
-        return view('pages.pago.boleta', compact('pago', 'estudiante', 'detalles', 'montoTotal'));
+        //return view('pages.pago.boleta', compact('pago', 'estudiante', 'detalles', 'montoTotal'));
 
         // Generar la vista para el PDF
-        // $pdf = PDF::loadView('pago.boleta', compact('pago', 'estudiante', 'detalles', 'montoTotal'));
-
+        $pdf = PDF::loadView('pages.pago.boletapdf', compact('pago', 'estudiante', 'detalles', 'montoTotal'));
+        return $pdf->stream('boleta_pago_' . $nroOperacion . '.pdf');
         // Descargar el PDF
         // return $pdf->download('boleta_pago_' . $nroOperacion . '.pdf');
     }
 
-    
+    public function fichapagos(Request $request){
+        $nombreEstudiante = $request->get('nombreEstudiante');
+        $apellidoPaterno = $request->get('apellidoPaterno');
+        $apellidoMaterno = $request->get('apellidoMaterno');
+        $buscarpor = $request->get('buscarpor');
+        $buscarCodigo = $request->get('buscarCodigo');
+        $nroOperacion = $request->get('nroOperacion');
+        $fechaInicio = $request->get('fechaInicio');
+        $fechaFin = $request->get('fechaFin');
+
+        $pago = DB::table('pago as P')
+        ->join('detalle_pago as DP', 'P.nroOperacion', '=', 'DP.nroOperacion')                                 
+        ->join('estudiante as E', 'P.idEstudiante', '=', 'E.idEstudiante')
+        ->select('P.nroOperacion','P.idEstudiante', 'P.fechaPago','P.periodo','E.nombre','E.apellidoP','E.apellidoM',DB::raw('ROUND(sum(DP.monto),2) as totalMonto'))
+        //->where('P.estado','=','1')
+        ->where('P.estadoPago','=','1')
+        #aqui pones la columna que se agregara a la tabla
+        ->groupBy('p.nroOperacion');
+        
+        
+        if($buscarCodigo !=null){
+            $pago->where('P.idEstudiante', 'like','%' .$buscarCodigo . '%');
+        }
+        if($nroOperacion !=null){
+            $pago->where('P.nroOperacion', 'like','%' .$nroOperacion . '%');
+        }
+        
+        if($nombreEstudiante !=null){
+            $pago->where('E.nombre', 'like','%' .$nombreEstudiante . '%');
+        }
+        
+        if($apellidoPaterno !=null){
+            $pago->where('E.apellidoP', 'like','%' .$apellidoPaterno . '%');
+        }
+        
+        if($apellidoMaterno !=null){
+            $pago->where('E.apellidoM', 'like','%' .$apellidoMaterno . '%');
+        }
+
+        if ($fechaInicio) {
+            $pago->whereDate('P.fechaPago', '>=', $fechaInicio);
+        }
+
+        if ($fechaFin) {
+            $pago->whereDate('P.fechaPago', '<=', $fechaFin);
+        }
+
+        $pagos = $pago->paginate($this::PAGINATION);
+        $totalPago = 0;
+
+        // Iterar sobre los registros y sumar los valores de totalMonto
+        foreach ($pagos as $minipago) {
+            $totalPago += $minipago->totalMonto;
+        }
+        $pagos = $pagos->appends(['buscarCodigo' => $buscarCodigo, 'apellidoPaterno'=>$apellidoPaterno, 'apellidoMaterno'=>$apellidoMaterno , 'nombreEstudiante'=>$nombreEstudiante  ,'nroOperacion' => $nroOperacion, 'fechaInicio' => $fechaInicio, 'fechaFin' => $fechaFin,'totalPago' => $totalPago]);
+
+        if($request->has('generarPDF') && $request->generarPDF){
+            $pdf = PDF::loadView('pages.pago.reportepdf', compact('pagos','nombreEstudiante' ,'apellidoPaterno','apellidoMaterno','nroOperacion','buscarCodigo', 'fechaInicio', 'fechaFin','totalPago'));
+            return $pdf->stream('invoice.pdf');
+        }
+
+        return view('pages.pago.fichaPago', compact('pagos','nombreEstudiante','apellidoPaterno','apellidoMaterno','nroOperacion','buscarCodigo', 'fechaInicio', 'fechaFin','totalPago'));
+
+    }
+
+    public function detalleFichaPago($nroOperacion){
+        $pago = Pago::where('nroOperacion', $nroOperacion)->first();
+        $estudiante = Estudiante::where('idEstudiante', $pago->idEstudiante)->first();
+        $detalles = detalle_pago::where('nroOperacion', $nroOperacion)->get();
+        //dd($detalles->deuda->ConceptoEscala->descripcion);
+
+        foreach ($detalles as $detalle) {
+            $detalle->monto = number_format($detalle->monto, 2, '.', '');
+
+            $detalle->estado = '1';
+            $detalle->save();
+            $monto = $detalle->monto;
+            // Actualizar la deuda
+            $deuda = Deuda::findOrFail($detalle->idDeuda);
+            if ($deuda) {
+                $cond = DB::table('DETALLE_CONDONACION as DC')
+                ->select('DC.IDDEUDA', DB::raw('SUM(DC.MONTO) as total'))->where('DC.IDDEUDA', '=', $deuda->idDeuda)
+                    ->groupBy('DC.IDDEUDA')->first();
+                // dd($cond);
+                if ($cond == null) {
+                    $montoPagar = $deuda->conceptoEscala->escala->monto + $deuda->montoMora;
+                } else {
+                    $montoPagar = $deuda->conceptoEscala->escala->monto + $deuda->montoMora - $cond->total;
+                }
+                $montotmp = $monto + $deuda->adelanto;
+                // $deuda->adelanto += $monto;
+                if ($montotmp >= $montoPagar) {
+                    // $deuda->adelanto += $monto;
+                    $deuda->estado = '0';
+                }
+                //$deuda->estado = '1';
+                $deuda->adelanto = $montotmp;
+                $deuda->save();
+            }
+        }
+        $montoTotal = number_format($detalles->sum('monto'), 2, '.', '');
+
+        return view('pages.pago.detalleFichaPago', compact('pago', 'estudiante', 'detalles', 'montoTotal'));
+
+    }
+
+    public function actualizaFichaPago($nroOperacion){
+        $pago = Pago::findOrFail($nroOperacion);
+        $pago->estadoPago = '2';
+        $pago->metodoPago ='Fisico';
+        $pago->save();
+        $detalles = detalle_pago::where('nroOperacion', $nroOperacion)->get();
+        foreach ($detalles as $detalle) {
+            $detalle->estado = '2';
+            $detalle->save();
+        }
+        return redirect()->route('pago.fichapagos');
+    }
 }

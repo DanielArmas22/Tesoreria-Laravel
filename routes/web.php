@@ -91,13 +91,20 @@ Route::get('cancelarDevolucion', function () {
 Route::post('/devolucion/datos',[DevolucionController::class,'datos'])->name('devolucion.datos');
 Route::post('/DevolucionPdf', [DevolucionController::class, 'showpdf'])->name('generarDevolucion');
 
-
+Route::get('/actualizarDevolucion/{idDevolucion}/{Operacion}',[DevolucionController::class,'actualizarDevolucion'])->name('devolucion.actualizarDevolucion');
+Route::get('/devolucionesRealizadas',[DevolucionController::class,'devolucionesRealizadas'])->name('devolucion.devolucionesRealizadas');
+Route::post('/devolucion/datosRealizados',[DevolucionController::class,'datosRealizados'])->name('devolucion.datosRealizados');
 //pagos
 Route::resource('/pago', pagoController::class);
 Route::get('/pagoPdf', [pagoController::class, 'index'])->name('generarPago');
 Route::get('/pago/estudiante', [PagoController::class, 'show'])->name('pago.show');
 Route::get('/boleta/{nroOperacion}', [PagoController::class, 'showBoleta'])->name('pago.showBoleta');
 
+
+Route::get('/FichaPago/{nroOperacion}', [PagoController::class, 'detalleFichaPago'])->name('pago.detalleFichaPago');
+Route::get('/FichaPagos',[pagoController::class,'fichapagos'])->name('pago.fichapagos');
+Route::get('/ActualizaFichaPago/{nroOperacion}',[pagoController::class,'actualizaFichaPago'])->name('pago.actualizaFichaPago');
+Route::get('/ListaPagos',[pagoController::class,'indexCajero'])->name('pago.listaPagosCajero');
 //escala
 //web escala
 

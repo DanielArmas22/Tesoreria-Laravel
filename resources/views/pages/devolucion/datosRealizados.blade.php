@@ -170,23 +170,15 @@
 
                                 </table>
                                 <div class="flex justify-center space-x-24 mt-4 px-10"> 
-                                    <a href="{{route('devolucion.index')}}">
+                                    <a href="{{route('devolucion.devolucionesRealizadas')}}">
                                         <div
                                             class="rounded hover:scale-105 py-2 relative z-[2] -ms-0.5 flex items-center rounded-e bg-black px-5  text-xs font-medium uppercase leading-normal text-white shadow-primary-3 hover:transition hover:duration-500 hover:ease-in-out hover:bg-secondary-900 hover:shadow-primary-2 focus:bg-secondary-900 focus:shadow-primary-2 focus:outline-none focus:ring-0 active:bg-primary-600 active:shadow-primary-2 dark:shadow-black/30 dark:hover:shadow-dark-strong dark:focus:shadow-dark-strong dark:active:shadow-dark-strong"
                                             id="search-button" data-twe-ripple-init data-twe-ripple-color="light">
                                             <span class="mx-auto [&>svg]:h-5 [&>svg]:w-5 flex space-x-1">
                                                 <i class="pt-1 fa-solid fa-arrow-left"></i>
-                                                <p class="flex justify-center items-center pl-2">Volver</p>
+                                                <p class="flex justify-center items-center pl-2">Regresar</p>
                                             </span>
                                         </div>
-                                    </a>
-                                    <a href="{{route('devolucion.actualizarDevolucion',[$idDevolucion,$operacion])}}"
-                                        class="rounded hover:scale-105 py-2 relative z-[2] -ms-0.5 flex items-center rounded-e bg-primary px-5  text-xs font-medium uppercase leading-normal text-white shadow-primary-3 hover:transition hover:duration-500 hover:ease-in-out hover:bg-primary-accent-300 hover:shadow-primary-2 focus:bg-primary-accent-300 focus:shadow-primary-2 focus:outline-none focus:ring-0 active:bg-primary-600 active:shadow-primary-2 dark:shadow-black/30 dark:hover:shadow-dark-strong dark:focus:shadow-dark-strong dark:active:shadow-dark-strong"
-                                        id="search-button" data-twe-ripple-init data-twe-ripple-color="light">
-                                        <span class="mx-auto [&>svg]:h-5 [&>svg]:w-5 flex space-x-1">
-                                        <i class=" pr-2 fa-solid fa-hand-holding-dollar"></i>
-                                            <p>Confirmar</p>
-                                        </span>
                                     </a>
                                 </div>
                             </div>
