@@ -11,7 +11,7 @@ class devolucion extends Model
     protected $table = 'devolucion';
     protected $primaryKey = 'idDevolucion';
     public $timestamps = false;
-    protected $fillable = ['fechaDevolucion','estado'];
+    protected $fillable = ['fechaDevolucion','estadoDevolucion'];
 
     public function detalleDevolucion()
     {

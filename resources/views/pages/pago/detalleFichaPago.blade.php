@@ -20,6 +20,7 @@
                 <thead>
                     <tr class="bg-gray-200 text-gray-700">
                         <th class="px-4 py-2 text-left">Código</th>
+                        <th class="px-4 py-2 text-left">Concepto Escala</th>
                         <th class="px-4 py-2 text-right">Monto</th>
                     </tr>
                 </thead>
@@ -28,6 +29,8 @@
                         <tr class="border-t border-gray-300">
                             <td class="px-4 py-2 text-gray-600 text-left">
                                 {{ $detalle->nroOperacion }}-{{ $detalle->idDeuda }}</td>
+                            <td class="px-4 py-2 text-gray-600 text-left">{{ $detalle->deuda->ConceptoEscala->descripcion }}
+                            </td>
                             <td class="px-4 py-2 text-gray-600 text-right">S/ {{ number_format($detalle->monto, 2) }}</td>
                         </tr>
                     @endforeach

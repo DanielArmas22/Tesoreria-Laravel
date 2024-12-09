@@ -186,11 +186,18 @@ class UsuarioController extends Controller
     {
         return view('auth.login',['role' => $this::ROLE_PADRE]);
     }
+    public function showLoginAdmin()
+    {
+        return view('auth.login',['role' => $this::ROLE_ADMIN]);
+    }
     public function loginPadre(Request $request)
     {
         return $this->loginByRole($request, $this::ROLE_PADRE);
     }
-
+    public function loginAdmin(Request $request)
+    {
+        return $this->loginByRole($request, $this::ROLE_ADMIN);
+    }
     protected function loginByRole(Request $request, $role)
     {
         // Validar los datos de inicio de sesión

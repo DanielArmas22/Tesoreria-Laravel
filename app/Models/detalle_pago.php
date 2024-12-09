@@ -12,16 +12,16 @@ class detalle_pago extends Model
     protected $primaryKey = ['nroOperacion', 'idDeuda'];
     public $incrementing = false; // Necesario para claves compuestas
     public $timestamps = false;
-    protected $fillable = ['nroOperacion', 'idDeuda', 'monto', 'estado'];
+    protected $fillable = ['nroOperacion', 'idDeuda', 'monto', 'estadoPago'];
 
     public function operacion()
     {
-        return $this->belongsTo(Pago::class, 'nroOperacion', 'nroOperacion');
+        return $this->hasOne(Pago::class, 'nroOperacion', 'nroOperacion');
     }
 
     public function deuda()
     {
-        return $this->belongsTo(Deuda::class, 'idDeuda', 'idDeuda');
+        return $this->hasOne(Deuda::class, 'idDeuda', 'idDeuda');
     }
 
     protected function setKeysForSaveQuery($query)

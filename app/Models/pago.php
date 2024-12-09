@@ -11,7 +11,7 @@ class pago extends Model
     protected $table = 'pago';
     protected $primaryKey = 'nroOperacion';
     public $timestamps = false;
-    protected $fillable = ['fechaPago', 'idEstudiante', 'periodo', 'estado'];
+    protected $fillable = ['fechaPago', 'idEstudiante', 'periodo', 'metodoPago','estadoPago'];
 
     public function detallePago()
     {

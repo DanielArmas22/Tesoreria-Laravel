@@ -158,7 +158,7 @@ class User extends Authenticatable
         
         // Iteramos cada estudiante y fusionamos sus deudas en una sola colección.
         foreach ($estudiantes as $estudiante) {
-            $deudasCollection = $deudasCollection->merge($estudiante->estudiante->getDeudas());
+            $deudasCollection = $deudasCollection->merge($estudiante->estudiante->condonaciones);
         }
 
         return $deudasCollection;

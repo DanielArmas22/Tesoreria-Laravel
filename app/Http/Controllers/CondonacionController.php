@@ -13,6 +13,7 @@ use App\Models\detalle_condonacion;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Support\Facades\Auth;
 
 class CondonacionController extends Controller implements HasMiddleware
 {
@@ -26,7 +27,15 @@ class CondonacionController extends Controller implements HasMiddleware
 
     public function index(Request $request)
     {
+        $estados = [
+            '0' => 'Rechazado',
+            '1' => 'Solicitado',
+            // '2' => 'Devuelto',
+            '5' => 'Registrado',
+        ];
+        // dd($estados);
         $idCondonacion = $request->get('idCondonacion');
+        $estadoCondonacion = $request->get('estadoCondonacion');
         $idEstudiante = $request->get('codigoEstudiante');
         $dniEstudiante = $request->get('dniEstudiante');
         $montoMenor = $request->get('montoMenor');
@@ -36,17 +45,29 @@ class CondonacionController extends Controller implements HasMiddleware
             ->join('deuda as D', 'D.idDeuda', '=', 'DC.idDeuda')
             ->join('estudiante as E', 'D.idEstudiante', '=', 'E.idEstudiante')
             ->select('C.idCondonacion', 'C.fecha','C.estadoCondonacion', 'E.idEstudiante','E.dni', DB::raw("CONCAT(E.nombre, ' ', E.apellidoP) as nombre_completo"),DB::raw('SUM(DC.monto) as total_monto'))
-            ->groupBy('C.idCondonacion', 'C.fecha', 'E.idEstudiante', 'E.dni', 'E.nombre', 'E.apellidoP')
-            ->whereIn('C.estadoCondonacion',['0','1','5'])
-            ->havingBetween ('total_monto',[$montoMenor?: 0,$montoMayor?: 10000]);
+            ->groupBy('C.idCondonacion', 'C.fecha', 'E.idEstudiante', 'E.dni', 'E.nombre', 'E.apellidoP');
+            if(isset($estadoCondonacion))
+                $datos = $datos->where('C.estadoCondonacion', '=' ,$estadoCondonacion);
+            else $datos = $datos->whereIn('C.estadoCondonacion',['0','1','5']);
+
+        $datos = $datos->havingBetween ('total_monto',[$montoMenor?: 0,$montoMayor?: 10000]);
+        $estudiantes = null;
+        if (Auth::user()->hasRole('padre')) {
+            // Obtener la colección de condonaciones del padre (asumiendo que retorna colecciones con idCondonacion)
+            $idCondonaciones = Auth::user()->getTotalCondonaciones()->pluck('idCondonacion')->toArray();
+            // Ajustar la consulta para que solo traiga esas deudas
+            $datos->whereIn('C.idCondonacion', $idCondonaciones);
+            $estudiantes = Auth::user()->estudiantes()->get();
+        }   
         if ($idCondonacion)
             $datos = $datos->where('C.idCondonacion',  'like', '%' .$idCondonacion. '%');
         if($idEstudiante)
             $datos = $datos->where('E.idEstudiante','like', '%' . $idEstudiante. '%');
         if($dniEstudiante)
             $datos = $datos->where('E.dni', 'like', '%' . $dniEstudiante. '%');
-        $datos = $datos->paginate($this::PAGINATION)->appends(['idCondonacion' => $idCondonacion, 'codigoEstudiante' => $idEstudiante, 'dniEstudiante' => $dniEstudiante, 'montoMenor' => $montoMenor, 'montoMayor' => $montoMayor]);
-        return view('pages.condonacion.index', compact('datos', 'idCondonacion', 'idEstudiante', 'dniEstudiante', 'montoMenor', 'montoMayor'));
+        
+        $datos = $datos->paginate($this::PAGINATION)->appends(['idCondonacion' => $idCondonacion, 'codigoEstudiante' => $idEstudiante, 'dniEstudiante' => $dniEstudiante, 'montoMenor' => $montoMenor, 'montoMayor' => $montoMayor, 'estadoCondonacion' => $estadoCondonacion]);
+        return view('pages.condonacion.index', compact('datos', 'idCondonacion', 'idEstudiante', 'dniEstudiante', 'montoMenor', 'montoMayor', 'estudiantes', 'estadoCondonacion', 'estados'));
     }
 
 

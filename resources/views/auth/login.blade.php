@@ -15,9 +15,16 @@
             <p>rol: {{ $role }}</p>
         @endisset
         <form method="POST"
-            action="@if (isset($role) && $role == 'padre') {{ route('login.padre') }}
-        @else
-        {{ route('login') }} @endif">
+            action="
+            @switch($role)
+                @case('admin')
+                    {{ route('login.admin') }}
+                    @break
+                @case('padre')
+                    {{ route('login.padre') }}
+                @default
+                    {{ route('login') }}
+            @endswitch">
             @csrf
 
             <div>

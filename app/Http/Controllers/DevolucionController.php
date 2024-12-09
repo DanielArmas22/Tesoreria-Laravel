@@ -35,41 +35,87 @@ class DevolucionController extends Controller  implements HasMiddleware
         $busquedaxnroOperacion = $request->get('busquedaxnroOperacion');
         $fechaInicio = $request->get('fechaInicio');
         $fechaFin = $request->get('fechaFin');
-        //if($busquedaxEstudiante=null)
-        
-        $query = DB::table('detalle_devolucion as DD')
-            ->join('pago as P', 'P.nroOperacion', '=', 'DD.nroOperacion')
-            ->join('devolucion as D', 'D.idDevolucion', '=', 'DD.idDevolucion')
-            ->join('estudiante as E', 'E.idEstudiante', '=', 'P.idEstudiante')
-            ->leftJoin('detalle_pago as DP', 'DP.nroOperacion', '=', 'P.nroOperacion')
-            ->where('DD.estadoDevolucion', '=', '1')
-            ->select(
-                'DD.idDevolucion',
-                'DD.nroOperacion',
-                'DD.observacion',
-                'D.estadoDevolucion',
-                'E.idEstudiante',
-                'E.nombre',
-                'E.apellidoP',
-                'D.fechaDevolucion',
-                DB::raw('SUM(DP.monto) as totalPago')
-            )
-            ->groupBy(
-                'DD.idDevolucion',
-                'DD.nroOperacion',
-                'DD.observacion',
-                'D.estadoDevolucion',
-                'E.idEstudiante',
-                'E.nombre',
-                'E.apellidoP',
-                'D.fechaDevolucion'
-            );
-            
+        $estadoDevolucion = $request->get('estadoDevolucion');
+        $nombreEstudiante = $request->get('nombreEstudiante');
+        $mayorPago = $request->get('mayorPago');
+        $menorPago = $request->get('menorPago');
+        $apellidoPaterno = $request->get('apellidoPaterno');
+
+        $estados = [
+            '0' => 'Rechazado',
+            '1' => 'Solicitado',
+            '2' => 'En Proceso',
+            '5' => 'Registrado',
+        ];
+            if(Auth::user()->rol != 'cajero'){
+                $query = DB::table('detalle_devolucion as DD')
+                    ->join('pago as P', 'P.nroOperacion', '=', 'DD.nroOperacion')
+                    ->join('devolucion as D', 'D.idDevolucion', '=', 'DD.idDevolucion')
+                    ->join('estudiante as E', 'E.idEstudiante', '=', 'P.idEstudiante')
+                    ->leftJoin('detalle_pago as DP', 'DP.nroOperacion', '=', 'P.nroOperacion');
+                    if(isset($estadoDevolucion))
+                        $query = $query->where('D.estadoDevolucion', '=' ,$estadoDevolucion)->where('DD.estadoDevolucion', '=' ,$estadoDevolucion);
+                    else{
+                        $query = $query->where('DD.estadoDevolucion', '=', '1');
+                    }
+                    $query = $query->select(
+                        'DD.idDevolucion',
+                        'DD.nroOperacion',
+                        'DD.observacion',
+                        'D.estadoDevolucion',
+                        'E.idEstudiante',
+                        'E.nombre',
+                        'E.apellidoP',
+                        'D.fechaDevolucion',
+                        DB::raw('SUM(DP.monto) as totalPago')
+                    )
+                    ->groupBy(
+                        'DD.idDevolucion',
+                        'DD.nroOperacion',
+                        'DD.observacion',
+                        'D.estadoDevolucion',
+                        'E.idEstudiante',
+                        'E.nombre',
+                        'E.apellidoP',
+                        'D.fechaDevolucion'
+                    );
+            }else{  
+                $query = DB::table('detalle_devolucion as DD')
+                    ->join('pago as P', 'P.nroOperacion', '=', 'DD.nroOperacion')
+                    ->join('devolucion as D', 'D.idDevolucion', '=', 'DD.idDevolucion')
+                    ->join('estudiante as E', 'E.idEstudiante', '=', 'P.idEstudiante')
+                    ->leftJoin('detalle_pago as DP', 'DP.nroOperacion', '=', 'P.nroOperacion')
+                    ->where('DD.estadoDevolucion', '=', '2')
+                    ->where('D.estadoDevolucion', '=', '2')
+                    ->select(
+                        'DD.idDevolucion',
+                        'DD.nroOperacion',
+                        'DD.observacion',
+                        'E.idEstudiante',
+                        'D.estadoDevolucion',
+                        'E.nombre',
+                        'E.apellidoP',
+                        'D.fechaDevolucion',
+                        DB::raw('SUM(DP.monto) as totalPago')
+                    )
+                    ->groupBy(
+                        'DD.idDevolucion',
+                        'DD.nroOperacion',
+                        'DD.observacion',
+                        'E.idEstudiante',
+                        'D.estadoDevolucion',
+                        'E.nombre',
+                        'E.apellidoP',
+                        'D.fechaDevolucion'
+                    );
+            }
+            $estudiantes = null;
             if (Auth::user()->hasRole('padre')) {
                 // Obtener la colección de pagos del padre (asumiendo que retorna colecciones con nroOperacion)
                 $idDevolucion = Auth::user()->getTotalDevoluciones()->pluck('idDevolucion')->toArray();
                 // Ajustar la consulta para que solo traiga esas deudas
                 $query->whereIn('D.idDevolucion', $idDevolucion);
+                $estudiantes = Auth::user()->estudiantes()->get();
                 }
         $total = DB::table('DETALLE_CONDONACION as DC')
                 ->select('DC.IDDEUDA', DB::raw('SUM(DC.MONTO) as total'))
@@ -87,11 +133,25 @@ class DevolucionController extends Controller  implements HasMiddleware
         if ($fechaFin) {
             $query->whereDate('D.fechaDevolucion', '<=', $fechaFin);
         }
+        if($nombreEstudiante!=null){
+            $query->where('E.nombre','=',$nombreEstudiante);
+        }
+
+        if($apellidoPaterno!=null){
+            $query->where('E.apellidoP','=',$apellidoPaterno);
+        }
+        
+        if ($menorPago != null) {
+            $query->havingRaw('SUM(DP.monto) >= ?', [$menorPago]);
+        }
+        if ($mayorPago != null) {
+            $query->havingRaw('SUM(DP.monto) <= ?', [$mayorPago]);
+        }
         $datos = $query
                 ->paginate($this::PAGINATION)
-                ->appends(['buscarxEstudiante' => $buscarxEstudiante, 'busquedaxnroOperacion' => $busquedaxnroOperacion, 'fechaInicio' => $fechaInicio, 'fechaFin' => $fechaFin]);
+                ->appends(['buscarxEstudiante' => $buscarxEstudiante, 'busquedaxnroOperacion' => $busquedaxnroOperacion, 'fechaInicio' => $fechaInicio, 'fechaFin' => $fechaFin, 'estadoDevolucion' => $estadoDevolucion, 'nombreEstudiante' => $nombreEstudiante, 'apellidoPaterno' => $apellidoPaterno, 'mayorPago' => $mayorPago, 'menorPago' => $menorPago]);
 
-        return view('pages.devolucion.index', compact('datos', 'buscarxEstudiante','busquedaxnroOperacion','fechaInicio','fechaFin'));
+        return view('pages.devolucion.index', compact('datos', 'buscarxEstudiante','busquedaxnroOperacion','fechaInicio','fechaFin','estudiantes','estados','estadoDevolucion','nombreEstudiante','apellidoPaterno','mayorPago','menorPago'));
     }
     
     public function create(Request $request)
@@ -164,7 +224,7 @@ class DevolucionController extends Controller  implements HasMiddleware
             $detalle_devolucion->estadoDevolucion = 1;
             $detalle_devolucion->save();
             
-            $deudas = $validatedData['deudas'];
+            // $deudas = $validatedData['deudas'];
 
             // Esto es realizado por el Tesorero
             // for ($i = 0; $i < count($deudas); $i++) {
@@ -207,9 +267,132 @@ class DevolucionController extends Controller  implements HasMiddleware
             ->join('deuda as D', 'D.idDeuda', '=', 'DP.idDeuda')
             ->join('concepto_escala as CE', 'CE.idConceptoEscala', '=', 'D.idConceptoEscala')
             ->where('P.idEstudiante', '=', $request->idEstudiante)
-            ->where('DP.estadoDevolucion', '=', '0')
+            ->where('DP.estadoPago', '=', '2')
             ->where('DP.nroOperacion', '=', $request->nroOperacion)
             ->select('D.idDeuda', 'DP.monto', 'CE.descripcion')->get();
         return view('pages.devolucion.datos', compact('operacion', 'deudas', 'estudiante', 'fechaActual', 'observacion'));
     }
+
+
+    public function showpdf(Request $request){
+        $datos = json_decode($request->input('datos'), true);
+        //dd($datos); // Verifica los datos aquí
+        $datos = collect($datos)->map(function ($item) {
+            return (object) $item;
+        });
+        $pdf = PDF::loadView('pages.devolucion.reportepdf', compact('datos'));
+        return $pdf->stream('invoice.pdf');
+    } 
+//cajero----------------------------------------------------------------------------------------------------------------------------
+    public function actualizarDevolucion($idDevolucion,$Operacion){
+        $devolucion = devolucion::findorFail($idDevolucion);
+        $devolucion->estadoDevolucion = '3';
+        $devolucion->save();
+        $pago = pago::findorFail($Operacion);
+        $pago->estadoPago='0';
+        $pago->save();
+        $detalle = detalle_devolucion::where('nroOperacion','=',$Operacion)->get();
+        foreach($detalle as $detalle){
+            $detalle->estado='3';//nuevo
+            $detalle->save();
+        }
+        return redirect()->route('devolucion.index')->with('mensaje', 'Devolucion actualizada con éxito.');
+    }
+    
+    public function devolucionesRealizadas(Request $request){
+        
+        $buscarxEstudiante = $request->get('buscarxEstudiante');
+        $busquedaxnroOperacion = $request->get('busquedaxnroOperacion');
+        $nombreEstudiante = $request->get('nombreEstudiante');
+        $mayorPago = $request->get('mayorPago');
+        $menorPago = $request->get('menorPago');
+        $apellidoPaterno = $request->get('apellidoPaterno');
+        $fechaInicio = $request->get('fechaInicio');
+        $fechaFin = $request->get('fechaFin');
+        
+        $query = DB::table('detalle_devolucion as DD')
+                ->join('pago as P', 'P.nroOperacion', '=', 'DD.nroOperacion')
+                ->join('devolucion as D', 'D.idDevolucion', '=', 'DD.idDevolucion')
+                ->join('estudiante as E', 'E.idEstudiante', '=', 'P.idEstudiante')
+                ->leftJoin('detalle_pago as DP', 'DP.nroOperacion', '=', 'P.nroOperacion')
+                ->where('DD.estadoDevolucion', '=', '3')
+                ->where('D.estadoDevolucion', '=', '3')
+                ->select(
+                    'DD.idDevolucion',
+                    'DD.nroOperacion',
+                    'DD.observacion',
+                    'E.idEstudiante',
+                    'E.nombre',
+                    'E.apellidoP',
+                    'D.fechaDevolucion',
+                    DB::raw('SUM(DP.monto) as totalPago')
+                )
+                ->groupBy(
+                    'DD.idDevolucion',
+                    'DD.nroOperacion',
+                    'DD.observacion',
+                    'E.idEstudiante',
+                    'E.nombre',
+                    'E.apellidoP',
+                    'D.fechaDevolucion'
+                );
+        
+                $total = DB::table('DETALLE_CONDONACION as DC')
+                ->select('DC.IDDEUDA', DB::raw('SUM(DC.MONTO) as total'))
+                ->groupBy('DC.IDDEUDA');
+
+        if($buscarxEstudiante!=null){
+            $query->where('E.idEstudiante',"=",$buscarxEstudiante);
+        }
+
+        if($busquedaxnroOperacion!=null){
+            $query->where('P.nroOperacion','=',$busquedaxnroOperacion);
+        }
+
+        if($nombreEstudiante!=null){
+            $query->where('E.nombre','=',$nombreEstudiante);
+        }
+
+        if($apellidoPaterno!=null){
+            $query->where('E.apellidoP','=',$apellidoPaterno);
+        }
+        
+        if ($menorPago != null) {
+            $query->havingRaw('SUM(DP.monto) >= ?', [$menorPago]);
+        }
+        if ($mayorPago != null) {
+            $query->havingRaw('SUM(DP.monto) <= ?', [$mayorPago]);
+        }
+
+        if ($fechaInicio) {
+            $query->whereDate('D.fechaDevolucion', '>=', $fechaInicio);
+        }
+        
+        if ($fechaFin) {
+            $query->whereDate('D.fechaDevolucion', '<=', $fechaFin);
+        }
+        $datos = $query
+                ->paginate($this::PAGINATION)
+                ->appends(['buscarxEstudiante' => $buscarxEstudiante, 'nombreEstudiante' => $nombreEstudiante, 'apellidoPaterno' =>$apellidoPaterno ,'mayorPago'=>$mayorPago,'menorPago'=>$menorPago, 'busquedaxnroOperacion' => $busquedaxnroOperacion, 'fechaInicio' => $fechaInicio, 'fechaFin' => $fechaFin]);
+
+        return view('pages.devolucion.devolucionesRealizadas', compact('datos', 'buscarxEstudiante','menorPago','mayorPago', 'nombreEstudiante', 'apellidoPaterno' ,'busquedaxnroOperacion','fechaInicio','fechaFin'));        
+    }
+
+    public function datosRealizados(Request $request){
+        $idDevolucion = $request->idDevolucion;
+        $fechaActual = $request->fechaDevolucion;
+        $estudiante = estudiante::findOrFail($request->idEstudiante);
+        $observacion = $request->observacion;
+        $operacion = $request->nroOperacion;
+        $deudas = DB::table('detalle_pago as DP')
+            ->join('pago as P', 'P.nroOperacion', '=', 'DP.nroOperacion')
+            ->join('deuda as D', 'D.idDeuda', '=', 'DP.idDeuda')
+            ->join('concepto_escala as CE', 'CE.idConceptoEscala', '=', 'D.idConceptoEscala')
+            ->where('P.idEstudiante', '=', $request->idEstudiante)
+            ->where('DP.estado', '=', '0')
+            ->where('DP.nroOperacion', '=', $request->nroOperacion)
+            ->select('D.idDeuda', 'DP.monto', 'CE.descripcion')->get();
+        return view('pages.devolucion.datosRealizados', compact('operacion', 'deudas', 'estudiante', 'fechaActual', 'observacion','idDevolucion'));
+    }
+
 }

@@ -8,11 +8,21 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
     let total = 0.00;
-
+    const ids = [];
+    let agregados = [];
+    let pos = 0;
     agregarButtons.forEach(button => {
+        const fila = button.closest('tr');
+        ids.push(fila.querySelector('td:nth-child(1)').innerText);
         button.addEventListener('click', function () {
             const row = button.closest('tr');
             const codigo = row.querySelector('td:nth-child(1)').innerText;
+            //comprobar si el codigo es el que debe ser agregado (orden)
+            if (codigo != ids[pos]) {
+                mensajealerta.textContent = 'Debe seleccionar los pagos en orden.';
+                botonalerta.click();
+                return;
+            }
             const concepto = row.querySelector('td:nth-child(2)').innerText;
             const montoAPagarInput = row.querySelector('.monto-a-pagar');
             const montoAPagar = parseFloat(montoAPagarInput.value) || 0.00;
@@ -40,13 +50,26 @@ document.addEventListener('DOMContentLoaded', function () {
                     </td>
                 `;
                 detallesTable.appendChild(newRow);
+                pos++;
+                console.log(pos);
+                agregados.push(codigo);
                 row.classList.add('hidden');
                 const eliminarButton = newRow.querySelector('.eliminar');
                 eliminarButton.addEventListener('click', function () {
-                    row.classList.remove('hidden');
-                    total -= montoAPagar;
-                    totalAPagar.innerText = total.toFixed(2);
-                    newRow.remove();
+                    if (codigo == agregados[pos - 1]) {
+                        agregados.pop();
+                        pos--;
+                        row.classList.remove('hidden');
+                        total -= montoAPagar;
+                        totalAPagar.innerText = total.toFixed(2);
+                        newRow.remove();
+                        // Eliminar el código de la lista de códigos agregados si sigue el orden
+                    } else {
+                        mensajealerta.textContent = 'Debe eliminar los pagos en orden.';
+                        botonalerta.click();
+                        return;
+
+                    }
                 });
 
                 montoAPagarInput.value = '';

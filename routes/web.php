@@ -29,8 +29,6 @@ Route::get('/', function () {
 
 Route::get('redirect',[HomeController::class.'redirect'])->name('redirect');
 
-
-
 Route::get('conceptos/', [conceptoEscalaController::class, 'show'])->name('conceptoEscala');
 Route::get('/home', [HomeController::class, 'index'])->name('home.index')->middleware('auth');
 Route::post('/identificacion', [UsuarioController::class, 'verificalogin'])->name('identificacion');
@@ -39,6 +37,8 @@ Route::get('/register/padre', [UsuarioController::class, 'showRegPadre'])->name(
 Route::post('/register/padre', [UsuarioController::class, 'regPadre']);
 Route::post('/addEstudiante/{id}', [UsuarioController::class, 'addEstudiante'])->name('addEstudiante');
 
+Route::get('/admin', [UsuarioController::class, 'showLoginAdmin'])->name('login.admin');
+Route::post('/admin', [UsuarioController::class, 'loginAdmin']);
 
 Route::get('/login/padre', [UsuarioController::class, 'showLoginPadre'])->name('login.padre');
 Route::post('/login/padre', [UsuarioController::class, 'loginPadre']);
@@ -91,7 +91,13 @@ Route::get('/devolucion/realizarDevolucion/{operacion}', [DevolucionController::
 Route::get('cancelarDevolucion', function () {
     return redirect()->route('devolucion.index')->with(['devolucion' => 'Acción Cancelada ..!', 'color' => 'error']);
 })->name('cancelarDevolucion');
+
 Route::post('/devolucion/datos',[DevolucionController::class,'datos'])->name('devolucion.datos');
+Route::post('/DevolucionPdf', [DevolucionController::class, 'showpdf'])->name('generarDevolucion');
+
+Route::get('/actualizarDevolucion/{idDevolucion}/{Operacion}',[DevolucionController::class,'actualizarDevolucion'])->name('devolucion.actualizarDevolucion');
+Route::get('/devolucionesRealizadas',[DevolucionController::class,'devolucionesRealizadas'])->name('devolucion.devolucionesRealizadas');
+Route::post('/devolucion/datosRealizados',[DevolucionController::class,'datosRealizados'])->name('devolucion.datosRealizados');
 
 
 //pagos
@@ -99,6 +105,12 @@ Route::resource('/pago', pagoController::class);
 Route::get('/pagoPdf', [pagoController::class, 'index'])->name('generarPago');
 Route::get('/pago/estudiante', [PagoController::class, 'show'])->name('pago.show');
 Route::get('/boleta/{nroOperacion}', [PagoController::class, 'showBoleta'])->name('pago.showBoleta');
+
+
+Route::get('/FichaPago/{nroOperacion}', [PagoController::class, 'detalleFichaPago'])->name('pago.detalleFichaPago');
+Route::get('/FichaPagos',[pagoController::class,'fichapagos'])->name('pago.fichapagos');
+Route::get('/ActualizaFichaPago/{nroOperacion}',[pagoController::class,'actualizaFichaPago'])->name('pago.actualizaFichaPago');
+Route::get('/ListaPagos',[pagoController::class,'indexCajero'])->name('pago.listaPagosCajero');
 
 //escala
 //web escala

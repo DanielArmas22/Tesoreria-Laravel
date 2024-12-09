@@ -65,12 +65,13 @@ class DeudaController extends Controller implements HasMiddleware
                     ->join('escala as E','C.idEscala','=','E.idEscala')
                     ->join('detalle_estudiante_gs as DEGS','DEGS.idEstudiante','=','ES.idEstudiante')
                     ->select('D.*', 'C.descripcion', 'E.descripcion as desEscala','ES.idEstudiante','ES.nombre','ES.apellidoP','E.monto',DB::raw('(SELECT SUM(DC.MONTO) FROM DETALLE_CONDONACION as DC WHERE DC.IDDEUDA = D.idDeuda GROUP BY DC.IDDEUDA) as totalCondonacion'))->where('D.estado','1');
-
+        $estudiantes = null;
         if (Auth::user()->hasRole('padre')) {
-        // Obtener la colección de deudas del padre (asumiendo que retorna colecciones con idDeuda)
-        $idsDeudasPadre = Auth::user()->getTotalDeudas()->pluck('idDeuda')->toArray();
-        // Ajustar la consulta para que solo traiga esas deudas
-        $query->whereIn('D.idDeuda', $idsDeudasPadre);
+            // Obtener la colección de deudas del padre (asumiendo que retorna colecciones con idDeuda)
+            $idsDeudasPadre = Auth::user()->getTotalDeudas()->pluck('idDeuda')->toArray();
+            // Ajustar la consulta para que solo traiga esas deudas
+            $query->whereIn('D.idDeuda', $idsDeudasPadre);
+            $estudiantes = Auth::user()->estudiantes()->get();
         }
 
         if($busquedaConcepto!=null){
@@ -133,7 +134,7 @@ class DeudaController extends Controller implements HasMiddleware
                 ->appends(['codEstudiante' => $codEstudiante, 'dniEstudiante'=> $dniEstudiante, 'busquedaNombreEstudiante' => $busquedaNombreEstudiante, 'busquedaApellidoEstudiante' => $busquedaApellidoEstudiante, 'codMinimo' => $codMinimo, 'codMaximo'=>$codMaximo, 'busquedaSeccion' => $busquedaSeccion, 'busquedaGrado' => $busquedaGrado,
                 'busquedaEscala' => $busquedaEscala, 'fechaInicio' => $fechaInicio, 'fechaFin' => $fechaFin,'deudaHoy' => $deudaHoy,'busquedaConcepto' => $busquedaConcepto]);
 
-        return view('pages.deuda.index', compact('datos', 'codEstudiante', 'dniEstudiante', 'busquedaNombreEstudiante','busquedaApellidoEstudiante', 'codMinimo', 'codMaximo', 'busquedaGrado', 'busquedaSeccion' ,'escalaF', 'grados', 'secciones','conceptoEscalas', 'fechaInicio', 'fechaFin','busquedaEscala','deudaHoy','busquedaConcepto'));
+        return view('pages.deuda.index', compact('datos', 'codEstudiante', 'dniEstudiante', 'busquedaNombreEstudiante','busquedaApellidoEstudiante', 'codMinimo', 'codMaximo', 'busquedaGrado', 'busquedaSeccion' ,'escalaF', 'grados', 'secciones','conceptoEscalas', 'fechaInicio', 'fechaFin','busquedaEscala','deudaHoy','busquedaConcepto', 'estudiantes'));
     }
     public function create(Request $request)
     {

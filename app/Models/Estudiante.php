@@ -90,4 +90,15 @@ class Estudiante extends Model
             'nroOperacion' // Clave primaria en pagos
         );
     }
+    public function condonaciones()
+    {
+        return $this->hasManyThrough(
+            detalle_condonacion::class, // Modelo final
+            deuda::class, // Modelo intermedio
+            'idEstudiante', // Clave foránea en pagos
+            'idDeuda', // Clave foránea en detalle_devolucion
+            'idEstudiante', // Clave primaria en estudiante
+            'idDeuda' // Clave primaria en pagos
+        );
+    }
 }

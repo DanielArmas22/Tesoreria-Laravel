@@ -11,7 +11,7 @@ class detalle_devolucion extends Model
     protected $table = 'detalle_devolucion';
     protected $primaryKey = 'nroOperacion';
     public $timestamps = false;
-    protected $fillable = ['observacion', 'estado'];
+    protected $fillable = ['observacion', 'estadoDevolucion'];
 
     public function devolucion()
     {
