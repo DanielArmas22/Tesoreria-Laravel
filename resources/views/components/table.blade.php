@@ -86,6 +86,28 @@
                                     {{ $dato->totalCondonacion ?? '0.0000' }}
                                 @break
 
+                                @case('estadoCondonacion')
+                                    @switch($dato->estadoCondonacion)
+                                        @case(1)
+                                            Solicitado
+                                        @break
+
+                                        @case(2)
+                                            En proceso
+                                        @break
+
+                                        @case(3)
+                                            devuelto
+                                        @break
+
+                                        @case(4)
+                                            Registrado
+                                        @break
+
+                                        @default
+                                    @endswitch
+                                @break
+
                                 {{-- @case('gradoEstudiante')
                                     {{ $dato->detalle_estudiante_gs->Seccion->descripcionSeccion }}
                                     {{ $dato->detalle_estudiante_gs->Grado->descripcionGrado }}

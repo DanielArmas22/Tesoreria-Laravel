@@ -50,7 +50,7 @@
                 <h3 class="text-2xl border-b-[1px]">Condonaciones Activas</h3>
                 <br>
                 <div class="">
-                    <x-table :cabeceras="['Codigo', 'DNI', 'Estudiante', 'Monto', 'Fecha']" :datos="$datos" :atributos="['idCondonacion', 'dni', 'nombre_completo', 'total_monto', 'fecha']" ruta="condonacion.edit"
+                    <x-table :cabeceras="['Codigo', 'DNI', 'Estudiante', 'Monto', 'Fecha', 'Estado']" :datos="$datos" :atributos="['idCondonacion', 'dni', 'nombre_completo', 'total_monto', 'fecha', 'estadoCondonacion']" ruta="condonacion.edit"
                         id="idCondonacion" />
                     <br>
                     <article class="flex justify-center">
@@ -63,9 +63,12 @@
         <div class="bg-white rounded-lg shadow-sm p-4 mb-4 w-full flex justify-end">
             <a href="{{ route('condonacion.create') }}"
                 class="inline-flex items-center px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
-                <i class="fas fa-plus"></i> Nueva Condonacion
+                <i class="fas fa-plus"></i>
+                @if (Auth::user()->hasRole('padre'))
+                    Solicitar
+                @endif
+                Condonacion
             </a>
         </div>
     </div>
 @endsection
-

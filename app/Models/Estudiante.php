@@ -82,8 +82,8 @@ class Estudiante extends Model
     public function devoluciones()
     {
         return $this->hasManyThrough(
-            DetalleDevolucion::class, // Modelo final
-            Pago::class, // Modelo intermedio
+            detalle_devolucion::class, // Modelo final
+            pago::class, // Modelo intermedio
             'idEstudiante', // Clave foránea en pagos
             'nroOperacion', // Clave foránea en detalle_devolucion
             'idEstudiante', // Clave primaria en estudiante

@@ -80,7 +80,7 @@
                         <button
                             class="rounded bg-primary px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white shadow-primary-3 transition duration-150 ease-in-out hover:bg-primary-accent-300 hover:shadow-primary-2 focus:bg-primary-accent-300 focus:shadow-primary-2 focus:outline-none focus:ring-0 active:bg-primary-600 active:shadow-primary-2 motion-reduce:transition-none dark:shadow-black/30 dark:hover:shadow-dark-strong dark:focus:shadow-dark-strong dark:active:shadow-dark-strong"
                             type="submit">Buscar</button>
-                        <x-button label="Limpiar" color="success" ruta="condonacion.create" />
+                        <x-boton label="Limpiar" color="success" ruta="condonacion.create" />
 
                     </section>
                 </form>
@@ -214,11 +214,14 @@
             <div class="rounded-lg shadow-sm mt-6">
                 <form id="pago-form" action="{{ route('condonacion.store') }}" method="POST">
                     @csrf
+                    <div>
+                        
+                    </div>
                     <div class="flex justify-between items-center">
-                        <h2 class="text-2xl font-bold mb-4 text-gray-800">Deudas Condonadas</h2>
+                        <h2 class="text-2xl font-bold mb-4 text-gray-800">Deudas a Condonar</h2>
                         <button type="submit"
                             class="px-4 py-2 bg-green-500 text-white font-semibold rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50">
-                            Registrar
+                            Solicitar Condonación
                         </button>
                     </div>
                     <br>
@@ -240,7 +243,7 @@
                                     Opciones</th>
                             </tr>
                         </thead>
-                        <tbody class="bg-white divide-y divide-gray-200"></tbody>
+                        <tbody class="bg-white divide-y divide-gray-200 text-center"></tbody>
                         <tfoot class="flex justify-start">
                             <tr>
                                 <td colspan="2" class="px-6 py-4 text-right font-bold">Total a Condonar</td>

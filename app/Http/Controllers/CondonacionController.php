@@ -35,9 +35,9 @@ class CondonacionController extends Controller implements HasMiddleware
             ->join('detalle_condonacion as DC', 'DC.idCondonacion', '=', 'C.idCondonacion')
             ->join('deuda as D', 'D.idDeuda', '=', 'DC.idDeuda')
             ->join('estudiante as E', 'D.idEstudiante', '=', 'E.idEstudiante')
-            ->select('C.idCondonacion', 'C.fecha','C.estadoCondonacion', 'E.idEstudiante', 'E.dni', DB::raw("CONCAT(E.nombre, ' ', E.apellidoP) as nombre_completo"),DB::raw('SUM(DC.monto) as total_monto'))
+            ->select('C.idCondonacion', 'C.fecha','C.estadoCondonacion', 'E.idEstudiante','E.dni', DB::raw("CONCAT(E.nombre, ' ', E.apellidoP) as nombre_completo"),DB::raw('SUM(DC.monto) as total_monto'))
             ->groupBy('C.idCondonacion', 'C.fecha', 'E.idEstudiante', 'E.dni', 'E.nombre', 'E.apellidoP')
-            ->where('C.estadoCondonacion', "=", "1")
+            ->whereIn('C.estadoCondonacion',['0','1','5'])
             ->havingBetween ('total_monto',[$montoMenor?: 0,$montoMayor?: 10000]);
         if ($idCondonacion)
             $datos = $datos->where('C.idCondonacion',  'like', '%' .$idCondonacion. '%');
@@ -58,7 +58,7 @@ class CondonacionController extends Controller implements HasMiddleware
         $busquedaApellidoEstudiante = $request->get('busquedaApellidoEstudiante');
 
         if($codEstudiante || $dniEstudiante || $busquedaNombreEstudiante || $busquedaApellidoEstudiante){
-            $filtro =  DB::table('estudiante as E')->join('detalle_estudiante_gs as DE', 'E.idEstudiante', '=', 'DE.idEstudiante')->join('grado as G', 'DE.gradoEstudiante', '=', 'G.gradoEstudiante')->join('seccion as S', 'DE.seccionEstudiante', '=', 'S.seccionEstudiante')->select('E.idEstudiante', 'E.DNI', 'E.nombre', 'E.apellidoP', 'E.apellidoM', 'G.descripcionGrado', 'S.descripcionSeccion', 'G.gradoEstudiante', 'S.seccionEstudiante')->where('E.estadoCondonacion','1');
+            $filtro =  DB::table('estudiante as E')->join('detalle_estudiante_gs as DE', 'E.idEstudiante', '=', 'DE.idEstudiante')->join('grado as G', 'DE.gradoEstudiante', '=', 'G.gradoEstudiante')->join('seccion as S', 'DE.seccionEstudiante', '=', 'S.seccionEstudiante')->select('E.idEstudiante', 'E.DNI', 'E.nombre', 'E.apellidoP', 'E.apellidoM', 'G.descripcionGrado', 'S.descripcionSeccion', 'G.gradoEstudiante', 'S.seccionEstudiante')->where('E.estado','1');
 
             if ($codEstudiante!=null) {
                 $filtro->where('E.idEstudiante', '=', $codEstudiante);
@@ -102,11 +102,11 @@ class CondonacionController extends Controller implements HasMiddleware
                 'D.montoMora',
                 'D.fechaLimite',
                 'D.adelanto',
-                'D.estadoCondonacion',
+                'D.estado',
                 'Esc.monto',
                 'sub.total as totalCondonacion'
 
-            )->where('D.idEstudiante', '=',$filtro->idEstudiante)->where('D.estadoCondonacion','=','1')->get();
+            )->where('D.idEstudiante', '=',$filtro->idEstudiante)->where('D.estado','=','1')->get();
 
         }
         
@@ -140,12 +140,28 @@ class CondonacionController extends Controller implements HasMiddleware
         $detalle =detalle_condonacion::where('idCondonacion', '=', $id)->paginate($this::PAGINATION);
 
         $aulas = Detalle_grado_seccion::get();
-        
+        switch ($condonacion->estadoCondonacion) {
+            case 1:
+                $estado = 'Solicitado';
+                break;
+            case 2:
+                $estado = 'En proceso';
+                break;
+            case 3:
+                $estado = 'Devuelto';
+                break;
+            case 4:
+                $estado = 'Registrado';
+                break;
+            default:
+                $estado = 'Desconocido';
+                break;
+        }
         if(isset($generarPDF)){
             $pdf = PDF::loadView('pages.condonacion.reportepdf', compact('condonacion', 'estudiante', 'aulas', 'detalle'));
             return $pdf->download('invoice.pdf');
         }
-        return view('pagina.condonacion.edit', compact('condonacion', 'estudiante', 'aulas', 'detalle'));
+        return view('pages.condonacion.edit', compact('condonacion', 'estudiante', 'aulas', 'detalle','estado'));
 
     }
 
@@ -179,18 +195,19 @@ class CondonacionController extends Controller implements HasMiddleware
                 $detalleCondonacion->save();
                 // dd($detalleCondonacion);
 
-                $deuda= Deuda::findOrFail($idDeuda);
-                if ($deuda) {
-                    $montotmp = $monto + $deuda->adelanto;
-                    $montototal = $deuda->conceptoEscala->escala->monto + $deuda->montoMora;
-                    // $deuda->adelanto += $monto;
-                    if($montotmp>=$montototal){
-                        // $deuda->adelanto += $monto;
-                        $deuda->estadoCondonacion = '0';
-                    }
-                    // $deuda->adelanto = $montotmp;
-                    $deuda->save();
-                }
+                // -- esto lo hacen otros
+                // $deuda= Deuda::findOrFail($idDeuda);
+                // if ($deuda) {
+                //     $montotmp = $monto + $deuda->adelanto;
+                //     $montototal = $deuda->conceptoEscala->escala->monto + $deuda->montoMora;
+                //     // $deuda->adelanto += $monto;
+                //     if($montotmp>=$montototal){
+                //         // $deuda->adelanto += $monto;
+                //         $deuda->estadoCondonacion = '0';
+                //     }
+                //     // $deuda->adelanto = $montotmp;
+                //     $deuda->save();
+                // }
             }
             DB::commit();
             return redirect()->route('condonacion.index')->with('datos', 'Registro Nuevo Guardado...!');

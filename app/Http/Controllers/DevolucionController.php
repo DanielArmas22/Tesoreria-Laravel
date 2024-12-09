@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Support\Facades\Auth;
 
 //$fechaActual = date('Y-m-d');->obtener fecha actual
 
@@ -46,6 +47,7 @@ class DevolucionController extends Controller  implements HasMiddleware
                 'DD.idDevolucion',
                 'DD.nroOperacion',
                 'DD.observacion',
+                'D.estadoDevolucion',
                 'E.idEstudiante',
                 'E.nombre',
                 'E.apellidoP',
@@ -56,12 +58,19 @@ class DevolucionController extends Controller  implements HasMiddleware
                 'DD.idDevolucion',
                 'DD.nroOperacion',
                 'DD.observacion',
+                'D.estadoDevolucion',
                 'E.idEstudiante',
                 'E.nombre',
                 'E.apellidoP',
                 'D.fechaDevolucion'
             );
-
+            
+            if (Auth::user()->hasRole('padre')) {
+                // Obtener la colección de pagos del padre (asumiendo que retorna colecciones con nroOperacion)
+                $idDevolucion = Auth::user()->getTotalDevoluciones()->pluck('idDevolucion')->toArray();
+                // Ajustar la consulta para que solo traiga esas deudas
+                $query->whereIn('D.idDevolucion', $idDevolucion);
+                }
         $total = DB::table('DETALLE_CONDONACION as DC')
                 ->select('DC.IDDEUDA', DB::raw('SUM(DC.MONTO) as total'))
                 ->groupBy('DC.IDDEUDA');
@@ -90,19 +99,19 @@ class DevolucionController extends Controller  implements HasMiddleware
         $estudiante = null;
         $detalle_pago = null;
         $idEstudiante = $request->get('idEstudiante');
-        $pago=pago::where('estadoDevolucion','=','1')->get();
+        $pago=pago::where('estadoPago','=','2')->get();
         if($idEstudiante!=null){
             $estudiante = DB::table('estudiante as E')
             ->join('detalle_estudiante_gs as DE', 'E.idEstudiante', '=', 'DE.idEstudiante')
             ->join('grado as G', 'DE.gradoEstudiante', '=', 'G.gradoEstudiante')
             ->join('seccion as S', 'DE.seccionEstudiante', '=', 'S.seccionEstudiante')
-            ->select('E.idEstudiante', 'E.DNI', 'E.nombre', 'E.apellidoP', 'E.apellidoM', 'G.descripcionGrado', 'S.descripcionSeccion')->where('E.estadoDevolucion', '=', '1')->where('E.idEstudiante', $idEstudiante)->first();
+            ->select('E.idEstudiante', 'E.DNI', 'E.nombre', 'E.apellidoP', 'E.apellidoM', 'G.descripcionGrado', 'S.descripcionSeccion')->where('E.estado', '=', '1')->where('E.idEstudiante', $idEstudiante)->first();
             
             $detalle_pago= DB::table('detalle_pago as DP')
             ->join('pago as P','P.nroOperacion','=','DP.nroOperacion')
             ->join('deuda as D','D.idDeuda','=','DP.idDeuda')
             ->join('concepto_escala as CE','CE.idConceptoEscala','=','D.idConceptoEscala')
-            ->where('P.idEstudiante','=',$idEstudiante)->where('DP.estadoDevolucion','=','1')
+            ->where('P.idEstudiante','=',$idEstudiante)->where('DP.estadoPago','=','2')
             ->select('DP.monto','P.fechaPago','P.nroOperacion','D.idDeuda','CE.descripcion')->get();
             if (!isset($estudiante)) {
                 return redirect()->route('devolucion.create')->with(['mensaje'=>'Estudiante no encontrado']);
@@ -123,7 +132,7 @@ class DevolucionController extends Controller  implements HasMiddleware
             ->join('pago as P','P.nroOperacion','=','DP.nroOperacion')
             ->join('deuda as D','D.idDeuda','=','DP.idDeuda')
             ->join('concepto_escala as CE','CE.idConceptoEscala','=','D.idConceptoEscala')
-            ->where('P.idEstudiante','=',$request->idEstudiante)->where('DP.estadoDevolucion','=','1')
+            ->where('P.idEstudiante','=',$request->idEstudiante)->where('DP.estadoPago','=','2')
             ->where('DP.nroOperacion','=',$operacion)
             ->select('D.idDeuda','DP.monto','CE.descripcion')->get();
             
@@ -157,33 +166,34 @@ class DevolucionController extends Controller  implements HasMiddleware
             
             $deudas = $validatedData['deudas'];
 
-            for ($i = 0; $i < count($deudas); $i++) {
-                $idDeuda = $deudas[$i];
+            // Esto es realizado por el Tesorero
+            // for ($i = 0; $i < count($deudas); $i++) {
+            //     $idDeuda = $deudas[$i];
                 
-                // Obtener la deuda
-                $deuda = deuda::findOrFail($idDeuda);
+            //     // Obtener la deuda
+            //     $deuda = deuda::findOrFail($idDeuda);
                 
-                // Obtener el detalle_pago usando ambas claves
-                $detalle_pago = detalle_pago::where('nroOperacion', $request->input('nroOperacion'))
-                                            ->where('idDeuda', $idDeuda)
-                                            ->firstOrFail();
+            //     // Obtener el detalle_pago usando ambas claves
+            //     $detalle_pago = detalle_pago::where('nroOperacion', $request->input('nroOperacion'))
+            //                                 ->where('idDeuda', $idDeuda)
+            //                                 ->firstOrFail();
                 
-                // Actualizar los estadoDevolucions y valores
-                $deuda->estadoDevolucion = '1';
-                $deuda->adelanto -= $detalle_pago->monto;
-                $detalle_pago->estadoDevolucion = '0';
+            //     // Actualizar los estados y valores
+            //     $deuda->estado = '1';
+            //     $deuda->adelanto -= $detalle_pago->monto;
+            //     $detalle_pago->estadoPago = '0';
 
-                // Guardar los cambios
-                $deuda->save();
-                $detalle_pago->save();  // Corrige aquí, accede al objeto directamente, no como un array
-            }
+            //     // Guardar los cambios
+            //     $deuda->save();
+            //     $detalle_pago->save();  // Corrige aquí, accede al objeto directamente, no como un array
+            // }
 
-            $pago = pago::findOrFail($request->input('nroOperacion'));
-            $pago->estadoDevolucion='0'; //eliminamos el pago
-            $pago->save();
+            // $pago = pago::findOrFail($request->input('nroOperacion'));
+            // $pago->estadoPago='0'; //eliminamos el pago
+            // $pago->save();
             //DB::commit();
 
-            return redirect()->route('devolucion.index')->with('mensaje', 'Devolucion realizada con éxito.');
+            return redirect()->route('devolucion.index')->with('mensaje', 'Devolucion Solicitada con Éxito.');
     }
 
     public function datos(Request $request){

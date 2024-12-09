@@ -16,7 +16,9 @@
                     <form method="POST"
                         action="{{ route('devolucion.update', $operacion, $deudas, $estudiante, $fechaActual) }}">
                         <h1 class="text-center font-bold text-2xl mb-6">
-                            CONFIRMAR DEVOLUCION
+                            @if (Auth::user()->hasRole('padre'))
+                                Solicitar Devolución
+                            @endif
                         </h1>
                         @method('put')
                         @csrf
@@ -82,7 +84,7 @@
                                 <div class="flex justify-center space-x-6 pt-6">
                                     <button type="submit"
                                         class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                                        Confirmar Devolución
+                                        solicitar
                                     </button>
                                     <a href="{{ route('cancelarDevolucion') }}"
                                         class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">

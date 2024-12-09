@@ -163,7 +163,7 @@ class pagoController extends Controller implements HasMiddleware
                 $detallePago->nroOperacion = $pago->nroOperacion;
                 $detallePago->idDeuda = $idDeuda;
                 $detallePago->monto = $monto;
-                $detallePago->estadoPago = '1';
+                $detallePago->estadoPago = '2';
                 $detallePago->save();
                 
                 
