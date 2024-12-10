@@ -56,7 +56,7 @@ class ReportesDirectorController extends Controller implements hasMiddleware
             ->join('seccion', 'detalle_estudiante_gs.seccionEstudiante', '=', 'seccion.seccionEstudiante')
             ->join('escala_estudiante', 'estudiante.idEstudiante', '=', 'escala_estudiante.idEstudiante')
             ->join('escala', 'escala_estudiante.idEscala', '=', 'escala.idEscala')
-            ->where('pago.estadoPago', 1) // Solo pagos activos
+            ->where('pago.estadoPago', 2) // Solo pagos activos
             ->select(
                 'grado.descripcionGrado',
                 'seccion.descripcionSeccion',
@@ -120,7 +120,7 @@ class ReportesDirectorController extends Controller implements hasMiddleware
             ->join('seccion', 'detalle_estudiante_gs.seccionEstudiante', '=', 'seccion.seccionEstudiante')
             ->join('escala_estudiante', 'estudiante.idEstudiante', '=', 'escala_estudiante.idEstudiante')
             ->join('escala', 'escala_estudiante.idEscala', '=', 'escala.idEscala')
-            ->where('pago.estadoPago', 1) // Solo pagos activos
+            ->where('pago.estadoPago', 2) // Solo pagos activos
             ->select(
                 'grado.descripcionGrado',
                 'seccion.descripcionSeccion',
@@ -315,7 +315,7 @@ class ReportesDirectorController extends Controller implements hasMiddleware
             ->join('seccion', 'detalle_estudiante_gs.seccionEstudiante', '=', 'seccion.seccionEstudiante')
             ->join('escala_estudiante', 'estudiante.idEstudiante', '=', 'escala_estudiante.idEstudiante')
             ->join('escala', 'escala_estudiante.idEscala', '=', 'escala.idEscala')
-            ->where('pago.estadoPago', 1)
+            ->where('pago.estadoPago', 2)
             ->select(
                 DB::raw('DATE_FORMAT(pago.fechaPago, "%Y-%m") AS periodo'),
                 DB::raw('SUM(detalle_pago.monto) AS total_ingresos')
@@ -415,7 +415,7 @@ class ReportesDirectorController extends Controller implements hasMiddleware
             ->join('seccion', 'detalle_estudiante_gs.seccionEstudiante', '=', 'seccion.seccionEstudiante')
             ->join('escala_estudiante', 'estudiante.idEstudiante', '=', 'escala_estudiante.idEstudiante')
             ->join('escala', 'escala_estudiante.idEscala', '=', 'escala.idEscala')
-            ->where('pago.estadoPago', 1)
+            ->where('pago.estadoPago', 2)
             ->select(
                 'pago.fechaPago',
                 'estudiante.nombre',
@@ -472,7 +472,7 @@ class ReportesDirectorController extends Controller implements hasMiddleware
             ->join('seccion', 'detalle_estudiante_gs.seccionEstudiante', '=', 'seccion.seccionEstudiante')
             ->join('escala_estudiante', 'estudiante.idEstudiante', '=', 'escala_estudiante.idEstudiante')
             ->join('escala', 'escala_estudiante.idEscala', '=', 'escala.idEscala')
-            ->where('pago.estadoPago', 1)
+            ->where('pago.estadoPago', 2)
             ->select(
                 'pago.fechaPago',
                 'estudiante.nombre',
