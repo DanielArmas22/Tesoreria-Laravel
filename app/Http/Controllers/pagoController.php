@@ -67,7 +67,7 @@ class pagoController extends Controller implements HasMiddleware
         ->join('seccion as SEC','SEC.seccionEstudiante','=','DEGS.seccionEstudiante')
         ->select('P.nroOperacion','P.idEstudiante', 'P.fechaPago','P.periodo','E.nombre','E.apellidoP','E.apellidoM',DB::raw('ROUND(sum(DP.monto),2) as totalMonto'),
                 'G.descripcionGrado','SEC.descripcionSeccion','ES.descripcion as escala','C.descripcion as concep')
-        ->where('P.estado','=','1')
+        ->where('P.estadoPago','=','1')
         ->groupBy('p.nroOperacion','G.descripcionGrado', 
         'SEC.descripcionSeccion','escala','concep');
         
@@ -218,7 +218,7 @@ class pagoController extends Controller implements HasMiddleware
             $pago->idEstudiante = $request->idestudiante;
             $pago->fechaPago = now()->format('Y-m-d');
             $pago->periodo = '2024';   //$pago->periodo = Carbon::now()->year; SE PUEDE PONER ESTO ARA QUE LO HAGA CON LA FECHA DEL SISTEMA
-            $pago->estado = '1';
+            $pago->estadoPago = '1';
             $pago->save();
             
             // Crear los detalles del pago

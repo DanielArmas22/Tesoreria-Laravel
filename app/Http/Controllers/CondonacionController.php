@@ -35,9 +35,9 @@ class CondonacionController extends Controller implements HasMiddleware
             ->join('detalle_condonacion as DC', 'DC.idCondonacion', '=', 'C.idCondonacion')
             ->join('deuda as D', 'D.idDeuda', '=', 'DC.idDeuda')
             ->join('estudiante as E', 'D.idEstudiante', '=', 'E.idEstudiante')
-            ->select('C.idCondonacion', 'C.fecha','C.estado', 'E.idEstudiante', 'E.dni', DB::raw("CONCAT(E.nombre, ' ', E.apellidoP) as nombre_completo"),DB::raw('SUM(DC.monto) as total_monto'))
+            ->select('C.idCondonacion', 'C.fecha','C.estadoCondonacion', 'E.idEstudiante', 'E.dni', DB::raw("CONCAT(E.nombre, ' ', E.apellidoP) as nombre_completo"),DB::raw('SUM(DC.monto) as total_monto'))
             ->groupBy('C.idCondonacion', 'C.fecha', 'E.idEstudiante', 'E.dni', 'E.nombre', 'E.apellidoP')
-            ->where('C.estado', "=", "1")
+            ->where('C.estadoCondonacion', "=", "1")
             ->havingBetween ('total_monto',[$montoMenor?: 0,$montoMayor?: 10000]);
         if ($idCondonacion)
             $datos = $datos->where('C.idCondonacion',  'like', '%' .$idCondonacion. '%');
@@ -125,7 +125,7 @@ class CondonacionController extends Controller implements HasMiddleware
         $condonacion = DB::table('condonacion as C')
         ->join('detalle_condonacion as DC', 'C.idCondonacion', '=', 'DC.idCondonacion')
         ->select(
-            'C.idCondonacion','C.fecha','C.estado',
+            'C.idCondonacion','C.fecha','C.estadoCondonacion',
             DB::raw('sum(DC.monto) as totalMonto')
         )
         ->where('C.idCondonacion', '=', $id)
@@ -160,7 +160,7 @@ class CondonacionController extends Controller implements HasMiddleware
             }
             $condonacion = new Condonacion();
             $condonacion->fecha =  now()->format('Y-m-d');
-            $condonacion->estado = 1;
+            $condonacion->estadoCondonacion = 1;
             $condonacion->save();
             // dd($request->condonaciones);
             foreach ($request->condonaciones as $idDeuda =>$pagoData) {

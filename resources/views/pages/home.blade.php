@@ -13,7 +13,7 @@
                 Admin
             @endif
             @if (Auth::user()->hasRole('director'))
-                Director
+                Director osi osi
             @endif
             @if (Auth::user()->hasRole('tesorero'))
                 Tesorero

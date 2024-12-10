@@ -13,13 +13,12 @@ class deuda extends Model
     protected $table = 'deuda';
     protected $primaryKey = 'idDeuda';
     public $timestamps = false;
-    protected $fillable = ['montoMora','fechaRegistro',  'fechaLimite', 'estado', 'adelanto','idEstudiante', 'idConceptoEscala'];
+    protected $fillable = ['montoMora', 'fechaRegistro',  'fechaLimite', 'estado', 'adelanto', 'idEstudiante', 'idConceptoEscala'];
 
     public function estudiante()
     {
         return $this->hasOne(Estudiante::class, 'idEstudiante', 'idEstudiante');
     }
-
     public function conceptoEscala()
     {
         return $this->hasOne(conceptoEscala::class, 'idConceptoEscala', 'idConceptoEscala');
@@ -33,5 +32,10 @@ class deuda extends Model
     public function detallePago()
     {
         return $this->hasMany(detalle_pago::class, 'idDeuda', 'idDeuda');
+    }
+
+    public function detalleEstudianteGs()
+    {
+        return $this->hasOne(Detalle_estudiante_GS::class, 'idEstudiante', 'idEstudiante');
     }
 }

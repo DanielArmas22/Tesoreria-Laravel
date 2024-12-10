@@ -19,6 +19,11 @@ class condonacion extends Model
     {
         return $this->hasMany(detalle_condonacion::class, 'idCondonacion', 'idCondonacion');
     }
+
+    public function deuda()
+    {
+        return $this->belongsTo(Deuda::class, 'idDeuda', 'idDeuda');
+    }
     
 
 }
