@@ -420,6 +420,7 @@ class DevolucionController extends Controller  implements HasMiddleware
             $estudiante = estudiante::findOrFail($request->idEstudiante);
             $observacion = $request->observacion;
             $operacion = $request->nroOperacion;
+            $idDevolucion = $request->idDevolucion;
             $deudas = DB::table('detalle_pago as DP')
                 ->join('pago as P', 'P.nroOperacion', '=', 'DP.nroOperacion')
                 ->join('deuda as D', 'D.idDeuda', '=', 'DP.idDeuda')
@@ -428,7 +429,7 @@ class DevolucionController extends Controller  implements HasMiddleware
                 ->where('DP.estadoPago', '=', '2')
                 ->where('DP.nroOperacion', '=', $request->nroOperacion)
                 ->select('D.idDeuda', 'DP.monto', 'CE.descripcion')->get();
-            return view('pages.devolucion.datos', compact('operacion', 'deudas', 'estudiante', 'fechaActual', 'observacion'));
+            return view('pages.devolucion.datos', compact('operacion', 'deudas', 'estudiante', 'fechaActual', 'observacion','idDevolucion'));
         }
     }
 
@@ -444,52 +445,58 @@ class DevolucionController extends Controller  implements HasMiddleware
     } 
 //cajero----------------------------------------------------------------------------------------------------------------------------
     public function actualizarDevolucion($idDevolucion,$Operacion){
-        if (Auth::user()->hasRole('tesorero')){
-            $devolucion = Devolucion::findOrFail($idDevolucion);
-            if ($request->action === 'aprobar') {
-                $devolucion->estadoDevolucion = 4; 
-            }
-            $devolucion->save();
-    
-            detalle_devolucion::where('idDevolucion', $idDevolucion)
-            ->update(['estadoDevolucion' => $devolucion->estadoDevolucion]);
-    
-            $deudas = DB::table('detalle_devolucion as DD')
-                ->join('detalle_pago as DP', 'DP.nroOperacion', '=', 'DD.nroOperacion')
-                ->join('deuda as D', 'D.idDeuda', '=', 'DP.idDeuda')
-                ->where('DD.idDevolucion', '=', $idDevolucion) // Filtrar por idDevolucion
-                ->where('DP.estadoPago', '=', '0') // Filtrar por estadoPago si es necesario
-                ->select('D.idDeuda', 'DP.monto', 'D.adelanto')
-                ->get();
-    
-            foreach ($deudas as $deuda) {
-                DB::table('deuda')
-                    ->where('idDeuda', $deuda->idDeuda)
-                    ->update(['estado' => 1]); // Cambiar el estado de la deuda
-    
-                $nuevoAdelanto = $deuda->adelanto - $deuda->monto;
-                DB::table('deuda')
-                    ->where('idDeuda', $deuda->idDeuda)
-                    ->update(['adelanto' => $nuevoAdelanto]);
-            }
-    
-            return redirect()->route('devolucion.indexDevolucionR')->with('datos', 'Solicitud evaluada correctamente');
-        }else{
-            $devolucion = devolucion::findorFail($idDevolucion);
-            $devolucion->estadoDevolucion = '3';
-            $devolucion->save();
-            $pago = pago::findorFail($Operacion);
-            $pago->estadoPago='0';
-            $pago->save();
-            $detalle = detalle_devolucion::where('nroOperacion','=',$Operacion)->get();
-            foreach($detalle as $detalle){
-                $detalle->estado='3';//nuevo
-                $detalle->save();
-            }
-            return redirect()->route('devolucion.index')->with('mensaje', 'Devolucion actualizada con éxito.');
+        $devolucion = devolucion::findorFail($idDevolucion);
+        $devolucion->estadoDevolucion = '3';
+        $devolucion->save();
+        $pago = pago::findorFail($Operacion);
+        $pago->estadoPago='0';
+        $pago->save();
+        $detalle = detalle_devolucion::where('nroOperacion','=',$Operacion)->get();
+        $detallePago = detalle_pago::where('nroOperacion','=',$Operacion)->get();
+        foreach($detallePago as $detallePago){
+            $detallePago->estadoPago='0';
+            $detallePago->save();
         }
+        foreach($detalle as $detalle){
+            $detalle->estadoDevolucion='3';//nuevo
+            $detalle->save();
+        }
+        return redirect()->route('devolucion.index')->with('mensaje', 'Devolucion actualizada con éxito.');
     }
     
+    public function actualizarDevolucion1(Request $request, $idDevolucion){
+        $devolucion = Devolucion::findOrFail($idDevolucion);
+        if ($request->action === 'aprobar') {
+            $devolucion->estadoDevolucion = 4; 
+        }
+        $devolucion->save();
+
+        detalle_devolucion::where('idDevolucion', $idDevolucion)
+        ->update(['estadoDevolucion' => $devolucion->estadoDevolucion]);
+
+        $deudas = DB::table('detalle_devolucion as DD')
+            ->join('detalle_pago as DP', 'DP.nroOperacion', '=', 'DD.nroOperacion')
+            ->join('deuda as D', 'D.idDeuda', '=', 'DP.idDeuda')
+            ->where('DD.idDevolucion', '=', $idDevolucion) // Filtrar por idDevolucion
+            ->where('DP.estadoPago', '=', '0') // Filtrar por estadoPago si es necesario
+            ->select('D.idDeuda', 'DP.monto', 'D.adelanto')
+            ->get();
+
+        foreach ($deudas as $deuda) {
+            DB::table('deuda')
+                ->where('idDeuda', $deuda->idDeuda)
+                ->update(['estado' => 1]); // Cambiar el estado de la deuda
+
+            $nuevoAdelanto = $deuda->adelanto - $deuda->monto;
+            DB::table('deuda')
+                ->where('idDeuda', $deuda->idDeuda)
+                ->update(['adelanto' => $nuevoAdelanto]);
+        }
+
+        return redirect()->route('devolucion.indexDevolucionR')->with('datos', 'Solicitud evaluada correctamente');
+    
+    }
+
     public function devolucionesRealizadas(Request $request){
         
         $buscarxEstudiante = $request->get('buscarxEstudiante');
@@ -580,7 +587,7 @@ class DevolucionController extends Controller  implements HasMiddleware
             ->join('deuda as D', 'D.idDeuda', '=', 'DP.idDeuda')
             ->join('concepto_escala as CE', 'CE.idConceptoEscala', '=', 'D.idConceptoEscala')
             ->where('P.idEstudiante', '=', $request->idEstudiante)
-            ->where('DP.estado', '=', '0')
+            ->where('DP.estadoPago', '=', '2')
             ->where('DP.nroOperacion', '=', $request->nroOperacion)
             ->select('D.idDeuda', 'DP.monto', 'CE.descripcion')->get();
         return view('pages.devolucion.datosRealizados', compact('operacion', 'deudas', 'estudiante', 'fechaActual', 'observacion','idDevolucion'));

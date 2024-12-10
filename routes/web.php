@@ -129,7 +129,9 @@ Route::post('/devolucion/datosDevolucion',[DevolucionController::class,'datosDev
 Route::get('/devolucionPdfTeso', [DevolucionController::class, 'index'])->name('generarDevolucionTeso');
 Route::get('/devolucionPdfRR', [DevolucionController::class, 'indexDevolucionR'])->name('generarDevolucionRR');
 Route::put('/devolucion/{idDevolucion}/actualizarSolicitud', [DevolucionController::class, 'actualizarSolicitud'])->name('devolucion.actualizarSolicitud');
-Route::put('/devolucion/{idDevolucion}/actualizarDevolucion', [DevolucionController::class, 'actualizarDevolucion'])->name('devolucion.actualizarDevolucion');
+Route::put('/devolucion/{idDevolucion}/actualizarDevolucion1', [DevolucionController::class, 'actualizarDevolucion1'])->name('devolucion.actualizarDevolucion1');
+
+//Route::get('/devolucion/{idDevolucion}/{operacion}/actualizarDevolucion', [DevolucionController::class, 'actualizarDevolucion'])->name('devolucion.actualizarDevolucion');
 
 
 //pagos

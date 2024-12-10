@@ -13,7 +13,7 @@
             <br>
             <div class="bg-gray-100">
                 <div class="max-w-2xl mx-auto mt-10 bg-white p-8 rounded-lg shadow-lg pb-">
-                    <form method="POST" action="{{ route('devolucion.actualizarDevolucion', $idDevolucion) }}">
+                    <form method="POST" action="{{ route('devolucion.actualizarDevolucion1', $idDevolucion) }}">
                         <h1 class="text-center font-bold text-2xl mb-6">
                             EVALUAR DEVOLUCION
                         </h1>
