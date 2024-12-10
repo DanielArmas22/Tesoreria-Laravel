@@ -10,9 +10,15 @@
 @endphp
 @section('contenido')
     <section class="shadow-3 border-neutral-400 px-16 pt-14 pb-10 mx-auto">
-        <h1 class="text-center font-bold text-2xl mb-6">
-            Editar Deuda
-        </h1>
+        @if (Auth::user()->hasRole('director'))
+            <h1 class="text-center font-bold text-2xl mb-6">
+                Ver Deuda
+            </h1>
+        @else
+            <h1 class="text-center font-bold text-2xl mb-6">
+                Editar Deuda
+            </h1>
+        @endif
         <form method="POST" action="{{ route('deuda.update', $deuda->idDeuda) }}"
             class="flex justify-center space-y-8 flex-row gap-10">
             @method('put')
@@ -106,13 +112,15 @@
                                 placeholder="Select date">
                         </div>
                     </div>
-                    <div class="flex justify-center space-x-4">
-                        <button type="submit" class="{{ $buttonClass }}"><i class="fas fa-save"></i> Grabar</button>
-                        <article class="flex justify-center"><a class="{{ $buttonElimiar }}"
-                                href="{{ route('deuda.confirmar', $deuda->idDeuda) }}">Eliminar</a></article>
-                        <article class="flex justify-center"><a class="{{ $buttonCancelar }}"
-                                href="{{ route('cancelarDeuda') }}">Cancelar</a></article>
-                    </div>
+                    @if (!Auth::user()->hasRole('director'))
+                        <div class="flex justify-center space-x-4">
+                            <button type="submit" class="{{ $buttonClass }}"><i class="fas fa-save"></i> Grabar</button>
+                            <article class="flex justify-center"><a class="{{ $buttonElimiar }}"
+                                    href="{{ route('deuda.confirmar', $deuda->idDeuda) }}">Eliminar</a></article>
+                            <article class="flex justify-center"><a class="{{ $buttonCancelar }}"
+                                    href="{{ route('cancelarDeuda') }}">Cancelar</a></article>
+                        </div>
+                    @endif
                 </div>
             </div>
         </form>

@@ -305,7 +305,8 @@
                     ]) }}">
                     Reporte de Deudas</a>
             </div>
-            @if (!Auth::user()->hasRole('director'))
+            {{-- cambio para el boton de deuda en el padre --}}
+            @if (!Auth::user()->hasRole('director') and !Auth::user()->hasRole('padre') )
                 <article class="flex justify-center"><a class="{{ $buttonClass }}"
                         href="{{ route('deuda.create') }}">Nueva
                         Deuda</a></article>
