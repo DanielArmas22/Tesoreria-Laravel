@@ -14,10 +14,16 @@ class escalaController extends Controller implements HasMiddleware
     //rechazar conexion si no está logeaado
     public static function middleware(): array 
     {
+
         return [
             'auth',
+            'role:admin,secretario',
         ];
     }
+    //restringir el acceso a la vista segun el rol
+
+
+
     //ConceptoEscala,nueva escala
     const PAGINATION = 5;
     public function index(Request $request)

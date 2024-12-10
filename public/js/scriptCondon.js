@@ -6,11 +6,21 @@ document.addEventListener('DOMContentLoaded', function () {
     const botonalerta = document.getElementById('botonAlerta');
     const mensajealerta = document.getElementById('errorMensaje');
     let total = 0.00;
-
+    const ids = [];
+    let agregados = [];
+    let pos = 0;
     botonesSeleccionar.forEach(button => {
+        const fila = button.closest('tr');
+        ids.push(fila.querySelector('td:nth-child(1)').innerText);
         button.addEventListener('click', function () {
             const row = button.closest('tr');
             const codigo = row.querySelector('td:nth-child(1)').innerText;
+            if (codigo != ids[pos]) {
+                mensajealerta.textContent = 'Debe seleccionar las Deudas en orden.';
+                botonalerta.click();
+                return;
+            }
+
             const concepto = row.querySelector('td:nth-child(2)').innerText;
             const montoAPagarInput = row.querySelector('.monto-a-condonar');
             const montoAPagar = parseFloat(montoAPagarInput.value) || 0.00;
@@ -37,18 +47,28 @@ document.addEventListener('DOMContentLoaded', function () {
                         <input type="hidden" name="condonaciones[${codigo}][monto]" value="${montoAPagar.toFixed(2)}">
                     </td>
                 `;
+
                 tablaCondonaciones.appendChild(newRow);
                 //esto oculta la fila de la tabla de deudas seleccionada
+                pos++;
+                agregados.push(codigo);
                 row.classList.add('hidden');
 
-                
+
                 const eliminarButton = newRow.querySelector('.eliminar');
                 eliminarButton.addEventListener('click', function () {
-                    total -= montoAPagar;
-                    totalAPagar.innerText = total.toFixed(2);
-                    newRow.remove();
-                    //esto muestra  la fila de la tabla de deudas seleccionada
-                    row.classList.remove('hidden');
+                    if (codigo == agregados[pos - 1]) {
+                        agregados.pop();
+                        pos--;
+                        total -= montoAPagar;
+                        totalAPagar.innerText = total.toFixed(2);
+                        newRow.remove();
+                        //esto muestra  la fila de la tabla de deudas seleccionada
+                        row.classList.remove('hidden');
+                    } else {
+                        mensajealerta.textContent = 'Debe eliminar  los Deudas en orden.';
+                        botonalerta.click();
+                    }
 
                 });
 

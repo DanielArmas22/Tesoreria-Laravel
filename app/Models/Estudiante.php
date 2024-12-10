@@ -35,7 +35,8 @@ class Estudiante extends Model
     {
         return $this->hasMany(pago::class, 'idEstudiante', 'idEstudiante');
     }
-    public function getDeudas(){
+
+    public function obtenerDeudas(){
         $deudas = Deuda::select(
             'deuda.*',
             DB::raw('(SELECT SUM(DC.MONTO) FROM DETALLE_CONDONACION as DC WHERE DC.IDDEUDA = deuda.idDeuda GROUP BY DC.IDDEUDA) as totalCondonacion')
@@ -48,7 +49,7 @@ class Estudiante extends Model
     }
     public function getDeudasProximas()
     {
-        $deudas = $this->getDeudas();
+        $deudas = $this->obtenerDeudas();
     
         // Obtener la fecha límite más próxima que no esté vencida
         $fechaLimiteMasProxima = $deudas->filter(function ($deuda) {
@@ -64,7 +65,7 @@ class Estudiante extends Model
     }
     public function getDeudasVencidas()
     {
-        $deudas = $this->getDeudas();
+        $deudas = $this->obtenerDeudas();
 
         // Filtrar las deudas cuya fecha límite es inferior a la fecha actual
         $deudasVencidas = $deudas->filter(function ($deuda) {
@@ -73,9 +74,18 @@ class Estudiante extends Model
 
         return $deudasVencidas;
     }
+    public function getDeudas($type)
+{
+    if ($type === 'Deudas Vencidas') {
+        return $this->getDeudasVencidas();
+    } elseif ($type === 'Deudas Próximas a Vencer') {
+        return $this->getDeudasProximas();
+    }
+    return collect();
+}
     public function countDeudas()
     {
-        $deudas = $this->getDeudas();
+        $deudas = $this->obtenerDeudas();
         return $deudas->count();
     }
 

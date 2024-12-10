@@ -49,7 +49,7 @@
                                 readonly="true" />
                         </div>
                         <div class="pt-2">
-                            <x-textField label="Observacion" name='observacion' />
+                            <x-textField label="Motivo" name='motivo' />
                         </div>
 
                         <article>

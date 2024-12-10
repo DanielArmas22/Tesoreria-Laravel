@@ -15,6 +15,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 
+use PDF;
+
 class DeudaController extends Controller implements HasMiddleware
 {
     public static function middleware(): array 
@@ -26,7 +28,7 @@ class DeudaController extends Controller implements HasMiddleware
 
     
     const PAGINATION = 10;
-    public function index(Request $request)
+    public function index(Request $request,$generarPDF = null)
     {
         
         $escalaF = escala::get();
@@ -133,7 +135,14 @@ class DeudaController extends Controller implements HasMiddleware
                 ->paginate($this::PAGINATION)
                 ->appends(['codEstudiante' => $codEstudiante, 'dniEstudiante'=> $dniEstudiante, 'busquedaNombreEstudiante' => $busquedaNombreEstudiante, 'busquedaApellidoEstudiante' => $busquedaApellidoEstudiante, 'codMinimo' => $codMinimo, 'codMaximo'=>$codMaximo, 'busquedaSeccion' => $busquedaSeccion, 'busquedaGrado' => $busquedaGrado,
                 'busquedaEscala' => $busquedaEscala, 'fechaInicio' => $fechaInicio, 'fechaFin' => $fechaFin,'deudaHoy' => $deudaHoy,'busquedaConcepto' => $busquedaConcepto]);
-
+        if($request->has('generarPDF') && $request->generarPDF){
+            $totalDeuda = 0;
+            foreach ($datos as $deuda) {
+                $totalDeuda += $deuda->montoMora + $deuda->monto - $deuda->totalCondonacion;
+            }
+            $pdf = PDF::loadView('pages.deuda.reporteDeuda', compact('datos', 'totalDeuda'));
+            return $pdf->stream('invoice.pdf');
+        }
         return view('pages.deuda.index', compact('datos', 'codEstudiante', 'dniEstudiante', 'busquedaNombreEstudiante','busquedaApellidoEstudiante', 'codMinimo', 'codMaximo', 'busquedaGrado', 'busquedaSeccion' ,'escalaF', 'grados', 'secciones','conceptoEscalas', 'fechaInicio', 'fechaFin','busquedaEscala','deudaHoy','busquedaConcepto', 'estudiantes'));
     }
     public function create(Request $request)

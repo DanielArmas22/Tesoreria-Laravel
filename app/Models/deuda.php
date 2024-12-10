@@ -34,4 +34,18 @@ class deuda extends Model
     {
         return $this->hasMany(detalle_pago::class, 'idDeuda', 'idDeuda');
     }
+    // En tu modelo Deuda.php
+
+    public function isVencida()
+    {
+        // Define la lógica para determinar si la deuda está vencida
+        return $this->fechaLimite < now();
+    }
+
+    public function detalleEstudianteGs()
+    {
+        return $this->hasOne(Detalle_estudiante_GS::class, 'idEstudiante', 'idEstudiante');
+    }
+
+
 }

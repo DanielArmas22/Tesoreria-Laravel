@@ -13,24 +13,24 @@
             }
 
             25% {
-                background-color: rgba(180, 240, 180, 0.5);
+                background-color: rgba(100, 255, 100, 0.5);
             }
 
             50% {
-                background-color: rgba(160, 230, 160, 0.5);
+                background-color: rgba(0, 210, 0, 0.5);
             }
 
             75% {
-                background-color: rgba(200, 255, 200, 0.5);
+                background-color: rgba(100, 255, 100, 0.5);
             }
 
             100% {
-                background-color: rgba(180, 240, 180, 0.5);
+                background-color: rgba(200, 255, 200, 0.5);
             }
         }
 
         .psychedelic-bg {
-            animation: colorCycle 10s infinite;
+            animation: colorCycle 06s infinite;
         }
     </style>
 </head>
@@ -54,7 +54,7 @@
             Parece que te perdiste en el espacio Sideral jeje.<img src="/img/profileTesoreria.jpg"
                 alt="tesoreria-icon"class="h-6 w-auto lg:h-8">
         </p>
-        <a href="{{ url('/') }}"
+        <a href="{{ url('/home') }}"
             class="mt-6 inline-block bg-gradient-to-r from-green-600 via-green-500 to-green-700 hover:from-green-500 hover:to-green-600 text-white px-6 py-3 rounded-lg shadow-lg font-bold uppercase tracking-wider transition-all duration-300 transform hover:scale-105">
             Volver al inicio
         </a>

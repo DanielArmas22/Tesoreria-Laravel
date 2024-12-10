@@ -51,7 +51,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 `;
                 detallesTable.appendChild(newRow);
                 pos++;
-                console.log(pos);
                 agregados.push(codigo);
                 row.classList.add('hidden');
                 const eliminarButton = newRow.querySelector('.eliminar');

@@ -14,17 +14,20 @@
         @isset($role)
             <p>rol: {{ $role }}</p>
         @endisset
-        <form method="POST"
-            action="
-            @switch($role)
-                @case('admin')
-                    {{ route('login.admin') }}
-                    @break
-                @case('padre')
-                    {{ route('login.padre') }}
-                @default
-                    {{ route('login') }}
-            @endswitch">
+        @php
+            $loginRoute = route('login');
+            if (isset($role)) {
+                switch ($role) {
+                    case 'admin':
+                        $loginRoute = route('login.admin');
+                        break;
+                    case 'padre':
+                        $loginRoute = route('login.padre');
+                        break;
+                }
+            }
+        @endphp
+        <form method="POST" action="{{ $loginRoute }}">
             @csrf
 
             <div>

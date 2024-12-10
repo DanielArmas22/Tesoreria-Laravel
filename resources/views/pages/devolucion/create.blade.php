@@ -47,12 +47,31 @@
             <div class="bg-gray-50 p-6 rounded-lg shadow-sm">
                 <h2 class="text-2xl font-bold mb-4 text-gray-800">Buscar Estudiante</h2>
                 <form method="GET" class="flex space-x-4 items-center">
-                    <div class="flex-grow">
-                        <label for="codigo" class="block text-sm font-medium text-gray-700">Código del Estudiante</label>
-                        <input type="text" name="idEstudiante" id="idEstudiante"
-                            placeholder="Ingrese el código del estudiante" value="{{ request('idEstudiante') }}"
-                            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    </div>
+                    @if (isset($estudiantes))
+                        <div class="w-max">
+                            <select
+                                class="block w-full rounded border border-gray-300 bg-white px-3 py-2 leading-normal text-gray-700 outline-none transition duration-150 ease-in-out focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                                aria-label="Seleccionar Escala" id="idEstudiante" name="idEstudiante">
+                                <option value="" {{ request('idEstudiante') == 'ninguno' ? 'Selected' : '' }}>
+                                    Estudiante
+                                </option>
+                                @foreach ($estudiantes as $es)
+                                    <option value="{{ $es->estudiante->idEstudiante }}"
+                                        {{ request('idEstudiante') == $es->estudiante->idEstudiante ? 'Selected' : '' }}>
+                                        {{ $es->estudiante->DNI }} - {{ $es->estudiante->nombre }}
+                                        {{ $es->estudiante->apellidoP }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    @else
+                        <div class="flex-grow">
+                            <label for="codigo" class="block text-sm font-medium text-gray-700">Código del
+                                Estudiante</label>
+                            <input type="text" name="idEstudiante" id="idEstudiante"
+                                placeholder="Ingrese el código del estudiante" value="{{ request('idEstudiante') }}"
+                                class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                    @endif
                     <button type="submit"
                         class="px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
                         Buscar

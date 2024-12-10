@@ -46,8 +46,9 @@
                         Buscar
                     </p>
                 </button>
-                <i class="fa-solid fa-broom"></i>
-                <x-button label="Limpiar" color="success" ruta="escalaEstudiante.index" />
+                <x-button label="Limpiar" color="success" ruta="escalaEstudiante.index">
+                    <i class="fa-solid fa-broom mr-2"></i>
+                </x-button>
             </div>
         </div>
     </form>

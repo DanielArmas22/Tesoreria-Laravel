@@ -228,8 +228,9 @@
                             Buscar
                         </p>
                     </button>
-                    <i class="fa-solid fa-broom"></i>
-                    <x-boton label="Limpiar" color="success" ruta="deuda.index" />
+                    <x-boton label="Limpiar" color="success" ruta="deuda.index">
+                        <i class="fa-solid fa-broom mr-2"></i>
+                    </x-boton>
                 </div>
             </section>
         </form>
@@ -281,9 +282,27 @@
                 {{ $datos->links() }}
                 <br>
             </article>
-            <article class="flex justify-center"><a class="{{ $buttonClass }}"
-                    href="{{ route('deuda.create') }}">Nueva
-                    Deuda</a></article>
+            <div class="lg:flex-row flex flex-col justify-center gap-4">
+                <a class="rounded flex items-center justify-center px-6 py-2 text-xs font-medium uppercase leading-normal text-white transition duration-150 ease-in-out focus:outline-none focus:ring-0 motion-reduce:transition-none dark:shadow-black/30 dark:hover:shadow-dark-strong dark:focus:shadow-dark-strong dark:active:shadow-dark-strong text-center bg-primary shadow-primary-3 hover:shadow-primary-2 hover:bg-primary-accent-300 focus:bg-primary-accent-300 active:bg-primary-600 focus:shadow-primary-2 active:shadow-primary-2"
+                    href="{{ route('generarDeuda', [
+                        'codEstudiante' => $codEstudiante,
+                        'dniEstudiante' => $dniEstudiante,
+                        'busquedaNombreEstudiante' => $busquedaNombreEstudiante,
+                        'busquedaApellidoEstudiante' => $busquedaApellidoEstudiante,
+                        'codMinimo' => $codMinimo,
+                        'codMaximo' => $codMaximo,
+                        'deudaHoy' => $conceptoEscalas,
+                        'busquedaConcepto' => $busquedaConcepto,
+                        'fechaInicio' => $grados,
+                        'fechaFin' => $secciones,
+                        'busquedaEscala' => $busquedaEscala,
+                        'generarPDF' => true,
+                    ]) }}">
+                    Reporte de Deudas</a>
+            </div>
+                <article class="flex justify-center"><a class="{{ $buttonClass }}"
+                        href="{{ route('deuda.create') }}">Nueva
+                        Deuda</a></article>
         </section>
     </div>
 @endsection

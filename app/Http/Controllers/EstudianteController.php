@@ -10,6 +10,7 @@ use App\Models\Deuda;
 use App\Models\pago;
 use App\Models\escala_estudiante;
 use App\Models\detalle_devolucion;
+use App\Models\conceptoEscala;
 use App\Models\escala;
 use App\Models\User;
 use App\Models\Estudiante_padre;
@@ -213,7 +214,7 @@ class EstudianteController extends Controller implements HasMiddleware
         $estudiante = Estudiante::findOrFail($id);
         // dd($estudiante);
         if (auth()->user()->cannot('edit', $estudiante)) {
-            abort(403, 'Estudiante no encontrado');
+            abort(404);
         }
         $aulas = Detalle_grado_seccion::get();
         $deudas = Deuda::select(

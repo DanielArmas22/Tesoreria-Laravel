@@ -40,47 +40,69 @@
 
         {{--  --}}
 
-        <article class="grid grid-cols-2 gap-4 justify-between">
+        <article class="grid grid-cols-2 gap-4 justify-center">
             <div class="flex">
                 <form class="w-max" method="GET">
                     {{-- estudiantes --}}
                     <section class="pr-6 w-max">
                         <h3 class="">Estudiante</h3>
-                        <article class="grid grid-cols-2 gap-4">
-                            <div class="flex flex-col items-start">
-                                <input type="search"
-                                    class="peer block w-full min-w-[200px] rounded border border-gray-300 bg-white px-3 py-2 leading-normal text-gray-700 outline-none transition duration-150 ease-in-out focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
-                                    placeholder="ID Estudiante" aria-label="Código" id="codEstudiante" name="codEstudiante"
-                                    value="{{ $codEstudiante }}" aria-describedby="search-button" />
+                        @if (isset($students))
+                            <div class="w-max">
+                                <select
+                                    class="block w-max rounded border border-gray-300 bg-white p-2 leading-normal text-gray-700 outline-none transition duration-150 ease-in-out focus:border-blue-500 focus:ring-2 focus:ring-blue-200 text-sm"
+                                    aria-label="Seleccionar Escala" id="idEstudiante" name="codEstudiante">
+                                    <option value="" {{ $codEstudiante == 'ninguno' ? 'Selected' : '' }}>
+                                        Estudiante
+                                    </option>
+                                    @foreach ($students as $es)
+                                        <option value="{{ $es->estudiante->idEstudiante }}"
+                                            {{ $codEstudiante == $es->estudiante->idEstudiante ? 'Selected' : '' }}>
+                                            {{ $es->estudiante->DNI }} -
+                                            {{ $es->estudiante->nombre }}
+                                            {{ $es->estudiante->apellidoP }}</option>
+                                    @endforeach
+                                </select>
                             </div>
-                            <div class="flex flex-col items-start">
-                                <input type="number"
-                                    class="peer block w-full min-w-[200px] rounded border border-gray-300 bg-white px-3 py-2 leading-normal text-gray-700 outline-none transition duration-150 ease-in-out focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
-                                    placeholder="DNI" aria-label="Código" id="dniEstudiante" name="dniEstudiante"
-                                    value="{{ $dniEstudiante }}" aria-describedby="search-button" />
-                            </div>
-                            <div class="flex flex-col items-start">
-                                <input type="search"
-                                    class="peer block w-full min-w-[200px] rounded border border-gray-300 bg-white px-3 py-2 leading-normal text-gray-700 outline-none transition duration-150 ease-in-out focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
-                                    placeholder="Nombres" aria-label="Código" id="busquedaNombreEstudiante"
-                                    name="busquedaNombreEstudiante" value="{{ $busquedaNombreEstudiante }}"
-                                    aria-describedby="search-button" />
-                            </div>
-                            <div class="flex flex-col items-start">
-                                <input type="search"
-                                    class="peer block w-full min-w-[200px] rounded border border-gray-300 bg-white px-3 py-2 leading-normal text-gray-700 outline-none transition duration-150 ease-in-out focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
-                                    placeholder="Apellidos" aria-label="Código" id="busquedaApellidoEstudiante"
-                                    name="busquedaApellidoEstudiante" value="{{ $busquedaApellidoEstudiante }}"
-                                    aria-describedby="search-button" />
-                            </div>
-                        </article>
+                        @else
+                            <article class="grid grid-cols-2 gap-4">
+                                <div class="flex flex-col items-start">
+                                    <input type="search"
+                                        class="peer block w-full min-w-[200px] rounded border border-gray-300 bg-white px-3 py-2 leading-normal text-gray-700 outline-none transition duration-150 ease-in-out focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                                        placeholder="ID Estudiante" aria-label="Código" id="codEstudiante"
+                                        name="codEstudiante" value="{{ $codEstudiante }}"
+                                        aria-describedby="search-button" />
+                                </div>
+                                <div class="flex flex-col items-start">
+                                    <input type="number"
+                                        class="peer block w-full min-w-[200px] rounded border border-gray-300 bg-white px-3 py-2 leading-normal text-gray-700 outline-none transition duration-150 ease-in-out focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                                        placeholder="DNI" aria-label="Código" id="dniEstudiante" name="dniEstudiante"
+                                        value="{{ $dniEstudiante }}" aria-describedby="search-button" />
+                                </div>
+                                <div class="flex flex-col items-start">
+                                    <input type="search"
+                                        class="peer block w-full min-w-[200px] rounded border border-gray-300 bg-white px-3 py-2 leading-normal text-gray-700 outline-none transition duration-150 ease-in-out focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                                        placeholder="Nombres" aria-label="Código" id="busquedaNombreEstudiante"
+                                        name="busquedaNombreEstudiante" value="{{ $busquedaNombreEstudiante }}"
+                                        aria-describedby="search-button" />
+                                </div>
+                                <div class="flex flex-col items-start">
+                                    <input type="search"
+                                        class="peer block w-full min-w-[200px] rounded border border-gray-300 bg-white px-3 py-2 leading-normal text-gray-700 outline-none transition duration-150 ease-in-out focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                                        placeholder="Apellidos" aria-label="Código" id="busquedaApellidoEstudiante"
+                                        name="busquedaApellidoEstudiante" value="{{ $busquedaApellidoEstudiante }}"
+                                        aria-describedby="search-button" />
+                                </div>
+                            </article>
+                        @endif
                     </section>
                     <br>
                     <section class="flex justify-center gap-4">
                         <button
                             class="rounded bg-primary px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white shadow-primary-3 transition duration-150 ease-in-out hover:bg-primary-accent-300 hover:shadow-primary-2 focus:bg-primary-accent-300 focus:shadow-primary-2 focus:outline-none focus:ring-0 active:bg-primary-600 active:shadow-primary-2 motion-reduce:transition-none dark:shadow-black/30 dark:hover:shadow-dark-strong dark:focus:shadow-dark-strong dark:active:shadow-dark-strong"
                             type="submit">Buscar</button>
-                        <x-boton label="Limpiar" color="success" ruta="condonacion.create" />
+                        <x-boton label="Limpiar" color="success" ruta="condonacion.create">
+                            <i class="fa-solid fa-broom mr-2"></i>
+                        </x-boton>
 
                     </section>
                 </form>
@@ -215,7 +237,7 @@
                 <form id="pago-form" action="{{ route('condonacion.store') }}" method="POST">
                     @csrf
                     <div>
-                        
+
                     </div>
                     <div class="flex justify-between items-center">
                         <h2 class="text-2xl font-bold mb-4 text-gray-800">Deudas a Condonar</h2>

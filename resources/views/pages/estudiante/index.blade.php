@@ -12,15 +12,17 @@
         @endif
         <section class="lg:flex gap-4 px-4 py-8 shadow-xl  rounded-3xl border-[1px]">
             <div class="">
-                <article class="flex justify-start">
-                    {{-- <button label="Nuevo Estudiante" ruta="estudiante.create" color="success" /> --}}
-                    <form action="{{ route('estudiante.create') }}" method="GET">
-                        <button type=""
-                            class="px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
-                            Nuevo estudiante
-                    </form>
+                @if (!Auth::user()->hasRole('director'))
+                    <article class="flex justify-start">
+                        {{-- <button label="Nuevo Estudiante" ruta="estudiante.create" color="success" /> --}}
+                        <form action="{{ route('estudiante.create') }}" method="GET">
+                            <button type=""
+                                class="px-4 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+                                Nuevo estudiante
+                        </form>
 
-                </article>
+                    </article>
+                @endif
                 <br>
                 <x-table nombreTabla="Estudiantes" :cabeceras="[
                     'Codigo',
@@ -127,8 +129,9 @@
                                     Buscar
                                 </p>
                             </button>
-                            <i class="fa-solid fa-broom"></i>
-                            <x-boton label="Limpiar" color="success" ruta="estudiante.index" />
+                            <x-boton label="Limpiar" color="success" ruta="estudiante.index">
+                                <i class="fa-solid fa-broom mr-2"></i>
+                            </x-boton>
                         </div>
                     </div>
                 </form>

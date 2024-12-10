@@ -22,6 +22,7 @@ class escalaEstudianteController extends Controller implements HasMiddleware
     {
         return [
             'auth',
+            'role:admin,secretario',
         ];
     }
     const PAGINATION = 10;

@@ -1,97 +1,99 @@
 @extends('layouts.layoutA')
 {{-- @section('titulo', 'Editar Estudiante') --}}
 @section('contenido')
-    @if (Auth::user()->hasRole('admin'))
-        <section class="border-[1px] flex gap-4  px-4 py-8 shadow-xl  rounded-3xl mx-auto justify-between">
-            <article class="border-r-2 border-r-blue-100 px-4">
-                <div class="flex gap-4 flex-col items-center">
-                    <div>
-                        <p class="px-4 py-2 text-xl font-bold text-center">{{ ucfirst($estudiante->nombre) }}
-                            <br>{{ ucfirst($estudiante->apellidoP) }} {{ ucfirst($estudiante->apellidoM) }}
-                        </p>
-                        <p class="px-4 py-2 text-xl font-light text-center" id="idEstudiante">{{ $estudiante->idEstudiante }}
-                        </p>
-                    </div>
-                </div>
-                <br>
-                <div class="lg:w-1/2 w-3/4 flex justify-center mx-auto">
-                    <form class="flex flex-col gap-3" action="{{ route('estudiante.update', $estudiante->idEstudiante) }}"
+    <section class="border border-gray-300 py-6 shadow-md rounded-xl mx-auto max-w-7xl">
+        <div class="px-6 pb-4 w-full border-b-2">
+            <div class="flex gap-2 items-center">
+                <p class="text-2xl font-semibold text-center text-gray-800">
+                    {{ ucfirst($estudiante->nombre) }} {{ ucfirst($estudiante->apellidoP) }}
+                    {{ ucfirst($estudiante->apellidoM) }}
+                </p>
+                <p class="text-2xl text-gray-500 text-center" id="idEstudiante">
+                    ID: {{ $estudiante->idEstudiante }}
+                </p>
+            </div>
+        </div>
+        <div class="flex gap-6">
+            <article class="border-r border-blue-200 pr-6 px-6 pt-4">
+
+                <div class="w-full max-w-md mx-auto">
+                    <form class="space-y-6" action="{{ route('estudiante.update', $estudiante->idEstudiante) }}"
                         method="POST">
                         @csrf
-                        @method('put')
-                        {{-- csrf: importante  --}}
-                        <x-textField label="DNI" name='DNI' placeholder='DNI' :message={{ $message }}
+                        @method('PUT')
+                        {{-- Campos de Texto --}}
+                        <x-textField label="DNI" name="DNI" placeholder="DNI" :message={{ $message }}
                             valor="{{ old('DNI', $estudiante->DNI) }}" />
-                        <x-textField label="Nombre" name='nombre' placeholder='nombre' :message={{ $message }}
+                        <x-textField label="Nombre" name="nombre" placeholder="Nombre" :message={{ $message }}
                             valor="{{ old('nombre', $estudiante->nombre) }}" />
-                        <x-textField label="Apellido Paterno" name='apellidoP' placeholder='apellidoP'
+                        <x-textField label="Apellido Paterno" name="apellidoP" placeholder="Apellido Paterno"
                             :message={{ $message }} valor="{{ old('apellidoP', $estudiante->apellidoP) }}" />
-                        <x-textField label="Apellido Materno" name='apellidoM' placeholder='apellidoM'
+                        <x-textField label="Apellido Materno" name="apellidoM" placeholder="Apellido Materno"
                             :message={{ $message }} valor="{{ old('apellidoM', $estudiante->apellidoM) }}" />
-                        {{-- <div class="flex gap-4">
-                        <div>
-                            <x-textField label="Grado" name='grado' placeholder='grado' :message={{ $message }}
-                                valor="{{ old('grado', $estudiante->grado) }}" />
+
+                        {{-- Selección de Aula --}}
+                        <div class="flex gap-2 items-center">
+                            <label for="aula" class="block text-lg font-medium text-gray-700">Aula</label>
+                            <select id="aula" name="aula"
+                                class="mt-1 block w-full rounded-md border border-gray-300 shadow-sm p-2 focus:ring-primary focus:border-primary">
+                                @foreach ($aulas as $grado)
+                                    <option
+                                        value="{{ $grado->grado->gradoEstudiante }}-{{ $grado->seccion->seccionEstudiante }}"
+                                        {{ $grado->gradoEstudiante == $estudiante->gradoEstudiante && $grado->seccion->seccionEstudiante == $estudiante->seccionEstudiante ? 'selected' : '' }}>
+                                        {{ $grado->grado->descripcionGrado }} - {{ $grado->seccion->descripcionSeccion }}
+                                    </option>
+                                @endforeach
+                            </select>
                         </div>
-                        <div>
-                            <x-textField label="Seccion" name='seccion' placeholder='seccion' :message={{ $message }}
-                                valor="{{ old('seccion', $estudiante->seccion) }}" />
-                        </div>
-                    </div> --}}
-                        <select class="rounded-lg" name="aula">
-                            {{-- <option value="">Seleccione un Aula</option> --}}
-                            @foreach ($aulas as $grado)
-                                <option
-                                    value="{{ $grado->grado->gradoEstudiante }}-{{ $grado->seccion->seccionEstudiante }}"
-                                    {{ $grado->gradoEstudiante == $estudiante->gradoEstudiante && $grado->seccion->seccionEstudiante == $estudiante->seccionEstudiante ? 'selected' : '' }}>
-                                    {{ $grado->grado->descripcionGrado }} {{ $grado->seccion->descripcionSeccion }}
-                                </option>
-                            @endforeach
-                        </select>
+
+                        {{-- Asignación de Escala --}}
                         @if ($escalas->isEmpty())
-                            <div class="border-y-2">
-                                <h4 class="text-center my-1">Escala sin Asignar</h4>
-                                <a class="rounded flex items-center justify-center px-6 py-2 text-xs font-medium uppercase leading-normal text-white transition duration-150 ease-in-out  focus:outline-none focus:ring-0  motion-reduce:transition-none dark:shadow-black/30 dark:hover:shadow-dark-strong dark:focus:shadow-dark-strong dark:active:shadow-dark-strong text-center  bg-primary shadow-primary-3 hover:shadow-primary-2 hover:bg-primary-accent-300 focus:bg-primary-accent-300 active:bg-primary-600 focus:shadow-primary-2 active:shadow-primary-2"
-                                    href="{{ route('escalaEstudiante.create', ['buscarEstudiante' => $estudiante->idEstudiante]) }}">Asignar
-                                    Escala</a>
+                            <div class="border-t border-b border-gray-200 py-4">
+                                <h4 class="text-center text-lg font-medium text-gray-700">Escala sin Asignar</h4>
+                                <a href="{{ route('escalaEstudiante.create', ['buscarEstudiante' => $estudiante->idEstudiante]) }}"
+                                    class="mt-4 w-full bg-primary text-white font-medium py-2 rounded-md shadow hover:bg-primary-dark transition">
+                                    Asignar Escala
+                                </a>
                             </div>
-                            <br>
                         @else
-                            <h4 class="text-center my-1">Escala</h4>
-                            <div class ="flex gap-4">
-                                <select class="w-full rounded-lg" name="periodo" id="periodo" onchange="mostrarEscala()">
+                            <div class="flex gap-4 items-center">
+                                <h4 class="text-center text-lg font-medium text-gray-700">Escala</h4>
+                                <select id="periodo" name="periodo"
+                                    class="flex-1 rounded-md border border-gray-300 shadow-sm p-2 focus:ring-primary focus:border-primary"
+                                    onchange="mostrarEscala()">
                                     @foreach ($periodos as $peri)
                                         <option value="{{ $peri }}">{{ $peri }}</option>
                                     @endforeach
                                 </select>
-                                {{-- <h3>{{ $escalas->periodo }}</h3> --}}
-                                <x-textField label="Escala" name='escala' placeholder='Escala'
-                                    :message={{ $message }} valor="a" readonly="true" />
+                                <x-textField label="Escala" name="escala" placeholder="Escala"
+                                    :message={{ $message }} valor="a" readonly />
                             </div>
                         @endif
-                        <div class="flex flex-col justify-center gap-4">
-                            <div class="lg:flex-row flex flex-col justify-center gap-4">
-                                <button
-                                    class="bg-success shadow-success-3 hover:shadow-success-2 hover:bg-success-accent-300 focus:bg-success-accent-300 active:bg-success-600 focus:shadow-success-2 active:shadow-success-2 rounded  flex items-center px-6 py-2 text-xs font-medium uppercase leading-normal text-white transition duration-150 ease-in-out  focus:outline-none focus:ring-0  motion-reduce:transition-none dark:shadow-black/30 dark:hover:shadow-dark-strong dark:focus:shadow-dark-strong dark:active:shadow-dark-strong text-center"
-                                    type="submit">Actualizar</button>
-                                <x-boton ruta="cancelarEstudiante" color="dark" label="Cancelar">Eliminar</x-boton>
-                            </div>
-                            <div class="flex justify-center">
-                                <x-boton ruta="estudiante.confirmar" color="danger" label="Eliminar"
-                                    datos="{{ $estudiante->idEstudiante }}" />
-                            </div>
-                            <a class="bg-success shadow-success-3 hover:shadow-success-2 hover:bg-success-accent-300 focus:bg-success-accent-300 active:bg-success-600 focus:shadow-success-2 active:shadow-success-2 rounded  flex items-center px-6 py-2 text-xs font-medium uppercase leading-normal text-white transition duration-150 ease-in-out  focus:outline-none focus:ring-0  motion-reduce:transition-none dark:shadow-black/30 dark:hover:shadow-dark-strong dark:focus:shadow-dark-strong dark:active:shadow-dark-strong text-center"
-                                href="{{ route('estudiante.confirmar', ['id' => $estudiante->idEstudiante]) }}">Eliminar
-                            </a>
-                        </div>
-                    </form>
 
+                        {{-- Botones de Acción --}}
+                        @if (!Auth::user()->hasRole('director'))
+                            <div class="space-y-4">
+                                <div class="flex gap-4">
+                                    <button type="submit"
+                                        class="text-xs flex-1 bg-success text-white font-medium p-2 rounded-md shadow hover:bg-success-dark transition">
+                                        Actualizar
+                                    </button>
+                                    <x-boton ruta="cancelarEstudiante" color="secondary" label="Cancelar" />
+                                </div>
+                                @if (!Auth::user()->hasRole('padre'))
+                                    <div class="flex justify-center">
+                                        <x-boton ruta="estudiante.confirmar" color="danger" label="Eliminar"
+                                            datos="{{ $estudiante->idEstudiante }}" />
+                                    </div>
+                                @endif
+                            </div>
+                        @endif
+                    </form>
                 </div>
             </article>
-            <article class="py-4">
-                <h3 class="text-xl font-semibold">Deudas Actuales</h3>
-                <br>
-                <x-table :cabeceras="['Codigo', 'Escala', 'Monto', 'Fecha', 'Adelanto', 'Condonado', 'Total a Pagar']" :datos="$deudas" :atributos="[
+            <article class="w-full lg:w-2/3 px-6 pt-4">
+                <h3 class="text-2xl font-semibold text-gray-800 mb-6">Deudas Actuales</h3>
+                <x-table :cabeceras="['Código', 'Escala', 'Monto', 'Fecha', 'Adelanto', 'Condonado', 'Total a Pagar']" :datos="$deudas" :atributos="[
                     'idDeuda',
                     'conceptoEscala',
                     'montoTotal',
@@ -100,180 +102,105 @@
                     'totalCondonacion',
                     'totalPagar',
                 ]" ruta="deuda.edit" id="idDeuda" />
-                <br>
 
-                <article class="flex justify-start">
-                    <x-boton label="Nueva Deuda" ruta="estudiante.create" color="primary" />
-                </article>
-            </article>
-            <article class="px-2 w-1/6 border-l border-blue-100 ">
-                <h3 class="text-xl font-semibold text-center">Opciones</h3>
-                <div class="text-center flex flex-col items-center justify-center h-4/5">
-                    <h4 class="text-lg">Pagos</h4>
-                    <br>
-                    <ul class="flex gap-2 p-3">
-                        <li> <a class="bg-success shadow-success-3 hover:shadow-success-2 hover:bg-success-accent-300 focus:bg-success-accent-300 active:bg-success-600 focus:shadow-success-2 active:shadow-success-2 rounded  flex items-center px-6 py-2 text-xs font-medium uppercase leading-normal text-white transition duration-150 ease-in-out  focus:outline-none focus:ring-0  motion-reduce:transition-none dark:shadow-black/30 dark:hover:shadow-dark-strong dark:focus:shadow-dark-strong dark:active:shadow-dark-strong text-center"
-                                href="{{ route('pago.show', ['idEstudiante' => $estudiante->idEstudiante]) }}">Nuevo
-                            </a></li>
-                        <li> <a class="bg-success shadow-success-3 hover:shadow-success-2 hover:bg-success-accent-300 focus:bg-success-accent-300 active:bg-success-600 focus:shadow-success-2 active:shadow-success-2 rounded  flex items-center px-6 py-2 text-xs font-medium uppercase leading-normal text-white transition duration-150 ease-in-out  focus:outline-none focus:ring-0  motion-reduce:transition-none dark:shadow-black/30 dark:hover:shadow-dark-strong dark:focus:shadow-dark-strong dark:active:shadow-dark-strong text-center"
-                                href="{{ route('pago.index', ['buscarCodigo' => $estudiante->idEstudiante]) }}">Listar
-                            </a></li>
-                    </ul>
-                    <br>
-                    <h4 class="text-lg">Devolucion</h4>
-                    <br>
-                    <ul class="flex gap-2 p-3">
-                        <li> <a class="bg-success shadow-success-3 hover:shadow-success-2 hover:bg-success-accent-300 focus:bg-success-accent-300 active:bg-success-600 focus:shadow-success-2 active:shadow-success-2 rounded  flex items-center px-6 py-2 text-xs font-medium uppercase leading-normal text-white transition duration-150 ease-in-out  focus:outline-none focus:ring-0  motion-reduce:transition-none dark:shadow-black/30 dark:hover:shadow-dark-strong dark:focus:shadow-dark-strong dark:active:shadow-dark-strong text-center"
-                                href="{{ route('devolucion.create', ['idEstudiante' => $estudiante->idEstudiante]) }}">Nuevo
-                            </a></li>
-                        <li> <a class="bg-success shadow-success-3 hover:shadow-success-2 hover:bg-success-accent-300 focus:bg-success-accent-300 active:bg-success-600 focus:shadow-success-2 active:shadow-success-2 rounded  flex items-center px-6 py-2 text-xs font-medium uppercase leading-normal text-white transition duration-150 ease-in-out  focus:outline-none focus:ring-0  motion-reduce:transition-none dark:shadow-black/30 dark:hover:shadow-dark-strong dark:focus:shadow-dark-strong dark:active:shadow-dark-strong text-center"
-                                href="{{ route('devolucion.index', ['buscarxEstudiante' => $estudiante->idEstudiante]) }}">Listar
-                            </a></li>
-                    </ul>
-                    <br>
-                    <h4 class="text-lg">Condonacion</h4>
-                    <br>
-                    <ul class="flex gap-2 p-3">
-                        <li> <a class="bg-success shadow-success-3 hover:shadow-success-2 hover:bg-success-accent-300 focus:bg-success-accent-300 active:bg-success-600 focus:shadow-success-2 active:shadow-success-2 rounded  flex items-center px-6 py-2 text-xs font-medium uppercase leading-normal text-white transition duration-150 ease-in-out  focus:outline-none focus:ring-0  motion-reduce:transition-none dark:shadow-black/30 dark:hover:shadow-dark-strong dark:focus:shadow-dark-strong dark:active:shadow-dark-strong text-center"
-                                href="{{ route('condonacion.create', ['idEstudiante' => $estudiante->idEstudiante]) }}">Nueva
-                            </a></li>
-                        <li> <a class="bg-success shadow-success-3 hover:shadow-success-2 hover:bg-success-accent-300 focus:bg-success-accent-300 active:bg-success-600 focus:shadow-success-2 active:shadow-success-2 rounded  flex items-center px-6 py-2 text-xs font-medium uppercase leading-normal text-white transition duration-150 ease-in-out  focus:outline-none focus:ring-0  motion-reduce:transition-none dark:shadow-black/30 dark:hover:shadow-dark-strong dark:focus:shadow-dark-strong dark:active:shadow-dark-strong text-center"
-                                href="{{ route('condonacion.index', ['codigoEstudiante' => $estudiante->idEstudiante, 'dniEstudiante' => $estudiante->DNI]) }}">Listar
-                            </a></li>
-                    </ul>
-                </div>
-            </article>
-        </section>
-    @else
-        <section class="border-[1px] flex gap-4  px-4 py-8 shadow-xl  rounded-3xl mx-auto justify-between">
-            <article class="border-r-2 border-r-blue-100 px-4">
-                <div class="flex gap-4 flex-col items-center">
-                    <div>
-                        <p class="px-4 py-2 text-xl font-bold text-center">{{ ucfirst($estudiante->nombre) }}
-                            <br>{{ ucfirst($estudiante->apellidoP) }} {{ ucfirst($estudiante->apellidoM) }}
-                        </p>
-                        <p class="px-4 py-2 text-xl font-light text-center" id="idEstudiante">
-                            {{ $estudiante->idEstudiante }}</p>
+                @if (!Auth::user()->hasRole('padre') && !Auth::user()->hasRole('director') )
+                    <div class="mt-6">
+                        <x-boton label="Nueva Deuda" ruta="estudiante.create" color="primary" />
                     </div>
-                </div>
-                <br>
-                <div class="lg:w-1/2 w-3/4 flex justify-center mx-auto">
-                    <form class="flex flex-col gap-3" action="{{ route('estudiante.update', $estudiante->idEstudiante) }}"
-                        method="POST">
-                        @csrf
-                        @method('put')
-                        {{-- csrf: importante  --}}
-                        <x-textField label="DNI" name='DNI' placeholder='DNI' :message={{ $message }}
-                            valor="{{ old('DNI', $estudiante->DNI) }}" />
-                        <x-textField label="Nombre" name='nombre' placeholder='nombre' :message={{ $message }}
-                            valor="{{ old('nombre', $estudiante->nombre) }}" />
-                        <x-textField label="Apellido Paterno" name='apellidoP' placeholder='apellidoP'
-                            :message={{ $message }} valor="{{ old('apellidoP', $estudiante->apellidoP) }}" />
-                        <x-textField label="Apellido Materno" name='apellidoM' placeholder='apellidoM'
-                            :message={{ $message }} valor="{{ old('apellidoM', $estudiante->apellidoM) }}" />
-                        <select class="rounded-lg" name="aula">
-                            {{-- <option value="">Seleccione un Aula</option> --}}
-                            @foreach ($aulas as $grado)
-                                <option
-                                    value="{{ $grado->grado->gradoEstudiante }}-{{ $grado->seccion->seccionEstudiante }}"
-                                    {{ $grado->gradoEstudiante == $estudiante->gradoEstudiante && $grado->seccion->seccionEstudiante == $estudiante->seccionEstudiante ? 'selected' : '' }}>
-                                    {{ $grado->grado->descripcionGrado }} {{ $grado->seccion->descripcionSeccion }}
-                                </option>
-                            @endforeach
-                        </select>
-                        @if ($escalas->isEmpty())
-                            <div class="border-y-2">
-                                <h4 class="text-center my-1">Escala sin Asignar</h4>
-                                <a class="rounded flex items-center justify-center px-6 py-2 text-xs font-medium uppercase leading-normal text-white transition duration-150 ease-in-out  focus:outline-none focus:ring-0  motion-reduce:transition-none dark:shadow-black/30 dark:hover:shadow-dark-strong dark:focus:shadow-dark-strong dark:active:shadow-dark-strong text-center  bg-primary shadow-primary-3 hover:shadow-primary-2 hover:bg-primary-accent-300 focus:bg-primary-accent-300 active:bg-primary-600 focus:shadow-primary-2 active:shadow-primary-2"
-                                    href="{{ route('escalaEstudiante.create', ['buscarEstudiante' => $estudiante->idEstudiante]) }}">Asignar
-                                    Escala</a>
-                            </div>
-                            <br>
-                        @else
-                            <h4 class="text-center my-1">Escala</h4>
-                            <div class ="flex gap-4">
-                                <select class="w-full rounded-lg" name="periodo" id="periodo"
-                                    onchange="mostrarEscala()">
-                                    @foreach ($periodos as $peri)
-                                        <option value="{{ $peri }}">{{ $peri }}</option>
-                                    @endforeach
-                                </select>
-                                {{-- <h3>{{ $escalas->periodo }}</h3> --}}
-                                <x-textField label="Escala" name='escala' placeholder='Escala'
-                                    :message={{ $message }} valor="a" readonly="true" />
-                            </div>
-                        @endif
-
-                    </form>
-
-                </div>
+                @endif
             </article>
-            <article class="py-4">
-                <h3 class="text-xl font-semibold">Deudas Actuales</h3>
-                <br>
-                <x-table :cabeceras="['Codigo', 'Escala', 'Monto', 'Fecha', 'Adelanto', 'Condonado', 'Total a Pagar']" :datos="$deudas" :atributos="[
-                    'idDeuda',
-                    'conceptoEscala',
-                    'montoTotal',
-                    'fechaLimite',
-                    'adelanto',
-                    'totalCondonacion',
-                    'totalPagar',
-                ]" id="idDeuda" />
-                <br>
+            @if (!Auth::user()->hasRole('director'))
+                <article class="px-4 w-1/6 border-l border-blue-200 pt-4">
+                    <h3 class="text-xl font-semibold text-center text-gray-800">Opciones</h3>
+                    <div class="mt-6 space-y-6">
+                        {{-- Pagos --}}
+                        <div>
+                            <h4 class="text-lg font-medium text-gray-700 text-center">Pagos</h4>
+                            <ul class="mt-2 space-y-2">
+                                <li>
+                                    <a class="block w-full bg-success text-white font-medium py-2 px-4 rounded-md shadow hover:bg-success-dark transition text-center"
+                                        href="{{ route('pago.show', ['idEstudiante' => $estudiante->idEstudiante]) }}">
+                                        @if (Auth::user()->hasRole('padre'))
+                                            Solicitar
+                                        @else
+                                            Nuevo
+                                        @endif
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="block w-full bg-success text-white font-medium py-2 px-4 rounded-md shadow hover:bg-success-dark transition text-center"
+                                        href="{{ route('pago.index', ['buscarCodigo' => $estudiante->idEstudiante]) }}">
+                                        Listar
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        {{-- Devolución --}}
+                        <div>
+                            <h4 class="text-lg font-medium text-gray-700 text-center">Devolución</h4>
+                            <ul class="mt-2 space-y-2">
+                                <li>
+                                    <a class="block w-full bg-success text-white font-medium py-2 px-4 rounded-md shadow hover:bg-success-dark transition text-center"
+                                        href="{{ route('devolucion.create', ['idEstudiante' => $estudiante->idEstudiante]) }}">
+                                        @if (Auth::user()->hasRole('padre'))
+                                            Solicitar
+                                        @else
+                                            Nuevo
+                                        @endif
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="block w-full bg-success text-white font-medium py-2 px-4 rounded-md shadow hover:bg-success-dark transition text-center"
+                                        href="{{ route('devolucion.index', ['buscarxEstudiante' => $estudiante->idEstudiante]) }}">
+                                        Listar
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        {{-- Condonación --}}
+                        <div>
+                            <h4 class="text-lg font-medium text-gray-700 text-center">Condonación</h4>
+                            <ul class="mt-2 space-y-2">
+                                <li>
+                                    <a class="block w-full bg-success text-white font-medium py-2 px-4 rounded-md shadow hover:bg-success-dark transition text-center"
+                                        href="{{ route('condonacion.create', ['codEstudiante' => $estudiante->idEstudiante]) }}">
+                                        @if (Auth::user()->hasRole('padre'))
+                                            Solicitar
+                                        @else
+                                            Nuevo
+                                        @endif
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="block w-full bg-success text-white font-medium py-2 px-4 rounded-md shadow hover:bg-success-dark transition text-center"
+                                        href="{{ route('condonacion.index', ['codigoEstudiante' => $estudiante->idEstudiante, 'dniEstudiante' => $estudiante->DNI]) }}">
+                                        Listar
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </article>
+            @endif
 
-            </article>
-            <article class="px-2 w-1/6 border-l border-blue-100 ">
-                <h3 class="text-xl font-semibold text-center">Opciones</h3>
-                <div class="text-center flex flex-col items-center justify-center h-4/5">
-                    <h4 class="text-lg">Pagos</h4>
-                    <br>
-                    <ul class="flex gap-2 p-3">
-                        <li> <a class="bg-success shadow-success-3 hover:shadow-success-2 hover:bg-success-accent-300 focus:bg-success-accent-300 active:bg-success-600 focus:shadow-success-2 active:shadow-success-2 rounded  flex items-center px-6 py-2 text-xs font-medium uppercase leading-normal text-white transition duration-150 ease-in-out  focus:outline-none focus:ring-0  motion-reduce:transition-none dark:shadow-black/30 dark:hover:shadow-dark-strong dark:focus:shadow-dark-strong dark:active:shadow-dark-strong text-center"
-                                href="{{ route('pago.show', ['idEstudiante' => $estudiante->idEstudiante]) }}">Nuevo
-                            </a></li>
-                        <li> <a class="bg-success shadow-success-3 hover:shadow-success-2 hover:bg-success-accent-300 focus:bg-success-accent-300 active:bg-success-600 focus:shadow-success-2 active:shadow-success-2 rounded  flex items-center px-6 py-2 text-xs font-medium uppercase leading-normal text-white transition duration-150 ease-in-out  focus:outline-none focus:ring-0  motion-reduce:transition-none dark:shadow-black/30 dark:hover:shadow-dark-strong dark:focus:shadow-dark-strong dark:active:shadow-dark-strong text-center"
-                                href="{{ route('pago.index', ['buscarCodigo' => $estudiante->idEstudiante]) }}">Listar
-                            </a></li>
-                    </ul>
-                    <br>
-                    <h4 class="text-lg">Devolucion</h4>
-                    <br>
-                    <ul class="flex gap-2 p-3">
-                        <li> <a class="bg-success shadow-success-3 hover:shadow-success-2 hover:bg-success-accent-300 focus:bg-success-accent-300 active:bg-success-600 focus:shadow-success-2 active:shadow-success-2 rounded  flex items-center px-6 py-2 text-xs font-medium uppercase leading-normal text-white transition duration-150 ease-in-out  focus:outline-none focus:ring-0  motion-reduce:transition-none dark:shadow-black/30 dark:hover:shadow-dark-strong dark:focus:shadow-dark-strong dark:active:shadow-dark-strong text-center"
-                                href="{{ route('devolucion.create', ['idEstudiante' => $estudiante->idEstudiante]) }}">Solicitar
-                            </a></li>
-                        <li> <a class="bg-success shadow-success-3 hover:shadow-success-2 hover:bg-success-accent-300 focus:bg-success-accent-300 active:bg-success-600 focus:shadow-success-2 active:shadow-success-2 rounded  flex items-center px-6 py-2 text-xs font-medium uppercase leading-normal text-white transition duration-150 ease-in-out  focus:outline-none focus:ring-0  motion-reduce:transition-none dark:shadow-black/30 dark:hover:shadow-dark-strong dark:focus:shadow-dark-strong dark:active:shadow-dark-strong text-center"
-                                href="{{ route('devolucion.index', ['buscarxEstudiante' => $estudiante->idEstudiante]) }}">Listar
-                            </a></li>
-                    </ul>
-                    <br>
-                    <h4 class="text-lg">Condonacion</h4>
-                    <br>
-                    <ul class="flex gap-2 p-3">
-                        <li> <a class="bg-success shadow-success-3 hover:shadow-success-2 hover:bg-success-accent-300 focus:bg-success-accent-300 active:bg-success-600 focus:shadow-success-2 active:shadow-success-2 rounded  flex items-center px-6 py-2 text-xs font-medium uppercase leading-normal text-white transition duration-150 ease-in-out  focus:outline-none focus:ring-0  motion-reduce:transition-none dark:shadow-black/30 dark:hover:shadow-dark-strong dark:focus:shadow-dark-strong dark:active:shadow-dark-strong text-center"
-                                href="{{ route('condonacion.create', ['idEstudiante' => $estudiante->idEstudiante]) }}">solicitar
-                            </a></li>
-                        <li> <a class="bg-success shadow-success-3 hover:shadow-success-2 hover:bg-success-accent-300 focus:bg-success-accent-300 active:bg-success-600 focus:shadow-success-2 active:shadow-success-2 rounded  flex items-center px-6 py-2 text-xs font-medium uppercase leading-normal text-white transition duration-150 ease-in-out  focus:outline-none focus:ring-0  motion-reduce:transition-none dark:shadow-black/30 dark:hover:shadow-dark-strong dark:focus:shadow-dark-strong dark:active:shadow-dark-strong text-center"
-                                href="{{ route('condonacion.index', ['codigoEstudiante' => $estudiante->idEstudiante, 'dniEstudiante' => $estudiante->DNI]) }}">Listar
-                            </a></li>
-                    </ul>
-                </div>
-            </article>
-        </section>
-    @endif
+        </div>
+    </section>
+
 @endsection
 @section('js')
     <script>
         function mostrarEscala() {
             var periodo = document.getElementById('periodo').value;
             var idestudiante = @json($estudiante->idEstudiante);
-            fetch('/descripcionEscala/' + idestudiante + '/' + periodo).then(response => response.json()).then(data => {
-                document.querySelector('input[name="escala"]').value = data.descripcion;
-            }).catch(error => {
-                console.error('Error:', error);
-            });
+            fetch('/descripcionEscala/' + idestudiante + '/' + periodo)
+                .then(response => response.json())
+                .then(data => {
+                    document.querySelector('input[name="escala"]').value = data.descripcion;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
         }
-        mostrarEscala();
+        document.addEventListener('DOMContentLoaded', mostrarEscala);
     </script>
 @endsection

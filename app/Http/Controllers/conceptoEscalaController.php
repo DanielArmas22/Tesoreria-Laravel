@@ -20,7 +20,7 @@ class conceptoEscalaController extends Controller implements HasMiddleware
             'auth',
         ];
     }
-    const PAGINATION = 10;
+    const PAGINATION = 5;
     public function index(Request $request)
     {
         $buscarxMora=$request->get('busquedaxMora');

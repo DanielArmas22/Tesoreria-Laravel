@@ -12,6 +12,10 @@ use App\Http\Controllers\escalaController;
 use App\Http\Controllers\EstudianteController;
 use App\Http\Controllers\escalaEstudianteController;
 use App\Http\Controllers\pagoController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DirectorSolicitudController;
+use App\Http\Controllers\ReportesDirectorController;
+
 Route::get('/', function () {
     return view('welcome');
 });
@@ -43,6 +47,7 @@ Route::post('/admin', [UsuarioController::class, 'loginAdmin']);
 Route::get('/login/padre', [UsuarioController::class, 'showLoginPadre'])->name('login.padre');
 Route::post('/login/padre', [UsuarioController::class, 'loginPadre']);
 
+// route::post('/login', [UsuarioController::class, 'loginByRole'])->name('login');
 
 //estudiante
 Route::get('estudiante/{id}/confirmar', [EstudianteController::class, 'confirmar'])->name('estudiante.confirmar');
@@ -67,12 +72,26 @@ Route::get('/cancelarCondonacion', function () {
     return redirect()->route('condonacion.index')->with('datos', 'Acción Cancelada ..!');
 })->name('cancelarCondonacion');
 
+Route::get('/indexCondonacionRR', [CondonacionController::class, 'indexCondonacionRR'])->name('condonacion.indexCondonacionRR');
+Route::get('/condonacion/{id}/editCondonacion', [CondonacionController::class, 'editCondonacion'])->name('condonacion.editCondonacion');
+Route::get('/condonacion/{id}/realizarCondonacionA', [CondonacionController::class, 'realizarCondonacionA'])->name('condonacion.realizarCondonacionA');
+Route::get('/condonacion/{id}/realizarCondonacionO', [CondonacionController::class, 'realizarCondonacionO'])->name('condonacion.realizarCondonacionO');
+Route::get('/condonacion/{id}/edit', [CondonacionController::class, 'edit'])->name('condonacion.edit');
+Route::put('/condonacion/{idCondonacion}/actualizarSolicitud', [CondonacionController::class, 'actualizarSolicitud'])->name('condonacion.actualizarSolicitud');
+Route::put('/condonacion/{idCondonacion}/actualizarCondonacionA', [CondonacionController::class, 'actualizarCondonacionA'])->name('condonacion.actualizarCondonacionA');
+Route::put('/condonacion/{idCondonacion}/actualizarCondonacionO', [CondonacionController::class, 'actualizarCondonacionO'])->name('condonacion.actualizarCondonacionO');
+Route::get('/condonacionPdfGeneral', [CondonacionController::class, 'index'])->name('generarCondonacionGeneral');
+Route::get('/condonacionPdfGeneral1', [CondonacionController::class, 'indexCondonacionRR'])->name('generarCondonacionGeneral1');
+
+
 //DEUDA
 Route::resource('/deuda', DeudaController::class);
 Route::get('deuda/{id}/confirmar', [DeudaController::class, 'confirmar'])->name('deuda.confirmar');
 Route::get('cancelarDeuda', function () {
     return redirect()->route('deuda.index')->with(['deuda' => 'Acción Cancelada ..!', 'color' => 'error']);
 })->name('cancelarDeuda');
+Route::get('/deudaPdf', [DeudaController::class, 'index'])->name('generarDeuda');
+
 
 //concepto Escala
 Route::get('conceptoEscala/{id}/confirmar', [conceptoEscalaController::class, 'confirmar'])->name('conceptoEscala.confirmar');
@@ -99,6 +118,13 @@ Route::get('/actualizarDevolucion/{idDevolucion}/{Operacion}',[DevolucionControl
 Route::get('/devolucionesRealizadas',[DevolucionController::class,'devolucionesRealizadas'])->name('devolucion.devolucionesRealizadas');
 Route::post('/devolucion/datosRealizados',[DevolucionController::class,'datosRealizados'])->name('devolucion.datosRealizados');
 
+Route::get('/indexDevolucionR', [DevolucionController::class, 'indexDevolucionR'])->name('devolucion.indexDevolucionR');
+Route::post('/devolucion/datosDevolucion',[DevolucionController::class,'datosDevolucion'])->name('devolucion.datosDevolucion');
+Route::get('/devolucionPdfTeso', [DevolucionController::class, 'index'])->name('generarDevolucionTeso');
+Route::get('/devolucionPdfRR', [DevolucionController::class, 'indexDevolucionR'])->name('generarDevolucionRR');
+Route::put('/devolucion/{idDevolucion}/actualizarSolicitud', [DevolucionController::class, 'actualizarSolicitud'])->name('devolucion.actualizarSolicitud');
+Route::put('/devolucion/{idDevolucion}/actualizarDevolucion', [DevolucionController::class, 'actualizarDevolucion'])->name('devolucion.actualizarDevolucion');
+
 
 //pagos
 Route::resource('/pago', pagoController::class);
@@ -112,6 +138,10 @@ Route::get('/FichaPagos',[pagoController::class,'fichapagos'])->name('pago.ficha
 Route::get('/ActualizaFichaPago/{nroOperacion}',[pagoController::class,'actualizaFichaPago'])->name('pago.actualizaFichaPago');
 Route::get('/ListaPagos',[pagoController::class,'indexCajero'])->name('pago.listaPagosCajero');
 
+
+Route::get('/index1', [pagoController::class, 'index1'])->name('pago.index1');
+Route::get('/pagoPdf1', [pagoController::class, 'index1'])->name('generarPago1');
+
 //escala
 //web escala
 
@@ -124,3 +154,36 @@ Route::post('/escala', [escalaController::class, 'store'])->name('escala.store')
 
 //usuarios
 Route::get('/usuarios', [UsuarioController::class, 'index'])->name('usuarios.index')->middleware('role:admin');
+
+
+
+
+// Solicitudes
+Route::resource('/solicitudes', DirectorSolicitudController::class);
+Route::post('/solicitudes/{id}/observar', [DirectorSolicitudController::class, 'observar'])->name('solicitudes.observar');
+Route::post('/solicitudes/{id}/aceptar', [DirectorSolicitudController::class, 'aceptar'])->name('solicitudes.aceptar');
+Route::get('/reporteSolicitudes/pdf/{idCondonacion}', [DirectorSolicitudController::class, 'verSolicitud'])->name('verSolicitud.pdf');
+
+// dashboard
+Route::get('/dashboard/index',  [DashboardController::class, 'index'])->name('dashboard.index');
+Route::get('/dashboard/deudas', [DashboardController::class, 'deudas'])->name('dashboard.deudas');
+Route::get('/dashboard/ingresos', [DashboardController::class, 'ingresos'])->name('dashboard.ingresos');
+
+// Reportes director
+
+// Rutas para generar cada reporte
+Route::get('/director/reportes/index', [ReportesDirectorController::class, 'index'])->name('director.reportes.index');
+Route::get('/director/reportes/resumen-ingresos', [ReportesDirectorController::class, 'resumenIngresos'])->name('director.reportes.resumen-ingresos');
+Route::get('/director/reportes/resumen-deudas', [ReportesDirectorController::class, 'resumenDeudas'])->name('director.reportes.resumen-deudas');
+Route::get('/director/reportes/ingresos-vs-deudas', [ReportesDirectorController::class, 'ingresosVsDeudas'])->name('director.reportes.ingresos-vs-deudas');
+Route::get('/director/reportes/ingresos-detallados', [ReportesDirectorController::class, 'ingresosDetallados'])->name('director.reportes.ingresos-detallados');
+Route::get('/director/reportes/deudores', [ReportesDirectorController::class, 'deudores'])->name('director.reportes.deudores');
+Route::get('/director/reportes/inscripcion-grado-seccion', [ReportesDirectorController::class, 'inscripcionGradoSeccion'])->name('director.reportes.inscripcion-grado-seccion');
+
+// Rutas para generar PDFs de cada reporte
+Route::get('/director/reportes/resumen-ingresos/pdf', [ReportesDirectorController::class, 'resumenIngresosPDF'])->name('director.reportes.resumen-ingresos.pdf');
+Route::get('/director/reportes/resumen-deudas/pdf', [ReportesDirectorController::class, 'resumenDeudasPDF'])->name('director.reportes.resumen-deudas.pdf');
+Route::get('/director/reportes/ingresos-vs-deudas/pdf', [ReportesDirectorController::class, 'ingresosVsDeudasPDF'])->name('director.reportes.ingresos-vs-deudas.pdf');
+Route::get('/director/reportes/ingresos-detallados/pdf', [ReportesDirectorController::class, 'ingresosDetalladosPDF'])->name('director.reportes.ingresos-detallados.pdf');
+Route::get('/director/reportes/deudores/pdf', [ReportesDirectorController::class, 'deudoresPDF'])->name('director.reportes.deudores.pdf');
+Route::get('/director/reportes/inscripcion-grado-seccion/pdf', [ReportesDirectorController::class, 'inscripcionGradoSeccionPDF'])->name('director.reportes.inscripcion-grado-seccion.pdf');

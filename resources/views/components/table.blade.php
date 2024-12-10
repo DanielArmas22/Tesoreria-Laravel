@@ -41,7 +41,8 @@
     <thead class="bg-gray-100">
         <tr>
             @foreach ($cabeceras as $cabecera)
-                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">{{ $cabecera }}</th>
+                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">
+                    {{ $cabecera }}</th>
             @endforeach
         </tr>
     </thead>
