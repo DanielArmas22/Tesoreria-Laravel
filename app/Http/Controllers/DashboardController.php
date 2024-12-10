@@ -52,7 +52,7 @@ class DashboardController extends Controller implements HasMiddleware
             ->join('seccion', 'detalle_estudiante_gs.seccionEstudiante', '=', 'seccion.seccionEstudiante')
             ->join('escala_estudiante', 'estudiante.idEstudiante', '=', 'escala_estudiante.idEstudiante')
             ->join('escala', 'escala_estudiante.idEscala', '=', 'escala.idEscala')
-            ->where('pago.estadoPago', 1) // Solo pagos activos
+            ->where('pago.estadoPago', 2) // Solo pagos activos
             ->when($filtroPeriodo, function ($query, $filtroPeriodo) {
                 return $query->where('escala_estudiante.periodo', $filtroPeriodo);
             })
@@ -173,7 +173,7 @@ class DashboardController extends Controller implements HasMiddleware
             ->join('seccion', 'detalle_estudiante_gs.seccionEstudiante', '=', 'seccion.seccionEstudiante')
             ->join('escala_estudiante', 'estudiante.idEstudiante', '=', 'escala_estudiante.idEstudiante')
             ->join('escala', 'escala_estudiante.idEscala', '=', 'escala.idEscala')
-            ->where('pago.estadoPago', 1) // Solo pagos activos, ajusta según tu lógica
+            ->where('pago.estadoPago', 2) // Solo pagos activos, ajusta según tu lógica
             ->when($filtroPeriodo, function ($query) use ($filtroPeriodo) {
                 return $query->where('escala_estudiante.periodo', $filtroPeriodo);
             })
