@@ -112,6 +112,7 @@ Route::put('/escalaEstudiante/{idEstudiante}/{periodo}', [escalaEstudianteContro
 
 //DEVOLUCION
 Route::resource('/devolucion', DevolucionController::class);
+
 Route::get('/devolucion/realizarDevolucion/{operacion}', [DevolucionController::class, 'realizarDevolucion'])->name('devolucion.realizarDevolucion');
 Route::get('cancelarDevolucion', function () {
     return redirect()->route('devolucion.index')->with(['devolucion' => 'Acción Cancelada ..!', 'color' => 'error']);

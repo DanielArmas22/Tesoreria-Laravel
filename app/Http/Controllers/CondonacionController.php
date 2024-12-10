@@ -295,7 +295,7 @@ class CondonacionController extends Controller implements HasMiddleware
                 }
                 $condonacion = new Condonacion();
                 $condonacion->fecha =  now()->format('Y-m-d');
-                $condonacion->estado = 1;
+                //$condonacion->estado = 1;
                 $condonacion->estadoCondonacion = 1;
                 $condonacion->save();
                 

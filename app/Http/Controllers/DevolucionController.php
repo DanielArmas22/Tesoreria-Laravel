@@ -343,12 +343,12 @@ class DevolucionController extends Controller  implements HasMiddleware
     public function update(Request $request)
     {
         $validatedData=request()->validate([
-            'observacion'=>'required|max:20',
+            'motivo'=>'required|max:250',
             'deudas' => 'required|array'
         ],
         [
-            'observacion.required' => 'Ingrese observacion de la devolucion',
-            'observacion.max' => 'Maximo 20 caracteres para la observacion',
+            'motivo.required' => 'Ingrese el motivo de la devolucion',
+            'motivo.max' => 'Maximo 250 caracteres para el motivo',
             'deudas.required' => 'Debe seleccionar al menos una deuda',
             'deudas.array' => 'Las deudas deben ser un array',
         ]);
@@ -361,7 +361,7 @@ class DevolucionController extends Controller  implements HasMiddleware
             $detalle_devolucion = new detalle_devolucion();
             $detalle_devolucion->nroOperacion = $request->input('nroOperacion');
             $detalle_devolucion->idDevolucion = $devolucion->idDevolucion;
-            $detalle_devolucion->motivoObservacion = $request->input('motivo');
+            $detalle_devolucion->motivoDevolucion = $request->input('motivo');
             $detalle_devolucion->estadoDevolucion = 1;
             $detalle_devolucion->save();
             
