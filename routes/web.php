@@ -159,7 +159,12 @@ Route::get('escala/{id}/confirmar', [escalaController::class, 'confirmar'])->nam
 Route::post('/escala', [escalaController::class, 'store'])->name('escala.store');
 
 //usuarios
-Route::get('/usuarios', [UsuarioController::class, 'index'])->name('usuarios.index')->middleware('role:admin');
+Route::middleware('role:admin')->group(function () {
+    Route::get('/usuarios', [UsuarioController::class, 'index'])->name('usuarios.index');
+    Route::get('usuarios/{id}/edit', [UsuarioController::class, 'editRol'])->name('usuarios.edit');
+    Route::put('usuarios/{id}', [UsuarioController::class, 'updateRol'])->name('usuarios.update');
+    Route::delete('usuarios/{id}', [UsuarioController::class, 'destroyRol'])->name('usuarios.destroy');
+});
 
 
 

@@ -26,7 +26,8 @@
 
                 </article>
                 <br>
-                <x-table nombreTabla="Usuarios" :cabeceras="['Codigo', 'DNI', 'Nombre', 'Email', 'Rol']" :datos="$datos" :atributos="['id', 'DNI', 'name', 'email', 'rol']" isonclick='false' />
+                <x-table nombreTabla="Usuarios" :cabeceras="['Codigo', 'DNI', 'Nombre', 'Email', 'Rol']" :datos="$datos" :atributos="['id', 'DNI', 'name', 'email', 'rol']" ruta="usuarios.edit"
+                    id="id" />
                 <br>
             </div>
         </section>

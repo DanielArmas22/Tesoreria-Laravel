@@ -32,9 +32,18 @@
             </div>
             @if (isset($role) && $role == 'admin')
                 <div class="mt-4">
-                    <x-label for="rol" value="{{ __('rol') }}" />
-                    <x-input id="rol" class="block mt-1 w-full" type="text" name="rol" :value="old('rol')"
-                        required autocomplete="rol" />
+                    <x-label for="rol" value="{{ __('Rol') }}" />
+                    <select id="rol" name="rol"
+                        class="appearance-none border border-gray-300 rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent mt-1">
+                        <option value="">Seleccione un rol</option>
+                        <option value="director" {{ old('rol') == 'director' ? 'selected' : '' }}>Director
+                        </option>
+                        <option value="secretario" {{ old('rol') == 'secretario' ? 'selected' : '' }}>Secretario
+                        </option>
+                        <option value="tesorero" {{ old('rol') == 'tesorero' ? 'selected' : '' }}>Tesorero
+                        </option>
+                        <option value="cajero" {{ old('rol') == 'cajero' ? 'selected' : '' }}>Cajero</option>
+                    </select>
                 </div>
             @endif
             @if (isset($role) && $role == 'padre')

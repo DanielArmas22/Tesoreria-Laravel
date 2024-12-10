@@ -281,4 +281,55 @@ class UsuarioController extends Controller
         $datos = User::paginate($this::PAGINATION);
         return view('pages.usuario.index',compact('datos','rol'));
     }
+    public function editRol($id)
+{
+    // Buscar al usuario por su ID
+    $user = User::findOrFail($id);
+
+    return view('pages.usuario.edit', compact('user'));
+}
+
+public function updateRol(Request $request, $id)
+{
+    // Validación de los datos del formulario
+    $data = $request->validate([
+        'name' => ['required', 'string', 'max:255'],
+        'email' => ['required', 'string', 'email', 'max:255', "unique:users,email,{$id}"],
+        'password' => ['nullable', 'string', 'min:8', 'confirmed'],
+        'rol' => ['required', 'string', 'max:255', 'in:director,secretario,tesorero,cajero'],
+    ], [
+        'name.required' => 'El nombre es obligatorio.',
+        'email.required' => 'El correo electrónico es obligatorio.',
+        'email.unique' => 'El correo electrónico ya está registrado.',
+        'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
+        'password.confirmed' => 'Las contraseñas no coinciden.',
+        'rol.required' => 'El rol es obligatorio.',
+        'rol.in' => 'El rol seleccionado no es válido.',
+    ]);
+
+    // Buscar al usuario por su ID
+    $user = User::findOrFail($id);
+
+    // Actualizar los datos del usuario
+    $user->name = $request->input('name');
+    $user->email = $request->input('email');
+    if ($request->filled('password')) {
+        $user->password = Hash::make($request->input('password'));
+    }
+    $user->rol = $request->input('rol');
+    $user->save();
+
+    return redirect()->route('usuarios.index')->with('datos', 'Usuario actualizado con éxito.');
+}
+public function destroyRol($id)
+{
+    // Buscar al usuario por su ID
+    $user = User::findOrFail($id);
+
+    // Eliminar al usuario
+    $user->delete();
+
+    return redirect()->route('usuarios.index')->with('datos', 'Usuario eliminado con éxito.');
+}
+
 }

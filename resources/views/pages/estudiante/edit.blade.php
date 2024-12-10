@@ -50,10 +50,12 @@
                         @if ($escalas->isEmpty())
                             <div class="border-t border-b border-gray-200 py-4">
                                 <h4 class="text-center text-lg font-medium text-gray-700">Escala sin Asignar</h4>
-                                <a href="{{ route('escalaEstudiante.create', ['buscarEstudiante' => $estudiante->idEstudiante]) }}"
-                                    class="mt-4 w-full bg-primary text-white font-medium py-2 rounded-md shadow hover:bg-primary-dark transition">
-                                    Asignar Escala
-                                </a>
+                                @if (Auth::user()->hasRole('admin') || Auth::user()->hasRole('secretario'))
+                                    <a href="{{ route('escalaEstudiante.create', ['buscarEstudiante' => $estudiante->idEstudiante]) }}"
+                                        class="mt-4 w-full bg-primary text-white font-medium py-2 rounded-md shadow hover:bg-primary-dark transition">
+                                        Asignar Escala
+                                    </a>
+                                @endif
                             </div>
                         @else
                             <div class="flex gap-4 items-center">
@@ -103,7 +105,7 @@
                     'totalPagar',
                 ]" ruta="deuda.edit" id="idDeuda" />
 
-                @if (!Auth::user()->hasRole('padre') && !Auth::user()->hasRole('director') )
+                @if (!Auth::user()->hasRole('padre') && !Auth::user()->hasRole('director'))
                     <div class="mt-6">
                         <x-boton label="Nueva Deuda" ruta="estudiante.create" color="primary" />
                     </div>
