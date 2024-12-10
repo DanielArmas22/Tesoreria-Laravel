@@ -23,6 +23,7 @@ class CreateNewUser implements CreatesNewUsers
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => $this->passwordRules(),
+            'rol' => ['required', 'string', 'max:255', 'in:director,secretario,tesorero'],
         ],
         [
             'name.required' => 'El nombre es obligatorio.',
@@ -31,13 +32,16 @@ class CreateNewUser implements CreatesNewUsers
             'password.required' => 'La contraseña es obligatoria.',
             'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
             'password.confirmed' => 'Las contraseñas no coinciden.',
+            'rol.required' => 'El rol es obligatorio.',
+            'rol.in' => 'El rol seleccionado no es válido.',
         ])->validate();
 
         return User::create([
             'name' => $input['name'],
             'email' => $input['email'],
             'password' => Hash::make($input['password']),
-            'rol' => 'director'
+            // 'rol' => 'director'
+            'rol' => $input['rol'],
         ]);
     }
 }

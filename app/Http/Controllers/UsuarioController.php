@@ -57,6 +57,13 @@ class UsuarioController extends Controller
         return back()->withErrors(['password' => 'Contraseña no válida'])->withInput(request(['name', 'password']));
     }
 
+    
+    public function showRegRoles()
+    {
+        //inicializar el array de estudiantes
+        // session()->put('estudiantes',[]);
+        return view('auth.register', ['role' => $this::ROLE_ADMIN]);
+    }
 
     public function showRegPadre()
     {
@@ -156,7 +163,38 @@ class UsuarioController extends Controller
             'estudiantes' => $estudiantes
         ]);
     }
-    
+    public function regRol(Request $request)
+    {
+        // Validación de los datos del formulario
+        $data = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'rol' => ['required', 'string', 'max:255', 'in:director,secretario,tesorero,cajero'],
+        ], [
+            'name.required' => 'El nombre es obligatorio.',
+            'email.required' => 'El correo electrónico es obligatorio.',
+            'email.unique' => 'El correo electrónico ya está registrado.',
+            'password.required' => 'La contraseña es obligatoria.',
+            'password.min' => 'La contraseña debe tener al menos 8 caracteres.',
+            'password.confirmed' => 'Las contraseñas no coinciden.',
+            'rol.required' => 'El rol es obligatorio.',
+            'rol.in' => 'El rol seleccionado no es válido.',
+        ]);
+
+        // Creación del usuario
+        $user = User::create([
+            'name' => $request->input('name'),
+            'email' => $request->input('email'),
+            'password' => Hash::make($request->input('password')),
+            'rol' => $request->input('rol'),
+        ]);
+
+        // Iniciar sesión con el nuevo usuario
+        // Auth::login($user);
+
+        return redirect()->route('usuarios.index')->with('datos', 'Usuario registrado con éxito.');
+    }
 
 // $objeto = $estudiantes->find(function($item){
     //     return $item->id == $id;
@@ -239,7 +277,8 @@ class UsuarioController extends Controller
         if (!Auth::check()) {
             return redirect('/login');
         }
+        $rol = $this::ROLE_ADMIN;
         $datos = User::paginate($this::PAGINATION);
-        return view('pages.usuario.index',compact('datos'));
+        return view('pages.usuario.index',compact('datos','rol'));
     }
 }

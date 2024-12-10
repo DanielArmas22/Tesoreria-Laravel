@@ -12,10 +12,13 @@
             action="
         @if (isset($role) && $role == 'padre') {{ route('register.padre') }}
         @else
-        {{ route('register') }} @endif
+        @if (isset($role) && $role == 'admin') 
+        {{ route('registrate') }} 
+        @else
+            {{ route('register') }} @endif
+        @endif
         ">
             @csrf
-
             <div>
                 <x-label for="name" value="{{ __('Nombre') }}" />
                 <x-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required
@@ -27,6 +30,13 @@
                 <x-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')"
                     required autocomplete="email" />
             </div>
+            @if (isset($role) && $role == 'admin')
+                <div class="mt-4">
+                    <x-label for="rol" value="{{ __('rol') }}" />
+                    <x-input id="rol" class="block mt-1 w-full" type="text" name="rol" :value="old('rol')"
+                        required autocomplete="rol" />
+                </div>
+            @endif
             @if (isset($role) && $role == 'padre')
                 <div id="error-message" style="color: red;"></div>
                 <input type="hidden" id="csrf_token" value="{{ csrf_token() }}" />

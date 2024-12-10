@@ -37,8 +37,14 @@ Route::get('conceptos/', [conceptoEscalaController::class, 'show'])->name('conce
 Route::get('/home', [HomeController::class, 'index'])->name('home.index')->middleware('auth');
 Route::post('/identificacion', [UsuarioController::class, 'verificalogin'])->name('identificacion');
 
+Route::middleware('role:admin')->group(function () {
+    Route::get('/registar', [UsuarioController::class, 'showRegRoles'])->name('registarRol');
+    Route::post('/registar', [UsuarioController::class, 'regRol'])->name('registrate');
+});
+
 Route::get('/register/padre', [UsuarioController::class, 'showRegPadre'])->name('register.padre');
 Route::post('/register/padre', [UsuarioController::class, 'regPadre']);
+
 Route::post('/addEstudiante/{id}', [UsuarioController::class, 'addEstudiante'])->name('addEstudiante');
 
 Route::get('/admin', [UsuarioController::class, 'showLoginAdmin'])->name('login.admin');

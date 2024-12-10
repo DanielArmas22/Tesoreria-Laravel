@@ -250,7 +250,9 @@
                             <th class="px-4 py-2 border-b">Fecha Limite</th>
                             <th class="px-4 py-2 border-b">Adelanto</th>
                             <th class="px-4 py-2 border-b">Monto Total</th>
-                            <th class="px-4 py-2 border-b text-center">Opciones</th>
+                            @if (!Auth::user()->hasRole('director'))
+                                <th class="px-4 py-2 border-b text-center">Opciones</th>
+                            @endif
                         </tr>
                     </thead>
                     <tbody class="text-gray-600">
@@ -270,10 +272,13 @@
                                     <td class="border px-4 py-2">{{ $dato->adelanto }}</td>
                                     <td class="border px-4 py-2">
                                         {{ $dato->montoMora + $dato->monto - $dato->totalCondonacion }} </td>
-                                    <td class="border px-4 py-2 flex space-x-2">
-                                        <a href="{{ route('deuda.edit', $dato->idDeuda) }}"
-                                            class="inline-block rounded bg-green-500 px-4 py-2 text-xs font-medium uppercase leading-normal text-white shadow transition duration-150 ease-in-out hover:bg-green-600 focus:bg-green-600 focus:outline-none focus:ring-0 active:bg-green-700">Editar</a>
-                                    </td>
+
+                                    @if (!Auth::user()->hasRole('director'))
+                                        <td class="border px-4 py-2 flex space-x-2">
+                                            <a href="{{ route('deuda.edit', $dato->idDeuda) }}"
+                                                class="inline-block rounded bg-green-500 px-4 py-2 text-xs font-medium uppercase leading-normal text-white shadow transition duration-150 ease-in-out hover:bg-green-600 focus:bg-green-600 focus:outline-none focus:ring-0 active:bg-green-700">Editar</a>
+                                        </td>
+                                    @endif
                                 </tr>
                             @endforeach
                         @endif
@@ -300,9 +305,11 @@
                     ]) }}">
                     Reporte de Deudas</a>
             </div>
+            @if (!Auth::user()->hasRole('director'))
                 <article class="flex justify-center"><a class="{{ $buttonClass }}"
                         href="{{ route('deuda.create') }}">Nueva
                         Deuda</a></article>
+            @endif
         </section>
     </div>
 @endsection

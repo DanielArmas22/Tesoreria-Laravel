@@ -28,7 +28,7 @@ class pagoController extends Controller implements HasMiddleware
         ];
     }
 
-    const PAGINATION = 3;
+    const PAGINATION = 5;
 
     public function index(Request $request, $generarPDF = null)
     {

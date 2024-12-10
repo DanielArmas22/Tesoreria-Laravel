@@ -89,6 +89,10 @@
 
                                 @case('estadoCondonacion')
                                     @switch($dato->estadoCondonacion)
+                                        @case(0)
+                                            Rechazado
+                                        @break
+
                                         @case(1)
                                             Solicitado
                                         @break
@@ -98,10 +102,14 @@
                                         @break
 
                                         @case(3)
-                                            devuelto
+                                            Observado
                                         @break
 
                                         @case(4)
+                                            Aprobado
+                                        @break
+
+                                        @case(5)
                                             Registrado
                                         @break
 

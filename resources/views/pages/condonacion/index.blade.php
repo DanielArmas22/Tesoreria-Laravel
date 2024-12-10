@@ -29,10 +29,10 @@
                             valor="{{ $idEstudiante }}" />
                         <x-textField label="DNI de Estudiante" placeholder="DNI de Estudiante" name="dniEstudiante"
                             valor="{{ $dniEstudiante }}" />
-                        <x-textField label="Nombre Estudiante" placeholder="Nombre Estudiante" name="busquedaNombreEstudiante"
-                            valor="{{ $busquedaNombreEstudiante }}" />
-                        <x-textField label="Apellido Estudiante" placeholder="Apellido Estudiante" name="busquedaApellidoEstudiante"
-                            valor="{{ $busquedaApellidoEstudiante }}" />
+                        <x-textField label="Nombre Estudiante" placeholder="Nombre Estudiante"
+                            name="busquedaNombreEstudiante" valor="{{ $busquedaNombreEstudiante }}" />
+                        <x-textField label="Apellido Estudiante" placeholder="Apellido Estudiante"
+                            name="busquedaApellidoEstudiante" valor="{{ $busquedaApellidoEstudiante }}" />
                         <div class="space-y-2">
                             <h3>Monto</h3>
                             <div class="flex justify-center space-x-6">
@@ -44,7 +44,8 @@
                                 <div class="border-b border-blue-500">
                                     <input name="montoMayor"
                                         class="appearance-none bg-transparent border-none w-full text-gray-700 mr-3 py-1 px-2 leading-tight focus:outline-none border-b border-blue-500"
-                                        type="search" placeholder="999.0000" aria-label="Search" value="{{ $montoMayor }}">
+                                        type="search" placeholder="999.0000" aria-label="Search"
+                                        value="{{ $montoMayor }}">
                                 </div>
                             </div>
                         </div>
@@ -53,8 +54,9 @@
                             <button
                                 class="rounded bg-primary px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white shadow-primary-3 transition duration-150 ease-in-out hover:bg-primary-accent-300 hover:shadow-primary-2 focus:bg-primary-accent-300 focus:shadow-primary-2 focus:outline-none focus:ring-0 active:bg-primary-600 active:shadow-primary-2 motion-reduce:transition-none dark:shadow-black/30 dark:hover:shadow-dark-strong dark:focus:shadow-dark-strong dark:active:shadow-dark-strong"
                                 type="submit">Buscar</button>
-                            <a href="{{route ('condonacion.index')}}" class="rounded bg-success px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white shadow-primary-3 transition duration-150 ease-in-out hover:bg-success-accent-300 hover:shadow-success-2 focus:bg-success-accent-300 focus:shadow-success-2 focus:outline-none focus:ring-0 active:bg-success-600 active:shadow-success-2 motion-reduce:transition-none dark:shadow-black/30 dark:hover:shadow-dark-strong dark:focus:shadow-dark-strong dark:active:shadow-dark-strong">
-                                    Limpiar
+                            <a href="{{ route('condonacion.index') }}"
+                                class="rounded bg-success px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white shadow-primary-3 transition duration-150 ease-in-out hover:bg-success-accent-300 hover:shadow-success-2 focus:bg-success-accent-300 focus:shadow-success-2 focus:outline-none focus:ring-0 active:bg-success-600 active:shadow-success-2 motion-reduce:transition-none dark:shadow-black/30 dark:hover:shadow-dark-strong dark:focus:shadow-dark-strong dark:active:shadow-dark-strong">
+                                Limpiar
                             </a>
                         </div>
                     </form>
@@ -72,10 +74,18 @@
                         </article>
                     </div>
                     <div class="mt-6 flex justify-center">
-                        <a class="px-6 py-2 bg-primary-500 hover:bg-primary-600 text-white text-xs font-bold rounded shadow-md" 
-                        href="{{ route('generarCondonacionGeneral', ['estado' => 'pendientes','idCondonacion'=>$idCondonacion, 'idEstudiante'=>$idEstudiante, 
-                        'dniEstudiante'=>$dniEstudiante, 'montoMenor'=>$montoMenor, 'montoMayor'=>$montoMayor,
-                        'busquedaNombreEstudiante'=>$busquedaNombreEstudiante,'busquedaApellidoEstudiante'=>$busquedaApellidoEstudiante,'generarPDF' => true]) }}">
+                        <a class="px-6 py-2 bg-primary-500 hover:bg-primary-600 text-white text-xs font-bold rounded shadow-md"
+                            href="{{ route('generarCondonacionGeneral', [
+                                'estado' => 'pendientes',
+                                'idCondonacion' => $idCondonacion,
+                                'idEstudiante' => $idEstudiante,
+                                'dniEstudiante' => $dniEstudiante,
+                                'montoMenor' => $montoMenor,
+                                'montoMayor' => $montoMayor,
+                                'busquedaNombreEstudiante' => $busquedaNombreEstudiante,
+                                'busquedaApellidoEstudiante' => $busquedaApellidoEstudiante,
+                                'generarPDF' => true,
+                            ]) }}">
                             Reporte Solicitudes Pendientes
                         </a>
                     </div>
@@ -96,11 +106,15 @@
                         <table class="w-full table-auto border-collapse border border-gray-200">
                             <thead class="bg-green-200">
                                 <tr>
-                                    <th class="border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700">Código Condonacion</th>
+                                    <th class="border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700">Código
+                                        Condonacion</th>
                                     <th class="border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700">DNI</th>
-                                    <th class="border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700">Estudiante</th>
-                                    <th class="border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700">Monto</th>
-                                    <th class="border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700">Fecha</th>
+                                    <th class="border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700">
+                                        Estudiante</th>
+                                    <th class="border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700">Monto
+                                    </th>
+                                    <th class="border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700">Fecha
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -111,11 +125,16 @@
                                 @else
                                     @foreach ($datosAceptados as $dato)
                                         <tr class="hover:bg-green-50">
-                                            <td class="border border-gray-300 px-4 py-2 text-center text-sm">{{ $dato->idCondonacion }}</td>
-                                            <td class="border border-gray-300 px-4 py-2 text-center text-sm">{{ $dato->dni }}</td>
-                                            <td class="border border-gray-300 px-4 py-2 text-center text-sm">{{ $dato->nombre_completo }}</td>
-                                            <td class="border border-gray-300 px-4 py-2 text-center text-sm">{{ $dato->total_monto }}</td>
-                                            <td class="border border-gray-300 px-4 py-2 text-center text-sm">{{ $dato->fecha }}</td>
+                                            <td class="border border-gray-300 px-4 py-2 text-center text-sm">
+                                                {{ $dato->idCondonacion }}</td>
+                                            <td class="border border-gray-300 px-4 py-2 text-center text-sm">
+                                                {{ $dato->dni }}</td>
+                                            <td class="border border-gray-300 px-4 py-2 text-center text-sm">
+                                                {{ $dato->nombre_completo }}</td>
+                                            <td class="border border-gray-300 px-4 py-2 text-center text-sm">
+                                                {{ $dato->total_monto }}</td>
+                                            <td class="border border-gray-300 px-4 py-2 text-center text-sm">
+                                                {{ $dato->fecha }}</td>
                                         </tr>
                                     @endforeach
                                 @endif
@@ -125,16 +144,24 @@
                             {{ $datosAceptados->links() }}
                         </div>
                         <div class="mt-6 flex justify-center">
-                            <a class="px-6 py-2 bg-green-500 hover:bg-green-600 text-white text-xs font-bold rounded shadow-md" 
-                            href="{{ route('generarCondonacionGeneral', ['estado' => 'aceptadas','idCondonacion'=>$idCondonacion, 'idEstudiante'=>$idEstudiante, 
-                            'dniEstudiante'=>$dniEstudiante, 'montoMenor'=>$montoMenor, 'montoMayor'=>$montoMayor,
-                            'busquedaNombreEstudiante'=>$busquedaNombreEstudiante,'busquedaApellidoEstudiante'=>$busquedaApellidoEstudiante,'generarPDF' => true]) }}">
+                            <a class="px-6 py-2 bg-green-500 hover:bg-green-600 text-white text-xs font-bold rounded shadow-md"
+                                href="{{ route('generarCondonacionGeneral', [
+                                    'estado' => 'aceptadas',
+                                    'idCondonacion' => $idCondonacion,
+                                    'idEstudiante' => $idEstudiante,
+                                    'dniEstudiante' => $dniEstudiante,
+                                    'montoMenor' => $montoMenor,
+                                    'montoMayor' => $montoMayor,
+                                    'busquedaNombreEstudiante' => $busquedaNombreEstudiante,
+                                    'busquedaApellidoEstudiante' => $busquedaApellidoEstudiante,
+                                    'generarPDF' => true,
+                                ]) }}">
                                 Reporte Solicitudes Aceptadas
                             </a>
                         </div>
                     </div>
                 </div>
-            
+
                 <!-- Tabla de Solicitudes Rechazadas -->
                 <div class="w-full lg:w-1/2 bg-red-100 rounded-lg shadow-md p-6">
                     <h3 class="text-lg font-semibold mb-4 text-red-800">Listado de Solicitudes Rechazadas</h3>
@@ -142,11 +169,15 @@
                         <table class="w-full table-auto border-collapse border border-gray-200">
                             <thead class="bg-red-200">
                                 <tr>
-                                    <th class="border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700">Código Condonacion</th>
+                                    <th class="border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700">Código
+                                        Condonacion</th>
                                     <th class="border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700">DNI</th>
-                                    <th class="border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700">Estudiante</th>
-                                    <th class="border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700">Monto</th>
-                                    <th class="border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700">Fecha</th>
+                                    <th class="border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700">
+                                        Estudiante</th>
+                                    <th class="border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700">Monto
+                                    </th>
+                                    <th class="border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700">Fecha
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -157,11 +188,16 @@
                                 @else
                                     @foreach ($datosRechazados as $dato)
                                         <tr class="hover:bg-red-50">
-                                            <td class="border border-gray-300 px-4 py-2 text-center text-sm">{{ $dato->idCondonacion }}</td>
-                                            <td class="border border-gray-300 px-4 py-2 text-center text-sm">{{ $dato->dni }}</td>
-                                            <td class="border border-gray-300 px-4 py-2 text-center text-sm">{{ $dato->nombre_completo }}</td>
-                                            <td class="border border-gray-300 px-4 py-2 text-center text-sm">{{ $dato->total_monto }}</td>
-                                            <td class="border border-gray-300 px-4 py-2 text-center text-sm">{{ $dato->fecha }}</td>
+                                            <td class="border border-gray-300 px-4 py-2 text-center text-sm">
+                                                {{ $dato->idCondonacion }}</td>
+                                            <td class="border border-gray-300 px-4 py-2 text-center text-sm">
+                                                {{ $dato->dni }}</td>
+                                            <td class="border border-gray-300 px-4 py-2 text-center text-sm">
+                                                {{ $dato->nombre_completo }}</td>
+                                            <td class="border border-gray-300 px-4 py-2 text-center text-sm">
+                                                {{ $dato->total_monto }}</td>
+                                            <td class="border border-gray-300 px-4 py-2 text-center text-sm">
+                                                {{ $dato->fecha }}</td>
                                         </tr>
                                     @endforeach
                                 @endif
@@ -171,10 +207,18 @@
                             {{ $datosRechazados->links() }}
                         </div>
                         <div class="mt-6 flex justify-center">
-                            <a class="px-6 py-2 bg-red-500 hover:bg-red-600 text-white text-xs font-bold rounded shadow-md" 
-                            href="{{ route('generarCondonacionGeneral', ['estado' => 'rechazadas','idCondonacion'=>$idCondonacion, 'idEstudiante'=>$idEstudiante, 
-                            'dniEstudiante'=>$dniEstudiante, 'montoMenor'=>$montoMenor, 'montoMayor'=>$montoMayor,
-                            'busquedaNombreEstudiante'=>$busquedaNombreEstudiante,'busquedaApellidoEstudiante'=>$busquedaApellidoEstudiante,'generarPDF' => true]) }}">
+                            <a class="px-6 py-2 bg-red-500 hover:bg-red-600 text-white text-xs font-bold rounded shadow-md"
+                                href="{{ route('generarCondonacionGeneral', [
+                                    'estado' => 'rechazadas',
+                                    'idCondonacion' => $idCondonacion,
+                                    'idEstudiante' => $idEstudiante,
+                                    'dniEstudiante' => $dniEstudiante,
+                                    'montoMenor' => $montoMenor,
+                                    'montoMayor' => $montoMayor,
+                                    'busquedaNombreEstudiante' => $busquedaNombreEstudiante,
+                                    'busquedaApellidoEstudiante' => $busquedaApellidoEstudiante,
+                                    'generarPDF' => true,
+                                ]) }}">
                                 Reporte Solicitudes Rechazadas
                             </a>
                         </div>
@@ -188,12 +232,13 @@
                 <x-alert :mensaje="session('datos')" tipo="success" />
             @endif
             @if (session('mensaje'))
-                <div class="w-full mb-4 bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-md" role="alert">
+                <div class="w-full mb-4 bg-green-100 border-l-4 border-green-500 text-green-700 p-4 rounded-md"
+                    role="alert">
                     <p>{{ session('mensaje') }}</p>
                 </div>
             @endif
-
-            <section class="flex flex-col lg:flex-row gap-6 w-full">
+            <h2 class="text-3xl font-bold mb-4 text-gray-800 w-full text-start">Condonaciones</h2>
+            <section class="flex flex-col lg:flex-row gap-6 w-max px-7">
                 <!-- Filtros de Búsqueda -->
                 <article class="rounded-lg shadow-md p-6 bg-white flex-1">
                     <h3 class="text-lg font-semibold text-center mb-4">Filtros de Búsqueda</h3>
@@ -223,8 +268,8 @@
                                 <div class="space-y-2">
                                     <x-textField label="Código de Estudiante" placeholder="Código de Estudiante"
                                         name="codigoEstudiante" valor="{{ $idEstudiante }}" class="w-full" />
-                                    <x-textField label="DNI de Estudiante" placeholder="DNI de Estudiante" name="dniEstudiante"
-                                        valor="{{ $dniEstudiante }}" class="w-full" />
+                                    <x-textField label="DNI de Estudiante" placeholder="DNI de Estudiante"
+                                        name="dniEstudiante" valor="{{ $dniEstudiante }}" class="w-full" />
                                 </div>
                             @endif
                         </div>
@@ -274,26 +319,38 @@
                 <article class="rounded-lg shadow-md p-6 bg-white flex-2">
                     <h3 class="text-xl font-semibold border-b pb-2 mb-4">Condonaciones Activas</h3>
                     <div class="overflow-x-auto">
-                        <x-table :cabeceras="['Código', 'DNI', 'Estudiante', 'Monto', 'Fecha', 'Estado']" :datos="$datos" :atributos="['idCondonacion', 'dni', 'nombre_completo', 'total_monto', 'fecha', 'estadoCondonacion']" ruta="condonacion.edit"
+                        <x-table :cabeceras="['Código', 'DNI', 'Estudiante', 'Monto', 'Fecha', 'Estado']" :datos="$datos" :atributos="[
+                            'idCondonacion',
+                            'dni',
+                            'nombre_completo',
+                            'total_monto',
+                            'fecha',
+                            'estadoCondonacion',
+                        ]" ruta="condonacion.edit"
                             id="idCondonacion" />
                     </div>
-                    <div class="flex justify-center mt-4">
-                        {{-- Botón adicional si es necesario --}}
-                        {{-- <x-button label="Nueva Condonación" ruta="condonacion.create" color="primary" /> --}}
-                    </div>
+                    @if (!Auth::user()->hasRole('director'))
+                        <div class="flex justify-center mt-4">
+                            {{-- Botón adicional si es necesario --}}
+                            {{-- <x-button label="Nueva Condonación" ruta="condonacion.create" color="primary" /> --}}
+                        </div>
+                    @endif
                 </article>
             </section>
 
-            <div class="w-full max-w-4xl mt-6 bg-white rounded-lg shadow-md p-4 flex justify-end">
-                <a href="{{ route('condonacion.create') }}"
-                    class="inline-flex items-center px-6 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-colors duration-200">
-                    <i class="fas fa-plus mr-2"></i>
-                    @if (Auth::user()->hasRole('padre'))
-                        Solicitar
-                    @endif
-                    Condonación
-                </a>
-            </div>
+            @if (!Auth::user()->hasRole('director'))
+                <div class="w-full max-w-4xl mt-6 bg-white rounded-lg shadow-md p-4 flex justify-center">
+                    <a href="{{ route('condonacion.create') }}"
+                        class="inline-flex items-center px-6 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-colors duration-200">
+                        <i class="fas fa-plus mr-2"></i>
+                        @if (Auth::user()->hasRole('padre'))
+                            Solicitar
+                        @endif
+                        Condonación
+                    </a>
+                </div>
+            @endif
         </div>
+        {{-- kelita, mira wsp --}}
     @endif
 @endsection

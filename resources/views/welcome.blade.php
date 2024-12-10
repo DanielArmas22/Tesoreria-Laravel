@@ -931,7 +931,7 @@
                                     class="rounded-md px-3 py-2 text-black ring-1 ring-transparent transition hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20]">
                                     Inicio
                                 </a>
-                                <a href="{{ route('login') }}"
+                                {{-- <a href="{{ route('login') }}"
                                     class="rounded-md px-3 py-2 text-black ring-1 ring-transparent transition hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20]">
                                     Iniciar Sesion
                                 </a>
@@ -941,19 +941,19 @@
                                         class="rounded-md px-3 py-2 text-black ring-1 ring-transparent transition hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20]">
                                         Registrarte
                                     </a>
-                                @endif
+                                @endif --}}
                             @else
                                 <a href="{{ route('login.padre') }}"
                                     class="rounded-md px-3 py-2 text-black ring-1 ring-transparent transition hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20]">
                                     Iniciar Sesion
                                 </a>
-
+                                {{-- 
                                 @if (Route::has('register'))
                                     <a href="{{ route('register') }}"
                                         class="rounded-md px-3 py-2 text-black ring-1 ring-transparent transition hover:text-black/70 focus:outline-none focus-visible:ring-[#FF2D20]">
                                         Registrarte
                                     </a>
-                                @endif
+                                @endif --}}
                             @endauth
                         </nav>
                     @endif
