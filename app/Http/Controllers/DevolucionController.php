@@ -440,7 +440,7 @@ class DevolucionController extends Controller  implements HasMiddleware
         $datos = collect($datos)->map(function ($item) {
             return (object) $item;
         });
-        $pdf = PDF::loadView('pages.devolucion.reportepdf', compact('datos'));
+        $pdf = PDF::loadView('pages.devolucion.reportepdf', compact('datos'))->setPaper('a4','landscape');
         return $pdf->stream('invoice.pdf');
     } 
 //cajero----------------------------------------------------------------------------------------------------------------------------
@@ -631,6 +631,7 @@ class DevolucionController extends Controller  implements HasMiddleware
                 'DD.idDevolucion',
                 'DD.nroOperacion',
                 'DD.observacion',
+                'D.estadoDevolucion',
                 'E.idEstudiante',
                 'E.nombre',
                 'E.apellidoP',
@@ -645,6 +646,7 @@ class DevolucionController extends Controller  implements HasMiddleware
                 'DD.idDevolucion',
                 'DD.nroOperacion',
                 'DD.observacion',
+                'D.estadoDevolucion',
                 'E.idEstudiante',
                 'E.nombre',
                 'E.apellidoP',

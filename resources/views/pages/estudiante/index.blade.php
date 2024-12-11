@@ -12,7 +12,7 @@
         @endif
         <section class="lg:flex gap-4 px-4 py-8 shadow-xl  rounded-3xl border-[1px]">
             <div class="">
-                @if (!Auth::user()->hasRole('director'))
+                @if (!Auth::user()->hasRole('director') && !Auth::user()->hasRole('tesorero'))
                     <article class="flex justify-start">
                         {{-- <button label="Nuevo Estudiante" ruta="estudiante.create" color="success" /> --}}
                         <form action="{{ route('estudiante.create') }}" method="GET">

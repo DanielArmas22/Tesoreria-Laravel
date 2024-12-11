@@ -105,7 +105,7 @@
                     'totalPagar',
                 ]" ruta="deuda.edit" id="idDeuda" />
 
-                @if (!Auth::user()->hasRole('padre') && !Auth::user()->hasRole('director'))
+                @if (!Auth::user()->hasRole('padre') && !Auth::user()->hasRole('director') && !Auth::user()->hasRole('secretario'))
                     <div class="mt-6">
                         <x-boton label="Nueva Deuda" ruta="estudiante.create" color="primary" />
                     </div>

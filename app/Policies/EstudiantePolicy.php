@@ -66,7 +66,7 @@ class EstudiantePolicy
     public function edit(User $user, Estudiante $estudiante)
     {
         // dd($user->findEstudiante(43));
-        if ($user->hasRole('admin') || $user->hasRole('director')) {
+        if ($user->hasRole('admin') || $user->hasRole('director') || $user->hasRole('secretario')) {
             return Response::allow();
         }
 

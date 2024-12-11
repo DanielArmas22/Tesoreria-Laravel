@@ -8,13 +8,13 @@
         'rounded bg-gray-700 px-6 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal text-white shadow-gray-3 transition duration-150 ease-in-out hover:bg-gray-accent-300 hover:shadow-gray-2 focus:bg-gray-accent-300 focus:shadow-gray-2 focus:outline-none focus:ring-0 active:bg-gray-600 active:shadow-gray-2 motion-reduce:transition-none dark:shadow-black/30 dark:hover:shadow-dark-strong dark:focus:shadow-dark-strong dark:active:shadow-dark-strong';
 @endphp
 @section('contenido')
-    @if (Auth::user()->hasRole("tesorero"))
+    @if (Auth::user()->hasRole('tesorero'))
         <section class="w-full flex flex-col justify-center">
             <article>
                 <br>
                 <div class="bg-gray-100">
                     <div class="max-w-2xl mx-auto mt-10 bg-white p-8 rounded-lg shadow-lg pb-">
-                        <form method="POST" action="{{ route('devolucion.actualizarSolicitud1', $idDevolucion) }}">
+                        <form method="POST" action="{{ route('devolucion.actualizarSolicitud', $idDevolucion) }}">
                             <h1 class="text-center font-bold text-2xl mb-6">
                                 EVALUAR DEVOLUCION
                             </h1>
@@ -52,8 +52,7 @@
                                     readonly="true" />
                             </div>
                             <div class="pt-4">
-                                <x-textField label="Observacion" name='observacion' 
-                                    readonly="false" />
+                                <x-textField label="Observacion" name='observacion' readonly="false" />
                             </div>
                             <article>
                                 <br>
@@ -103,7 +102,7 @@
             </article>
         </section>
     @else
-        @if(Auth::user()->hasRole("cajero"))
+        @if (Auth::user()->hasRole('cajero'))
             <section class="w-full flex flex-col justify-center">
                 <article>
                     <br>
@@ -139,8 +138,8 @@
                                 </div>
                                 <h3 class="text-xl font-semibold mb-4 text-gray-800">Devolucion</h3>
                                 <div class="mb-4 items-center">
-                                    <x-textField label="Numero de Operacion" name='nroOperacion' valor="{{ $operacion }} "
-                                        readonly="true" />
+                                    <x-textField label="Numero de Operacion" name='nroOperacion'
+                                        valor="{{ $operacion }} " readonly="true" />
                                 </div>
                                 <div class="pt-2">
                                     <x-textField label="Observacion" name='observacion' valor="{{ $observacion }} "
@@ -169,17 +168,17 @@
                                                             <td class="border px-4 py-2">{{ $d->idDeuda }}</td>
                                                             <td class="border px-4 py-2">{{ $d->descripcion }}</td>
                                                             <td class="border px-4 py-2">{{ $d->monto }}</td>
-                                                            <input type="hidden" name="deudas[]" value="{{ $d->idDeuda }}">
+                                                            <input type="hidden" name="deudas[]"
+                                                                value="{{ $d->idDeuda }}">
                                                         </tr>
                                                     @endforeach
                                                 @endif
                                             </tbody>
 
                                         </table>
-                                        <div class="flex justify-center space-x-24 mt-4 px-10"> 
-                                            <a href="{{route('devolucion.index')}}">
-                                                <div
-                                                    class="rounded hover:scale-105 py-2 relative z-[2] -ms-0.5 flex items-center rounded-e bg-black px-5  text-xs font-medium uppercase leading-normal text-white shadow-primary-3 hover:transition hover:duration-500 hover:ease-in-out hover:bg-secondary-900 hover:shadow-primary-2 focus:bg-secondary-900 focus:shadow-primary-2 focus:outline-none focus:ring-0 active:bg-primary-600 active:shadow-primary-2 dark:shadow-black/30 dark:hover:shadow-dark-strong dark:focus:shadow-dark-strong dark:active:shadow-dark-strong"
+                                        <div class="flex justify-center space-x-24 mt-4 px-10">
+                                            <a href="{{ route('devolucion.index') }}">
+                                                <div class="rounded hover:scale-105 py-2 relative z-[2] -ms-0.5 flex items-center rounded-e bg-black px-5  text-xs font-medium uppercase leading-normal text-white shadow-primary-3 hover:transition hover:duration-500 hover:ease-in-out hover:bg-secondary-900 hover:shadow-primary-2 focus:bg-secondary-900 focus:shadow-primary-2 focus:outline-none focus:ring-0 active:bg-primary-600 active:shadow-primary-2 dark:shadow-black/30 dark:hover:shadow-dark-strong dark:focus:shadow-dark-strong dark:active:shadow-dark-strong"
                                                     id="search-button" data-twe-ripple-init data-twe-ripple-color="light">
                                                     <span class="mx-auto [&>svg]:h-5 [&>svg]:w-5 flex space-x-1">
                                                         <i class="pt-1 fa-solid fa-arrow-left"></i>
@@ -187,11 +186,11 @@
                                                     </span>
                                                 </div>
                                             </a>
-                                            <a href="{{route('devolucion.actualizarDevolucion',[$idDevolucion,$operacion])}}"
+                                            <a href="{{ route('devolucion.actualizarDevolucion', [$idDevolucion, $operacion]) }}"
                                                 class="rounded hover:scale-105 py-2 relative z-[2] -ms-0.5 flex items-center rounded-e bg-primary px-5  text-xs font-medium uppercase leading-normal text-white shadow-primary-3 hover:transition hover:duration-500 hover:ease-in-out hover:bg-primary-accent-300 hover:shadow-primary-2 focus:bg-primary-accent-300 focus:shadow-primary-2 focus:outline-none focus:ring-0 active:bg-primary-600 active:shadow-primary-2 dark:shadow-black/30 dark:hover:shadow-dark-strong dark:focus:shadow-dark-strong dark:active:shadow-dark-strong"
                                                 id="search-button" data-twe-ripple-init data-twe-ripple-color="light">
                                                 <span class="mx-auto [&>svg]:h-5 [&>svg]:w-5 flex space-x-1">
-                                                <i class=" pr-2 fa-solid fa-hand-holding-dollar"></i>
+                                                    <i class=" pr-2 fa-solid fa-hand-holding-dollar"></i>
                                                     <p>Confirmar</p>
                                                 </span>
                                             </a>
@@ -203,7 +202,7 @@
                         </div>
                     </div>
                 </article>
-            </section>  
+            </section>
         @else
             <section class="w-full flex flex-col justify-center">
                 <article>
@@ -240,8 +239,8 @@
                                 </div>
                                 <h3 class="text-xl font-semibold mb-4 text-gray-800">Devolucion</h3>
                                 <div class="mb-4 items-center">
-                                    <x-textField label="Numero de Operacion" name='nroOperacion' valor="{{ $operacion }} "
-                                        readonly="true" />
+                                    <x-textField label="Numero de Operacion" name='nroOperacion'
+                                        valor="{{ $operacion }} " readonly="true" />
                                 </div>
                                 <div class="pt-2">
                                     <x-textField label="Observacion" name='observacion' valor="{{ $observacion }} "
@@ -270,7 +269,8 @@
                                                             <td class="border px-4 py-2">{{ $d->idDeuda }}</td>
                                                             <td class="border px-4 py-2">{{ $d->descripcion }}</td>
                                                             <td class="border px-4 py-2">{{ $d->monto }}</td>
-                                                            <input type="hidden" name="deudas[]" value="{{ $d->idDeuda }}">
+                                                            <input type="hidden" name="deudas[]"
+                                                                value="{{ $d->idDeuda }}">
                                                         </tr>
                                                     @endforeach
                                                 @endif

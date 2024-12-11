@@ -348,13 +348,12 @@ class ReportesDirectorController extends Controller implements hasMiddleware
             ->join('seccion', 'detalle_estudiante_gs.seccionEstudiante', '=', 'seccion.seccionEstudiante')
             ->join('escala_estudiante', 'estudiante.idEstudiante', '=', 'escala_estudiante.idEstudiante')
             ->join('escala', 'escala_estudiante.idEscala', '=', 'escala.idEscala')
-            ->join('detalle_pago', 'deuda.idDeuda', '=', 'detalle_pago.idDeuda')
             ->where('deuda.estado', 1)
             ->select(
-                DB::raw('DATE_FORMAT(deuda.fechaRegistro, "%Y-%m") AS periodo'),
+                DB::raw('DATE_FORMAT(deuda.fechaLimite, "%Y-%m") AS periodo'),
                 DB::raw('SUM(escala.monto + deuda.montoMora - deuda.adelanto) AS total_deudas')
             )
-            ->groupBy('deuda.fechaRegistro')
+            ->groupBy('deuda.fechalimite')
             // Aplicar filtros de manera condicional
             ->when($periodo, function ($query, $periodo) {
                 return $query->where('escala_estudiante.periodo', $periodo);
@@ -371,7 +370,7 @@ class ReportesDirectorController extends Controller implements hasMiddleware
             });
 
         $deudas = $deudasQuery->get();
-
+        // dd($deudas);
         // Unificar ingresos y deudas por período
         $periodosIngresos = $ingresos->pluck('periodo')->all();
         $periodosDeudas = $deudas->pluck('periodo')->all();
@@ -382,11 +381,15 @@ class ReportesDirectorController extends Controller implements hasMiddleware
         $datosDeudas = [];
 
         foreach ($periodosUnicos as $p) {
-            $ingreso = $ingresos->firstWhere('periodo', $p);
-            $deuda = $deudas->firstWhere('periodo', $p);
-            $datosIngresos[] = $ingreso ? $ingreso->total_ingresos : 0;
-            $datosDeudas[] = $deuda ? $deuda->total_deudas : 0;
+            $ingreso = $ingresos->where('periodo', $p)->sum('total_ingresos');
+            $deuda = $deudas->where('periodo', $p)->sum('total_deudas');
+            $datosIngresos[] = $ingreso;
+            $datosDeudas[] = $deuda;
         }
+
+        // Obtener listas para selects, si no las tienes ya:
+        $listadoGrados = DB::table('grado')->pluck('descripcionGrado');
+        $listadoSecciones = DB::table('seccion')->pluck('descripcionSeccion');
 
         // Retornar la vista con los datos
         return view('pages.director.reportes.ingresos_vs_deudas', compact(
@@ -394,7 +397,11 @@ class ReportesDirectorController extends Controller implements hasMiddleware
             'datosIngresos',
             'datosDeudas',
             'grado',
-            'seccion'
+            'seccion',
+            'periodo',
+            'mes',
+            'listadoGrados',
+            'listadoSecciones'
         ));
     }
 

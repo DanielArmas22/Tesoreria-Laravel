@@ -1,4 +1,4 @@
-@if (Auth::user()->hasRole("tesorero"))
+@if (Auth::user()->hasRole('tesorero'))
     <!DOCTYPE html>
     <html lang="es">
 
@@ -99,34 +99,37 @@
                     </div>
                 </div>
             </div>
-            <div class="filters" style="margin-top: 20px; font-size: 14px; color: #333;">
+            <div class="filters" style="margin-top: 20px; font-size: 10px; color: #333;">
                 <h3>Filtros Aplicados:</h3>
                 <ul>
-                    @if($buscarCodigo)
+                    @if ($buscarCodigo)
                         <li><strong>ID Estudiante:</strong> {{ $buscarCodigo }}</li>
                     @endif
-                    @if($dniEstudiante)
+                    @if ($dniEstudiante)
                         <li><strong>DNI Estudiante:</strong> {{ $dniEstudiante }}</li>
                     @endif
-                    @if($busquedaNombreEstudiante)
+                    @if ($busquedaNombreEstudiante)
                         <li><strong>Nombre Estudiante:</strong> {{ $busquedaNombreEstudiante }}</li>
                     @endif
-                    @if($busquedaApellidoEstudiante)
+                    @if ($busquedaApellidoEstudiante)
                         <li><strong>Apellido Estudiante:</strong> {{ $busquedaApellidoEstudiante }}</li>
                     @endif
-                    @if($busquedaGrado)
-                        <li><strong>Grado:</strong> {{ $grados->firstWhere('gradoEstudiante', $busquedaGrado)->descripcionGrado ?? '' }}</li>
+                    @if ($busquedaGrado)
+                        <li><strong>Grado:</strong>
+                            {{ $grados->firstWhere('gradoEstudiante', $busquedaGrado)->descripcionGrado ?? '' }}</li>
                     @endif
-                    @if($busquedaSeccion)
-                        <li><strong>Sección:</strong> {{ $secciones->firstWhere('seccionEstudiante', $busquedaSeccion)->descripcionSeccion ?? '' }}</li>
+                    @if ($busquedaSeccion)
+                        <li><strong>Sección:</strong>
+                            {{ $secciones->firstWhere('seccionEstudiante', $busquedaSeccion)->descripcionSeccion ?? '' }}
+                        </li>
                     @endif
-                    @if($fechaInicio)
+                    @if ($fechaInicio)
                         <li><strong>Fecha Inicio:</strong> {{ $fechaInicio }}</li>
                     @endif
-                    @if($fechaFin)
+                    @if ($fechaFin)
                         <li><strong>Fecha Fin:</strong> {{ $fechaFin }}</li>
                     @endif
-                    @if(isset($DevolucionesHoy) && $DevolucionesHoy === 'si')
+                    @if (isset($DevolucionesHoy) && $DevolucionesHoy === 'si')
                         <li><strong>Filtro de Devoluciones del Día:</strong> Activado</li>
                     @endif
                 </ul>
@@ -135,12 +138,13 @@
                 <table>
                     <thead>
                         <tr>
-                        <th>Código Devolucion</th>
-                        <th>Pago Total</th>
-                        <th>Estudiante</th>
-                        <th>Grado-Seccion</th>
-                        <th>Fecha</th>
-                        <th>Motivo</th>
+                            <th>Código Devolucion</th>
+                            <th>Pago Total</th>
+                            <th>Estudiante</th>
+                            <th>Grado-Seccion</th>
+                            <th>Fecha</th>
+                            <th>Observacion</th>
+                            <th>Estado</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -156,7 +160,30 @@
                                     <td>{{ $dato->nombre }} {{ $dato->apellidoP }}</td>
                                     <td>{{ $dato->descripcionGrado }} {{ $dato->descripcionSeccion }}</td>
                                     <td>{{ $dato->fechaDevolucion }}</td>
-                                    <td>{{ $dato->motivoDevolucion }}</td>
+                                    {{-- <td>{{ $dato->motivoDevolucion }}</td> --}}
+                                    <td>{{ $dato->observacion }}</td>
+                                    <td> @switch($dato->estadoDevolucion)
+                                            @case(1)
+                                                <span class="text-yellow-600">Solicitado</span>
+                                            @break
+
+                                            @case(2)
+                                                <span class="text-blue-600">En proceso</span>
+                                            @break
+
+                                            @case(3)
+                                                <span class="text-green-600">Devuelto</span>
+                                            @break
+
+                                            @case(4)
+                                                <span class="text-gray-600">Registrado</span>
+                                            @break
+
+                                            @default
+                                                <span class="text-gray-400">Desconocido</span>
+                                        @endswitch
+                                    </td>
+
                                 </tr>
                             @endforeach
                         @endif
@@ -171,6 +198,7 @@
 @else
     <!DOCTYPE html>
     <html lang="es">
+
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -312,7 +340,10 @@
                     padding: 15px;
                 }
 
-                table, tbody, th, td {
+                table,
+                tbody,
+                th,
+                td {
                     font-size: 10px;
                 }
 
@@ -331,13 +362,14 @@
             }
         </style>
     </head>
+
     <body>
         <div class="report-container">
             <div class="date-time">
                 {{ \Carbon\Carbon::now()->format('d/m/Y H:i') }}
             </div>
             <h2>Reporte de Devoluciones</h2>
-            
+
             <table>
                 <thead>
                     <tr>
@@ -347,7 +379,8 @@
                         <th>ID Estudiante</th>
                         <th>Estudiante</th>
                         <th>Fecha</th>
-                        <th>Observación</th>
+                        <th>Observacion</th>
+                        <th>Estado</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -365,6 +398,27 @@
                                 <td>{{ $dato->nombre }} {{ $dato->apellidoP }}</td>
                                 <td>{{ $dato->fechaDevolucion }}</td>
                                 <td>{{ $dato->observacion }}</td>
+                                <td> @switch($dato->estadoDevolucion)
+                                        @case(1)
+                                            <span class="text-yellow-600">Solicitado</span>
+                                        @break
+
+                                        @case(2)
+                                            <span class="text-blue-600">En proceso</span>
+                                        @break
+
+                                        @case(3)
+                                            <span class="text-green-600">Devuelto</span>
+                                        @break
+
+                                        @case(4)
+                                            <span class="text-gray-600">Registrado</span>
+                                        @break
+
+                                        @default
+                                            <span class="text-gray-400">Desconocido</span>
+                                    @endswitch
+                                </td>
                             </tr>
                         @endforeach
                     @endif
@@ -374,5 +428,6 @@
 
         </div>
     </body>
+
     </html>
 @endif
