@@ -36,6 +36,10 @@ class EstudianteController extends Controller implements HasMiddleware
     // const Busqueda = 
     public function index(Request $request)
     {
+        if(Auth::user()->hasRole("padre")){
+            return redirect()->route('home.index');
+        }
+
         $busquedaNombre = $request->get('busquedaNombre');
         $busquedaCodigo = $request->get('busquedaCodigo');
         $busquedaDNI = $request->get('busquedaDNI');

@@ -21,42 +21,6 @@ class UsuarioController extends Controller
 
     const PAGINATION = 5;
     // const ROLE_PADRE = 'padre';
-    public function showLogin()
-    {
-        return view('login');
-    }
-    public function showRegistro()
-    {
-        return view('register');
-    }
-
-    public function verificalogin(Request $request) // funcion para verificar el login(recibe un request con los datos)
-    {
-        //return dd($request->all());
-        // validacion de campos
-        $data = request()->validate(
-            [
-                'name' => 'required',
-                'password' => 'required'
-            ],
-            [
-                'name.required' => 'Ingrese Usuario existente',
-                'password.required' => 'Ingrese contraseña correcta',
-            ]
-        );
-        $user = User::where('name', $request->get('name'))->first();
-        if (!$user) {
-            return back()->withErrors(['name' => 'Usuario no válido'])->withInput(request(['name']));
-        }
-        if (Auth::attempt($data)) {
-            $request->session()->put('name', $user->name); //guardamos el nombre del usuario en la sesion
-            //guadar el correo
-            $request->session()->put('email', $user->email);
-            return redirect('home');
-        }
-        return back()->withErrors(['password' => 'Contraseña no válida'])->withInput(request(['name', 'password']));
-    }
-
     
     public function showRegRoles()
     {
@@ -258,7 +222,7 @@ class UsuarioController extends Controller
             'rol' => $role, 
         ];
         if (Auth::attempt($credentials)) {
-            $request->session()->regenerate(); 
+            $request->session()->regenerate(); // regenerar la sesión
             return redirect()->intended("/home"); 
         }
         return back()->withErrors([
@@ -278,7 +242,8 @@ class UsuarioController extends Controller
             return redirect('/login');
         }
         $rol = $this::ROLE_ADMIN;
-        $datos = User::paginate($this::PAGINATION);
+        $datos = User::where("rol","<>","padre")->where("rol","<>","admin")->paginate($this::PAGINATION);
+
         return view('pages.usuario.index',compact('datos','rol'));
     }
     public function editRol($id)

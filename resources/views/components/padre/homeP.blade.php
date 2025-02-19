@@ -1,4 +1,17 @@
 <article class="w-full space-y-12 px-4 py-8 bg-gray-100 min-h-screen">
+    <section>
+        <h1 class="text-4xl font-bold text-gray-800 text-center">Bienvenido, {{ Auth::user()->name }}</h1>
+        <div class="my-16">
+        <h3 class="text-3xl font-bold text-gray-800">Estudiantes a Cargo</h3>
+        <br>
+        <div class="flex justify-center gap-6">
+            @foreach (Auth::user()->estudiantes()->get() as $estudiante)
+            <a class="rounded-xl shadow-md px-4 py-2 hover:bg-white transition-colors" href="{{route('estudiante.edit', ['estudiante' => $estudiante->estudiante->idEstudiante])}}">
+                {{ $estudiante->estudiante->nombre }} {{ $estudiante->estudiante->apellidoP }}
+            </a>
+        @endforeach
+        </div>
+    </section>
     <!-- Sección de Deudas Vencidas -->
     <section class="space-y-6">
         <div class="flex items-center justify-between">

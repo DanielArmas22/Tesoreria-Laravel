@@ -12,7 +12,15 @@
             </div>
         @endsession
         @isset($role)
-            <p>rol: {{ $role }}</p>
+            @if($role == 'admin')
+                <p class="text-center my-2">Panel de Administrador</p>
+            @else
+                @if ($role == 'padre')
+                    <p class="text-center my-2">Panel de Padres</p>
+                @else
+                    <p class="text-center my-2">{{$rol}}</p>
+                @endif
+            @endif
         @endisset
         @php
             $loginRoute = route('login');
@@ -56,24 +64,24 @@
             </div>
 
             <div class="flex items-center justify-end mt-4">
-                @if (Route::has('password.request'))
+                {{-- @if (Route::has('password.request'))
                     <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                         href="{{ route('password.request') }}">
                         {{ __('Olvidaste tu Constraseña?') }}
                     </a>
-                @endif
+                @endif --}}
 
                 <x-button class="ms-4">
                     {{ __('Iniciar') }}
                 </x-button>
             </div>
         </form>
-        <div class="pt-4">
+        {{-- <div class="pt-4">
             <p class="text-sm text-gray-600 rounded-md">
                 ¿No tienes una cuenta?</p>
             <a href="{{ route('register') }}"
                 class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Registrate
                 aquí</a>
-        </div>
+        </div> --}}
     </x-authentication-card>
 </x-guest-layout>
